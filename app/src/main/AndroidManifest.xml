@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cz.zcu.fav.remotestimulatorcontrol">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/launcher_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- Activity -->
+        <!-- Main activity -->
+        <activity
+            android:name=".ui.configurations.ConfigurationActivity"
+            android:label="@string/nav_configurations"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Other activity -->
+        <!-- Device list activity -->
+        <activity
+            android:name=".ui.devices.DeviceListActivity"
+            android:label="@string/select_device"
+            android:theme="@style/AppTheme.Dialog" />
+        <!-- Settings activity -->
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/nav_text_settings"
+            android:parentActivityName=".ui.configurations.ConfigurationActivity"
+            android:theme="@style/AppTheme.ActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationActivity" />
+        </activity>
+        <!-- Configuration detail activity -->
+        <activity
+            android:name=".ui.configurations.detail.ConfigurationDetailActivity"
+            android:label="@string/activity_title_configuration_detail"
+            android:parentActivityName=".ui.configurations.ConfigurationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationActivity" />
+        </activity>
+        <!-- Configuration factory activity -->
+        <activity
+            android:name=".ui.configurations.factory.ConfigurationFactoryActivity"
+            android:label="@string/activity_title_new_configuration"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Configuration rename activity -->
+        <activity
+            android:name=".ui.configurations.rename.ConfigurationRenameActivity"
+            android:label="@string/activity_title_rename_configuration"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Configuration duplicate activity -->
+        <activity
+            android:name=".ui.configurations.duplicate.ConfigurationDuplicateActivity"
+            android:label="@string/activity_title_duplicate_configuration"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Configuration sorting activity -->
+        <activity
+            android:name=".ui.configurations.sorting.ConfigurationSortingActivity"
+            android:label="@string/activity_title_configuration_sorting"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Configuration import activity -->
+        <activity
+            android:name=".ui.configurations.importation.ConfigurationImportActivity"
+            android:label="@string/activity_title_import_configuration"
+            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+        <!-- Help activity -->
+        <activity
+            android:name=".ui.help.HelpActivity"
+            android:label="@string/nav_text_help"
+            android:parentActivityName=".ui.configurations.ConfigurationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationActivity" />
+        </activity>
+        <!-- About activity -->
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:label="@string/nav_text_about"
+            android:parentActivityName=".ui.configurations.ConfigurationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationActivity" />
+        </activity>
+
+        <!-- Services -->
+        <service android:name=".service.BluetoothService" />
+    </application>
+
+</manifest>

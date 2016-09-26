@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.tvep.ConfigurationFragmentTVEP" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.tvep.ConfigurationTVEP" />
+
+        <variable
+            name="controller"
+            type="ConfigurationFragmentTVEP" />
+
+        <variable
+            name="configuration"
+            type="ConfigurationTVEP" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/parameters_tvep" />
+
+                <cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:esbMax="@{ConfigurationTVEP.MAX_PATTERN_LENGTH}"
+                    app:esbMin="@{ConfigurationTVEP.MIN_PATTERN_LENGTH}"
+                    app:esbTitle="@string/parameter_pattern_length"
+                    app:esbValue="@{configuration.patternLength}"
+                    app:onProgressChanged="@{controller.patternLengthChanged}"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_puls_length}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationTVEP.FLAG_PULS_LENGTH}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.pulsLength}' />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_time_between}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationTVEP.FLAG_TIME_BETWEEN}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.timeBetween}' />
+                    </android.support.design.widget.TextInputLayout>
+
+                </LinearLayout>
+
+                <cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:esbMax="@{AConfiguration.MAX_BRIGHTNESS}"
+                    app:esbMin="@{AConfiguration.MIN_BRIGHTNESS}"
+                    app:esbTitle="@string/parameter_brightness"
+                    app:esbValue="@{configuration.brightness}"
+                    app:onProgressChanged="@{controller.brightnessChanged}"/>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <cz.zcu.fav.remotestimulatorcontrol.widget.wrappedviewpager.WrappedViewPager
+            android:id="@+id/pagerPattern"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</layout>

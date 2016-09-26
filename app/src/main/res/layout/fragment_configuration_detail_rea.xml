@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea.ConfigurationREA" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea.ConfigurationREA.OnFail" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea.ConfigurationREA.Gender" />
+
+        <variable
+            name="controller"
+            type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.rea.ConfigurationFragmentREA" />
+
+        <variable
+            name="configuration"
+            type="ConfigurationREA" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@{@string/parameter_cycle_count}"
+                    app:errorText="@{@string/error_invalid_input}"
+                    app:validity="@{configuration.validityFlag}"
+                    app:validityFlag="@{ConfigurationREA.FLAG_CYCLE_COUNT}">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="numberSigned"
+                        android:text='@={"" + configuration.cycleCount}' />
+                </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_wait_fixed}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationREA.FLAG_WAIT_FIXED}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.waitFixed}' />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_wait_random}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationREA.FLAG_WAIT_RANDOM}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.waitRandom}' />
+                    </android.support.design.widget.TextInputLayout>
+
+                </LinearLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@{@string/parameter_miss_time}"
+                    app:errorText="@{@string/error_invalid_input}"
+                    app:validity="@{configuration.validityFlag}"
+                    app:validityFlag="@{ConfigurationREA.FLAG_MISS_TIME}">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="numberSigned"
+                        android:text='@={"" + configuration.missTime}' />
+                </android.support.design.widget.TextInputLayout>
+
+                <cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:esbMax="@{AConfiguration.MAX_BRIGHTNESS}"
+                    app:esbMin="@{AConfiguration.MIN_BRIGHTNESS}"
+                    app:esbTitle="@string/parameter_brightness"
+                    app:esbValue="@{configuration.brightness}"
+                    app:onProgressChanged="@{controller.brightnessChanged}" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/parameter_on_fail" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/radioOnFailWait"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="onFailRadioButtonClicked"
+                        android:text="@string/parameter_on_fail_wait"
+                        app:flag="@{OnFail.WAIT}"
+                        app:value="@{configuration.onFail}" />
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/radioOnFailContinue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="onFailRadioButtonClicked"
+                        android:text="@string/parameter_on_fail_continue"
+                        app:flag="@{OnFail.CONTINUE}"
+                        app:value="@{configuration.onFail}" />
+
+                </RadioGroup>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/parameter_gender" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/radioGenderMale"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="onGenderRadioButtonClicked"
+                        android:text="@string/parameter_gender_male"
+                        app:flag="@{Gender.MALE}"
+                        app:value="@{configuration.gender}" />
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/radioGenderFemale"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="onGenderRadioButtonClicked"
+                        android:text="@string/parameter_gender_female"
+                        app:flag="@{Gender.FEMALE}"
+                        app:value="@{configuration.gender}" />
+
+                </RadioGroup>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@{@string/parameter_age}"
+                    app:errorText="@{@string/error_invalid_input}"
+                    app:validity="@{configuration.validityFlag}"
+                    app:validityFlag="@{ConfigurationREA.FLAG_AGE}">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="numberSigned"
+                        android:text='@={"" + configuration.age}' />
+                </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_height}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationREA.FLAG_HEIGHT}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.height}' />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@{@string/parameter_weight}"
+                        app:errorText="@{@string/error_invalid_input}"
+                        app:validity="@{configuration.validityFlag}"
+                        app:validityFlag="@{ConfigurationREA.FLAG_WEIGHT}">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="numberSigned"
+                            android:text='@={"" + configuration.weight}' />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</layout>

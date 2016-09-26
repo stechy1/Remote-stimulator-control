@@ -1,0 +1,219 @@
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false">Remote stimulator control</string>
+    <string name="app_author">Petr Štechmüller</string>
+    <string name="app_background">Background</string>
+
+    <!-- Navigace -->
+    <string name="nav_drawer_open">Open sidebar</string>
+    <string name="nav_drawer_close">Close sidebar</string>
+    <string name="nav_configurations">Experiments</string>
+    <string name="nav_text_settings">Settings</string>
+    <string name="nav_text_help">Help</string>
+    <string name="nav_text_about">About</string>
+
+    <!-- Položky menu -->
+    <string name="action_connect">connect</string>
+    <string name="action_disconnect">disconnect</string>
+    <string name="action_share">Share</string>
+    <string name="action_import">Import</string>
+
+    <!-- Activity - configuration -->
+    <string name="configuration_type_description">configuration type</string>
+    <string name="configuration_type_led">configuration with leds</string>
+    <string name="configuration_type_audio">configuration with audio</string>
+    <string name="configuration_type_image">configuration with image</string>
+    <string name="no_configuration_found">No configuration found.</string>
+    <!-- Action mode akce -->
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_rename">Rename</string>
+    <string name="save_values">Save values</string>
+    <string name="action_export">Export</string>
+    <string name="output_type">Parameter type</string>
+    <string name="selected_count" translatable="false">%1$d</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_select_none">Select none</string>
+    <string name="action_select_inverse">Invert selection</string>
+    <string name="action_sort_by">Sort by</string>
+
+    <!-- Dialogová tlačítka -->
+    <string name="dialog_title_confirmation">Confirm</string>
+    <string name="dialog_message_delete">Do you realy want to delete configuration?</string>
+    <string name="no">no</string>
+    <string name="yes">yes</string>
+
+    <!-- Podnadpis aplikace-->
+    <string name="title_connecting">connecting…</string>
+    <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="title_not_connected">not connected</string>
+    <!-- Zprávy z bluetooth komunikace -->
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled">Bluetooth was not enabled!</string>
+    <string name="bt_not_supported">Bluetooth is not supported!</string>
+    <string name="enable">Enable</string>
+    <string name="error_lost_connection">Connection lost…</string>
+    <string name="error_connect_failed">Unable to connect device</string>
+    <string name="unknown_device">Device not recognized</string>
+
+    <!-- Activity - hledání a připojení zařízení-->
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="title_paired_devices">Paired Devices</string>
+
+    <!-- Activity - configuration factory -->
+    <string name="activity_title_new_configuration">New configuration</string>
+    <string name="configuration_name">Name</string>
+    <string name="configuration_type">Configuration type</string>
+    <string name="configuration_configm_create">Create</string>
+
+    <!-- Activity - rename configuration -->
+    <string name="activity_title_rename_configuration">Rename configuration</string>
+
+
+    <!-- Activity - duplicate configuration -->
+    <string name="activity_title_duplicate_configuration">Duplicate configuration</string>
+
+    <!-- Activity - configuration detail -->
+    <string name="activity_title_configuration_detail">Configuration detail</string>
+
+    <!-- Activity - configuration sorting -->
+    <string name="activity_title_configuration_sorting">Sort by</string>
+    <string name="sort_by_name">Name</string>
+    <string name="sort_by_type">Type</string>
+    <string name="sort_by_media">Media</string>
+
+    <!-- Activity - import configuration  -->
+    <string name="activity_title_import_configuration">Import configuration</string>
+    <string name="configuration_file_path">File path</string>
+    <string name="import_failded">Import failed</string>
+
+    <!-- Experimenty -->
+    <string name="experiment_undefinded">Undefined</string>
+    <string name="experiment_erp" translatable="false">ERP</string>
+    <string name="experiment_fvep" translatable="false">f-VEP</string>
+    <string name="experiment_tvep" translatable="false">t-VEP</string>
+    <string name="experiment_cvep" translatable="false">c-VEP</string>
+    <string name="experiment_rea" translatable="false">Reaction experiment</string>
+    <string name="experiment_aut">Autostimulation</string>
+    <string name="experiment_bio">Biosensor logger</string>
+    <string-array name="experiment_array">
+        <item>@string/experiment_erp</item>
+        <item>@string/experiment_fvep</item>
+        <item>@string/experiment_tvep</item>
+        <item>@string/experiment_cvep</item>
+        <item>@string/experiment_rea</item>
+        <item>@string/experiment_aut</item>
+        <item>@string/experiment_bio</item>
+        <item>@string/experiment_undefinded</item>
+    </string-array>
+    <!-- Typ použitého media k experimentu -->
+    <string name="media_led">LED</string>
+    <string name="media_audio">AUDIO</string>
+    <string name="media_image">IMAGE</string>
+    <!-- Parametry experimentů -->
+    <string name="parameters_erp">ERP params</string>
+    <string name="parameters_tvep">TVEP params</string>
+    <string name="parameters_cvep">CVEP params</string>
+    <string name="parameters_rea">REA params</string>
+    <string name="parameter_output" translatable="false">%1$s. Output</string>
+    <string name="parameter_pattern" translatable="false">%1$s. Pattern</string>
+    <string name="parameter_output_count">Output count</string>
+    <string name="parameter_random" translatable="false">Random</string>
+    <string name="parameter_random_off" translatable="false">OFF</string>
+    <string name="parameter_random_short" translatable="false">Short</string>
+    <string name="parameter_random_long" translatable="false">Long</string>
+    <string name="parameter_random_short_long" translatable="false">Short and long</string>
+    <string name="parameter_edge" translatable="false">Edge</string>
+    <string name="parameter_edge_leading" translatable="false">Leading</string>
+    <string name="parameter_edge_falling" translatable="false">Falling</string>
+    <string name="parameter_puls" translatable="false">Pulse</string>
+    <string name="parameter_puls_up" translatable="false">up [ms]</string>
+    <string name="parameter_puls_down" translatable="false">down [ms]</string>
+    <string name="parameter_distribution" translatable="false">Distribution</string>
+    <string name="parameter_distribution_value" translatable="false">value [%]</string>
+    <string name="parameter_distribution_delay" translatable="false">delay [ms]</string>
+    <string name="parameter_brightness" translatable="false">Brightness [%]</string>
+    <string name="parameter_frequency" translatable="false">Frequency (0 – 20Hz)</string>
+    <string name="parameter_duty_cycle" translatable="false">Duty cycle (0 – 255)</string>
+    <string name="parameter_cycle_count" translatable="false">Cycle count</string>
+    <string name="parameter_wait_fixed" translatable="false">Wait - fixed</string>
+    <string name="parameter_wait_random" translatable="false">Wait - random</string>
+    <string name="parameter_miss_time" translatable="false">Miss time [ms]</string>
+    <string name="parameter_on_fail" translatable="false">On fail</string>
+    <string name="parameter_on_fail_continue" translatable="false">Continue</string>
+    <string name="parameter_on_fail_wait" translatable="false">Wait</string>
+    <string name="parameter_gender" translatable="false">Gender</string>
+    <string name="parameter_gender_male" translatable="false">Male</string>
+    <string name="parameter_gender_female" translatable="false">Female</string>
+    <string name="parameter_age" translatable="false">Age</string>
+    <string name="parameter_weight" translatable="false">Weight [kg]</string>
+    <string name="parameter_height" translatable="false">Height [cm]</string>
+    <string name="parameter_out" translatable="false">Out [ms]</string>
+    <string name="parameter_wait" translatable="false">Wait [ms]</string>
+    <string name="parameter_puls_length" translatable="false">Pulse length [ms]</string>
+    <string name="parameter_bit_shift" translatable="false">Bit shift</string>
+    <string name="parameter_time_between" translatable="false">Time between [ms]</string>
+    <string name="parameter_pattern_32_bit" translatable="false">Pattern 32 bit</string>
+    <string name="parameter_pattern_length" translatable="false">Pattern length</string>
+    <string-array name="parameter_random_values">
+        <item>@string/parameter_random_off</item>
+        <item>@string/parameter_random_short</item>
+        <item>@string/parameter_random_long</item>
+        <item>@string/parameter_random_short_long</item>
+    </string-array>
+    <string-array name="parameter_edge_values">
+        <item>@string/parameter_edge_leading</item>
+        <item>@string/parameter_edge_falling</item>
+    </string-array>
+    <string-array name="parameter_erp_fvep_output_values">
+        <item>@string/parameter_puls_up</item>
+        <item>@string/parameter_puls_down</item>
+        <item>@string/parameter_distribution_value</item>
+        <item>@string/parameter_distribution_delay</item>
+        <item>@string/parameter_brightness</item>
+    </string-array>
+    <string-array name="parameter_fail_type_values">
+        <item>@string/parameter_on_fail_continue</item>
+        <item>@string/parameter_on_fail_wait</item>
+    </string-array>
+    <string-array name="parameter_gender_values">
+        <item>@string/parameter_gender_male</item>
+        <item>@string/parameter_gender_female</item>
+    </string-array>
+    <string name="clear">Clear</string>
+    <string name="toggle">Toggle</string>
+
+    <!-- Zprávy posílající se z manažeru konfigurací -->
+    <string name="manager_message_create_unsuccessful">Can not create configuration</string>
+    <string name="manager_message_create_successful">Configuration was created</string>
+    <string name="manager_message_import_successful">Configuration was imported</string>
+    <string name="manager_message_import_unsuccessful">Can not import configuration</string>
+    <string name="manager_message_rename_unsuccessful">Can not rename configuration</string>
+    <string name="manager_message_rename_successful">Rename was successful</string>
+    <string name="manager_message_delete_unsuccessful">Can not delete configuration</string>
+    <string name="manager_message_delete_successful">Deleting was successful</string>
+    <string name="manager_message_duplicate_successful">Configuration was duplicated</string>
+    <string name="manager_message_duplicate_unsuccessful">Can not duplicate configuration</string>
+
+    <!-- Validační chyby -->
+    <string name="error_invalid_name">Bad name format</string>
+    <string name="error_name_exists">Name already exists</string>
+    <string name="error_invalid_input">Value is out of range</string>
+
+    <!-- Nastavení -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_file_type">Preferred file type</string>
+    <string name="pref_show_extension">Show extension</string>
+
+    <string-array translatable="false" name="pref_extensions">
+        <item name="0">XML</item>
+        <item name="1">JSON</item>
+        <item name="2">CSV</item>
+    </string-array>
+    <string-array translatable="false" name="pref_extensions_values">
+        <item name="0">XML</item>
+        <item name="1">JSON</item>
+        <item name="2">CSV</item>
+    </string-array>
+</resources>

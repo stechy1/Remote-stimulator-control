@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.factory.ConfigurationFactoryActivity" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.factory.ObservableConfiguration" />
+
+        <variable
+            name="configuration"
+            type="ObservableConfiguration" />
+
+        <variable
+            name="controller"
+            type="ConfigurationFactoryActivity" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_configuration_factory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.configurations.factory.ConfigurationFactoryActivity">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
+            app:errorEnabled="true"
+            app:errorText="@{@string/error_invalid_name}"
+            app:validity="@{configuration.validity}"
+            app:validityFlag="@{ConfigurationFactoryActivity.FLAG_NAME}">
+
+            <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
+                android:id="@+id/editConfigurationName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/configuration_name"
+                android:inputType="textPersonName"
+                android:text="@={configuration.name}" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <cz.zcu.fav.remotestimulatorcontrol.widget.labeledspinner.LabelledSpinner
+            android:id="@+id/spinnerConfigurationType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            app:labelText="@string/configuration_type"
+            app:onItemSelected="@{controller.typeListener}"
+            app:selectedItemPosition="@{ConfigurationType.valueOf(configuration.configurationType).ordinal()}"
+            app:spinnerEntries="@array/experiment_array" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:actionBarStyle">
+        <Button
+            style="?android:actionButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="@{configuration.changed &amp;&amp; configuration.validity == 0}"
+            android:onClick="onCreate"
+            android:text="@string/configuration_configm_create" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

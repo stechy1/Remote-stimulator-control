@@ -1,0 +1,62 @@
+language: android
+jdk: oraclejdk8
+
+env:
+  matrix:
+    - ANDROID_TARGET=android-24 ANDROID_ABI=armeabi-v7a
+    - BUILD_TOOLS_VERSION=24.0.2
+    - ANDROID_VERSION=24
+  global:
+    # wait up to 10 minutes for adb to connect to emulator
+    - ADB_INSTALL_TIMEOUT=10
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-${BUILD_TOOLS_VERSION}
+    - android-${ANDROID_VERSION}
+
+    # Additional components
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-android-support
+
+    # Emulator for the tests
+    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+
+licenses:
+  - '.+'
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle
+
+addons:
+  apt_packages:
+    - pandoc
+  artifacts:
+    paths:
+      - $(git ls-files -o | grep build/outputs | tr "\n" ":")
+
+before_install:
+  - pip install --user codecov
+  - chmod +x gradlew
+
+#before_script:
+#  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+#  - emulator -avd test -no-skin -no-audio -no-window &
+#  - android-wait-for-emulator
+#  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew check -PdisablePreDex --continue --stacktrace
+  - ./gradlew build jacocoTestReport assembleAndroidTest -PdisablePreDex --continue --stacktrace
+#  - android-wait-for-emulator
+#  - adb devices
+#  - adb shell input keyevent 82 &
+  - ./gradlew connectedAndroidTest -PdisablePreDex --continue --stacktrace
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationBindings" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <variable
+            name="configuration"
+            type="AConfiguration" />
+
+        <variable
+            name="showExtension"
+            type="android.databinding.ObservableBoolean" />
+
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/configuration_item"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@drawable/selection_indicator_state_list"
+        android:clickable="true"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/text_configuration_type"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:background="@{configuration.configurationType}"
+            android:gravity="center"
+            android:text="@{configuration.configurationType}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:transitionName="transition_configuration_type"
+            app:valid="@{configuration.valid}"
+            tools:text="ERP"/>
+
+        <TextView
+            android:id="@+id/text_configuration_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/text_configuration_type"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/text_configuration_type"
+            android:layout_toRightOf="@+id/text_configuration_type"
+            android:text="@{configuration.name}"
+            tools:text="Configuration name" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignTop="@+id/text_configuration_type"
+            android:layout_toEndOf="@+id/text_configuration_name"
+            android:layout_toRightOf="@+id/text_configuration_name"
+            android:text="@{configuration.metaData.extensionType.toString()}"
+            android:visibility="@{showExtension.get() ? View.VISIBLE : View.GONE}"
+            tools:text="Extension"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true">
+
+            <ImageView
+                android:id="@+id/imageMediaLed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/configuration_type_led"
+                app:media_mask="@{AConfiguration.MEDIA_LED}"
+                app:media_type="@{configuration.mediaType}"
+                app:srcCompat="@drawable/led_type_configuration" />
+
+            <ImageView
+                android:id="@+id/imageMediaAudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/configuration_type_audio"
+                app:media_mask="@{AConfiguration.MEDIA_AUDIO}"
+                app:media_type="@{configuration.mediaType}"
+                app:srcCompat="@drawable/audio_type_configuration" />
+
+            <ImageView
+                android:id="@+id/imageMediaImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/configuration_type_image"
+                app:media_mask="@{AConfiguration.MEDIA_IMAGE}"
+                app:media_type="@{configuration.mediaType}"
+                app:srcCompat="@drawable/image_type_configuration" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

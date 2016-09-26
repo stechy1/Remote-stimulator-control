@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LabelledSpinner" >
+        <!-- Text, který se zobrazí jako popisek spinneru -->
+        <attr name="labelText" format="string" />
+        <!-- Specifikuje barvu popisku a spodní čáry -->
+        <attr name="widgetColor" format="color" />
+        <!-- Nastaví položky spinneru -->
+        <attr name="spinnerEntries" format="reference" />
+    </declare-styleable>
+
+
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationActivity" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity" />
+
+        <variable
+            name="controller"
+            type="ConfigurationSortingActivity" />
+
+        <variable
+            name="sortingFlag"
+            type="android.databinding.ObservableInt" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_configuration_sorting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity">
+
+        <CheckBox
+            android:id="@+id/checkBoxSortName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onChecked"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/sort_by_name"
+            app:flag="@{ConfigurationActivity.FLAG_SORT_NAME}"
+            app:value="@{sortingFlag}" />
+
+        <CheckBox
+            android:id="@+id/checkBoxSortType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onChecked"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/sort_by_type"
+            app:flag="@{ConfigurationActivity.FLAG_SORT_TYPE}"
+            app:value="@{sortingFlag}" />
+
+        <CheckBox
+            android:id="@+id/checkBoxSortMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onChecked"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/sort_by_media"
+            app:flag="@{ConfigurationActivity.FLAG_SORT_MEDIA}"
+            app:value="@{sortingFlag}" />
+
+        <LinearLayout
+            style="?android:attr/actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonCancel"
+                style="?android:actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onCancel"
+                android:text="@android:string/cancel" />
+
+            <Button
+                android:id="@+id/buttonSort"
+                style="?android:actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onSubmit"
+                android:text="@android:string/ok" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

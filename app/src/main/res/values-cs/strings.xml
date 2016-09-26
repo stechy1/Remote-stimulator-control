@@ -1,0 +1,139 @@
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="app_author">Petr Štechmüller</string>
+    <string name="app_background">Background</string>
+
+    <!-- Navigace -->
+    <string name="nav_drawer_open">Otevřít navigaci</string>
+    <string name="nav_drawer_close">Zavřít navigaci</string>
+    <string name="nav_configurations">Experimenty</string>
+    <string name="nav_text_settings">Nastavení</string>
+    <string name="nav_text_help">Nápověda</string>
+    <string name="nav_text_about">O aplikaci</string>
+
+    <!-- Položky menu -->
+    <string name="action_connect">připojit</string>
+    <string name="action_disconnect">odpojit</string>
+    <string name="action_share">Sdílet</string>
+    <string name="action_import">Importovat</string>
+
+    <!-- Activity - configuration -->
+    <string name="configuration_type_description">typ konfigurace</string>
+    <string name="configuration_type_led">configuration with leds</string>
+    <string name="configuration_type_audio">configuration with audio</string>
+    <string name="configuration_type_image">configuration with image</string>
+    <string name="no_configuration_found">Žádná konfigurace nenalezena.</string>
+    <!-- Action mode akce -->
+    <string name="action_duplicate">Duplikovat</string>
+    <string name="action_delete">Smazat</string>
+    <string name="action_rename">Přejmenovat</string>
+    <string name="save_values">Uložit hodnoty</string>
+    <string name="action_export">Exportovat</string>
+    <string name="output_type">Parametry výstupu</string>
+    <string name="action_select_all">Vybrat vše</string>
+    <string name="action_select_none">Zrušit výběr</string>
+    <string name="action_select_inverse">Invertovat výběr</string>
+    <string name="action_sort_by">Třídit podle</string>
+
+    <!-- Dialogová tlačítka -->
+    <string name="dialog_title_confirmation">Potvrďte</string>
+    <string name="dialog_message_delete">Opravdu si přejete konfiguraci smazat?</string>
+    <string name="no">ne</string>
+    <string name="yes">Ano</string>
+
+    <!-- Podnadpis aplikace-->
+    <string name="title_connecting">připojuji…</string>
+    <string name="title_connected_to">připojeno k <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="title_not_connected">nepřipojeno</string>
+    <!-- Zprávy z bluetooth komunikace -->
+    <string name="not_connected">Nejste připojeni k žádnému zařízení</string>
+    <string name="bt_not_enabled">Bluetooth není zapnutý!</string>
+    <string name="bt_not_supported">Bluetooth není podporovaný!</string>
+    <string name="enable">Zapnout</string>
+    <string name="error_lost_connection">Připojení bylo ztraceno…</string>
+    <string name="error_connect_failed">Není možné se připojit k zařízení</string>
+    <string name="unknown_device">Zařízení nebylo rozpoznáno</string>
+
+    <!-- Activity - hledání a připojení zařízení-->
+    <string name="select_device">vyberte zařízení pro připojení</string>
+    <string name="none_paired">Žádná spárovaná zařízení</string>
+    <string name="title_paired_devices">Spárovaná zařízení</string>
+
+    <!-- Activity - configuration factory -->
+    <string name="activity_title_new_configuration">Nová configurace</string>
+    <string name="configuration_name">Název</string>
+    <string name="configuration_type">Typ konfigurace</string>
+    <string name="configuration_configm_create">Vytvořit</string>
+
+    <!-- Activity - rename configuration -->
+    <string name="activity_title_rename_configuration">Přejmenovat konfiguraci</string>
+
+    <!-- Activity - duplicate configuration -->
+    <string name="activity_title_duplicate_configuration">Duplikovat konfiguraci</string>
+
+    <!-- Activity - configuration detail -->
+    <string name="activity_title_configuration_detail">Detail konfigurace</string>
+
+    <!-- Activity - configuration sorting -->
+    <string name="activity_title_configuration_sorting">Řadit podle</string>
+    <string name="sort_by_name">Názvu</string>
+    <string name="sort_by_type">Typu</string>
+    <string name="sort_by_media">Média</string>
+
+    <!-- Activity - import configuration  -->
+    <string name="activity_title_import_configuration">Importovat konfiguraci</string>
+    <string name="configuration_file_path">Cesta k souboru</string>
+    <string name="import_failded">Import se nezdařil</string>
+
+    <!-- Experimenty -->
+    <string name="experiment_undefinded">Undefined</string>
+    <string name="experiment_aut">Autostimulation</string>
+    <string name="experiment_bio">Biosensor logger</string>
+
+    <!-- Typ použitého media k experimentu -->
+    <string name="media_led">LED</string>
+    <string name="media_audio">AUDIO</string>
+    <string name="media_image">IMAGE</string>
+    <!-- Parametry experimentů -->
+    <string name="parameters_erp">ERP parametry</string>
+    <string name="parameters_tvep">TVEP parametry</string>
+    <string name="parameters_cvep">CVEP parametry</string>
+    <string name="parameters_rea">REA parametry</string>
+    <string name="parameter_output_count">Počet výstupů</string>
+
+    <string name="clear">Vyčistit</string>
+    <string name="toggle">Toggle</string>
+
+    <!-- Zprávy posílající se z manažeru konfigurací -->
+    <string name="manager_message_create_unsuccessful">Konfiguraci se nepodařilo vytvořit</string>
+    <string name="manager_message_create_successful">Konfigurace byla vytvořena</string>
+    <string name="manager_message_import_unsuccessful">Konfiguraci se nepodařilo importovat</string>
+    <string name="manager_message_import_successful">Konfigurace byla importována</string>
+    <string name="manager_message_rename_unsuccessful">Konfiguraci se nepodařilo přejmenovat</string>
+    <string name="manager_message_rename_successful">Konfigurace byla přejmenována</string>
+    <string name="manager_message_delete_unsuccessful">Konfiguraci se nepodařilo smazat</string>
+    <string name="manager_message_delete_successful">Konfigurace byla smazána</string>
+    <string name="manager_message_duplicate_unsuccessful">Konfiguraci se nepodařilo zduplikovat</string>
+    <string name="manager_message_duplicate_successful">Konfigurace byla zduplikována</string>
+
+    <!-- Validační chyby -->
+    <string name="error_invalid_name">Název má špatný formát</string>
+    <string name="error_name_exists">Název již existuje</string>
+    <string name="error_invalid_input">Hodnota je mimo rozsah</string>
+
+    <!-- Nastavení -->
+    <string name="pref_header_general">Obecné</string>
+
+    <string name="pref_file_type">Preferovaný typ souboru</string>
+    <string name="pref_show_extension">Zobrazit koncovky</string>
+
+    <string-array name="pref_extensions">
+        <item name="0">XML</item>
+        <item name="1">JSON</item>
+        <item name="2">CSV</item>
+    </string-array>
+    <string-array name="pref_extensions_values">
+        <item name="0">XML</item>
+        <item name="1">JSON</item>
+        <item name="2">CSV</item>
+    </string-array>
+</resources>

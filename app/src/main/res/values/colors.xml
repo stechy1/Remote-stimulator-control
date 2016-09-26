@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorPrimary">#00BCD4</color>
+    <color name="colorPrimaryDark">#0097A7</color>
+    <color name="colorPrimaryLight">#B2EBF2</color>
+    <color name="colorAccent">#FF9800</color>
+    <color name="colorAccent2">#FFFF6F00</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#727272</color>
+    <color name="colorIcons">@color/colorWhite</color>
+    <color name="colorDivider">#B6B6B6</color>
+    <color name="colorTransparent">#00ffffff</color>
+
+    <color name="colorERP">#F6AA00</color>
+    <color name="colorTVEP">#9C4B00</color>
+    <color name="colorFVEP">#C75F00</color>
+    <color name="colorCVEP">#FF7A00</color>
+    <color name="colorREA">#C79900</color>
+    <integer-array name="config_type_color_array">
+        <item>@color/colorERP</item>
+        <item>@color/colorTVEP</item>
+        <item>@color/colorFVEP</item>
+        <item>@color/colorCVEP</item>
+        <item>@color/colorREA</item>
+    </integer-array>
+
+    <color name="colorError">#DD2C00</color>
+    <integer-array name="config_invalid_color">
+        <item>@color/colorError</item>
+    </integer-array>
+    <!-- The default color of the widget (label and bottom line). -->
+    <color name="widget_labelled_spinner_default">#6D6D6D</color>
+    <!-- The color of the divider and error text when enabled. -->
+    <color name="widget_labelled_spinner_error">@color/colorError</color>
+
+    <color name="refresh_progress_1">@color/colorAccent2</color>
+    <color name="refresh_progress_2">@color/colorAccent</color>
+    <color name="refresh_progress_3">@color/colorPrimary</color>
+</resources>

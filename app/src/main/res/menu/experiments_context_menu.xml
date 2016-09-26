@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/context_rename"
+        android:icon="@drawable/rename_configuration"
+        app:showAsAction="ifRoom|withText"
+        android:title="@string/action_rename"
+        android:titleCondensed="@string/action_rename"/>
+    <item
+        android:id="@+id/context_delete"
+        android:icon="@drawable/delete_configuration"
+        app:showAsAction="ifRoom|withText"
+        android:title="@string/action_delete"
+        android:titleCondensed="@string/action_delete"/>
+    <item
+        android:id="@+id/context_duplicate"
+        android:icon="@drawable/duplicate_configuration"
+        app:showAsAction="ifRoom|withText"
+        android:title="@string/action_duplicate"
+        android:titleCondensed="@string/action_duplicate"/>
+
+    <item
+        android:id="@+id/context_select_all"
+        app:showAsAction="never"
+        android:title="@string/action_select_all"/>
+    <item
+        android:id="@+id/context_select_none"
+        app:showAsAction="never"
+        android:title="@string/action_select_none" />
+    <item
+        android:id="@+id/context_select_inverse"
+        app:showAsAction="never"
+        android:title="@string/action_select_inverse" />
+
+    <item
+        android:id="@+id/context_share"
+        android:icon="@drawable/share"
+        android:title="@string/action_share"
+        android:titleCondensed="@string/action_share"
+        app:showAsAction="always" />
+</menu>

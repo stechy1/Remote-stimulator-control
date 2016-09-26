@@ -9,6 +9,8 @@
 
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
 
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType" />
+
         <variable
             name="configuration"
             type="AConfiguration" />
@@ -83,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:contentDescription="@string/configuration_type_led"
-                app:media_mask="@{AConfiguration.MEDIA_LED}"
+                app:media_mask="@{MediaType.LED}"
                 app:media_type="@{configuration.mediaType}"
                 app:srcCompat="@drawable/led_type_configuration" />
 
@@ -93,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:contentDescription="@string/configuration_type_audio"
-                app:media_mask="@{AConfiguration.MEDIA_AUDIO}"
+                app:media_mask="@{MediaType.AUDIO}"
                 app:media_type="@{configuration.mediaType}"
                 app:srcCompat="@drawable/audio_type_configuration" />
 
@@ -103,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:contentDescription="@string/configuration_type_image"
-                app:media_mask="@{AConfiguration.MEDIA_IMAGE}"
+                app:media_mask="@{MediaType.IMAGE}"
                 app:media_type="@{configuration.mediaType}"
                 app:srcCompat="@drawable/image_type_configuration" />
         </LinearLayout>

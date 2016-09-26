@@ -20,6 +20,7 @@ import android.widget.Toolbar;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
 @SuppressWarnings("unused")
 public class ConfigurationBindings {
@@ -86,14 +87,14 @@ public class ConfigurationBindings {
     }
 
     @BindingAdapter({"media_type", "media_mask"})
-    public static void setLedImageOverlay(ImageView imageView, int mediaType, int mediaMask) {
-        boolean visible = (mediaType & mediaMask) == mediaMask;
+    public static void setLedImageOverlay(ImageView imageView, int mediaType, MediaType mediaMask) {
+        boolean visible = (mediaType & mediaMask.getOrdinal()) == mediaMask.getOrdinal();
         imageView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @BindingAdapter({"media_type", "media_flag"})
-    public static void mediaTypeProccess(CheckBox checkBox, int mediaType, int mediaFlag) {
-        boolean checked = (mediaType & mediaFlag) == mediaFlag;
+    public static void mediaTypeProccess(CheckBox checkBox, int mediaType, MediaType mediaFlag) {
+        boolean checked = (mediaType & mediaFlag.getOrdinal()) == mediaFlag.getOrdinal();
         checkBox.setChecked(checked);
 
         boolean invalid = AConfiguration.isInvalidMediaCombination(mediaType);

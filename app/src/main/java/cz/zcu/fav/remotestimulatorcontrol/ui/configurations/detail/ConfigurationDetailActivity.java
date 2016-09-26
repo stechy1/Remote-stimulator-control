@@ -5,6 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,8 @@ import cz.zcu.fav.remotestimulatorcontrol.model.ConfigurationHelper;
 import cz.zcu.fav.remotestimulatorcontrol.model.ConfigurationManager;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
+import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.cvep.ConfigurationFragmentCVEP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.ConfigurationFragmentERP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.fvep.ConfigurationFragmentFVEP;
@@ -33,6 +37,7 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
 public class ConfigurationDetailActivity extends AppCompatActivity
         implements ConfigurationLoader.OnConfigurationLoaded {
 
+    // region Constants
     public static final int CONFIGURATION_UNKNOWN_ID = -1;
     public static final String CONFIGURATION_ID = "id";
     public static final String CONFIGURATION_NAME = "name";
@@ -44,8 +49,14 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     @SuppressWarnings("unused")
     private static final String TAG = "ConfigDetailActivity";
     private static final String FRAGMENT = "fragment";
-    private AConfiguration configuration;
+    // endregion
+
+    // region Variables
+    private ActivityConfigurationDetailBinding mBinding;
+    private RecyclerView recyclerView;
+    private MediaAdapter adapter;
     private ADetailFragment detailFragment;
+    private AConfiguration configuration;
     @SuppressWarnings("unused")
     // Listener pro změnu počtu výstupů
     public final EditableSeekBar.OnEditableSeekBarProgressChanged outputCountChange = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
@@ -60,7 +71,9 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     private int id;
     // Použitý typ souboru
     private ExtensionType extensionType;
+    // endregion
 
+    // region Private methods
     /**
      * Vrátí fragment podle typu konfigurace
      *
@@ -82,6 +95,16 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             default:
                 return new ConfigurationFragmentERP();
         }
+    }
+
+    private void initRecyclerView() {
+        recyclerView = mBinding.recyclerViewMedia;
+        adapter = new MediaAdapter(configuration.mediaList);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.Orientation.VERTICAL));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
     }
 
     /**
@@ -117,6 +140,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         setResult(RESULT_OK, intent);
         finish();
     }
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +165,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         configuration = ConfigurationHelper.from(configName, type);
         configuration.metaData.extensionType = extensionType;
 
-        ActivityConfigurationDetailBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration_detail);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration_detail);
         mBinding.setController(this);
         mBinding.setConfiguration(configuration);
 
@@ -199,6 +223,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
                 .beginTransaction()
                 .replace(R.id.frame_configuration_detail, detailFragment, FRAGMENT)
                 .commit();
+        initRecyclerView();
     }
 
     @SuppressWarnings("unused")
@@ -207,15 +232,15 @@ public class ConfigurationDetailActivity extends AppCompatActivity
 
         switch (view.getId()) {
             case R.id.checkboxMediaLed:
-                configuration.setMediaType(AConfiguration.MEDIA_LED, checked);
+                configuration.setMediaType(MediaType.LED, checked);
                 break;
 
             case R.id.checkboxMediaAudio:
-                configuration.setMediaType(AConfiguration.MEDIA_AUDIO, checked);
+                configuration.setMediaType(MediaType.AUDIO, checked);
                 break;
 
             case R.id.checkboxMediaImage:
-                configuration.setMediaType(AConfiguration.MEDIA_IMAGE, checked);
+                configuration.setMediaType(MediaType.IMAGE, checked);
                 break;
         }
     }

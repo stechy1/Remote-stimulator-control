@@ -3,7 +3,11 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType" />
 
         <variable
             name="controller"
@@ -108,7 +112,7 @@
                                 android:text="@string/media_led"
                                 android:drawableLeft="@drawable/led_type_configuration"
                                 android:drawableStart="@drawable/led_type_configuration"
-                                app:media_flag="@{AConfiguration.MEDIA_LED}"
+                                app:media_flag="@{MediaType.LED}"
                                 app:media_type="@{configuration.mediaType}"
                                 android:onClick="onMediaCheckBoxClick"/>
 
@@ -120,7 +124,7 @@
                                 android:text="@string/media_audio"
                                 android:drawableLeft="@drawable/audio_type_configuration"
                                 android:drawableStart="@drawable/audio_type_configuration"
-                                app:media_flag="@{AConfiguration.MEDIA_AUDIO}"
+                                app:media_flag="@{MediaType.AUDIO}"
                                 app:media_type="@{configuration.mediaType}"
                                 android:onClick="onMediaCheckBoxClick"/>
 
@@ -132,11 +136,22 @@
                                 android:text="@string/media_image"
                                 android:drawableLeft="@drawable/image_type_configuration"
                                 android:drawableStart="@drawable/image_type_configuration"
-                                app:media_flag="@{AConfiguration.MEDIA_IMAGE}"
+                                app:media_flag="@{MediaType.IMAGE}"
                                 app:media_type="@{configuration.mediaType}"
                                 android:onClick="onMediaCheckBoxClick"/>
                         </LinearLayout>
                     </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerViewMedia"
+                        android:layout_width="match_parent"
+                        android:layout_height="75dp"
+                        android:visibility="@{configuration.media ? View.VISIBLE : View.GONE}"/>
                 </android.support.v7.widget.CardView>
 
                 <FrameLayout

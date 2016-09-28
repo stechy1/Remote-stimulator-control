@@ -2,16 +2,14 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableArrayList;
+import android.databinding.ObservableList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
-import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 
 public abstract class AConfiguration extends BaseObservable implements IValidate, IDuplicable {
 
@@ -99,7 +97,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     // Příznak, zda-li se změníl stav konfigurace od posledního načteníprotected boolean changed;
     protected boolean changed;
     // Kolekce medií
-    public final List<AMedia> mediaList;
+    public final ObservableList<AMedia> mediaList;
     // Dodatečné informace o konfiguraci
     public final MetaData metaData = new MetaData();
     // endregion
@@ -134,16 +132,8 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      * @param outputCount       Počet výstupů
      */
     public AConfiguration(String name, ConfigurationType configurationType, int outputCount) {
-        mediaList = new ArrayList<>();
-        mediaList.addAll(Arrays.asList(
-                new MediaAudio("test1"),
-                new MediaAudio("test2"),
-                new MediaAudio("test3"),
-                new MediaAudio("testtt4"),
-                new MediaAudio("test5"),
-                new MediaAudio("test6"),
-                new MediaAudio("test7")
-        ));
+        mediaList = new ObservableArrayList<>();
+
         setName(name);
         this.configurationType = configurationType;
         setOutputCount(outputCount);

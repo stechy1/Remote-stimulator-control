@@ -2,15 +2,23 @@ package cz.zcu.fav.remotestimulatorcontrol.model.media;
 
 import android.graphics.Bitmap;
 
+import java.io.File;
+
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
+
 public class MediaAudio extends AMedia {
 
-
-    public MediaAudio(String name) {
-        super(name);
+    public MediaAudio(File mediaFile, String name) {
+        super(mediaFile, name);
     }
 
     @Override
-    Bitmap getImagePreview() {
+    public Bitmap getImagePreview() {
         return null;
+    }
+
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.AUDIO;
     }
 }

@@ -5,6 +5,7 @@ import android.databinding.BindingConversion;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.TextInputEditText;
@@ -111,6 +112,11 @@ public class ConfigurationBindings {
     @BindingAdapter({"value", "flag"})
     public static void setCheckBoxChecked(CheckBox view, int value, int flag) {
         view.setChecked((value & flag) == flag);
+    }
+
+    @BindingAdapter({"preview"})
+    public static void setPreviewBitmap(ImageView imageView, Bitmap bitmap) {
+        imageView.setImageBitmap(bitmap);
     }
 
     @BindingConversion

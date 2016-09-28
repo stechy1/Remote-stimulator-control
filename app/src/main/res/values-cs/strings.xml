@@ -81,7 +81,7 @@
 
     <!-- Activity - import configuration  -->
     <string name="activity_title_import_configuration">Importovat konfiguraci</string>
-    <string name="configuration_file_path">Cesta k souboru</string>
+    <string name="file_path">Cesta k souboru</string>
     <string name="import_failded">Import se nezdařil</string>
 
     <!-- Experimenty -->

@@ -4,15 +4,21 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.graphics.Bitmap;
 
+import java.io.File;
+
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
+
 /**
  * Abstraktní třída média konfigurace
  */
 public abstract class AMedia extends BaseObservable {
 
+    protected final File mediaFile;
     @Bindable
-    protected String name;
+    protected final String name;
 
-    public AMedia(String name) {
+    public AMedia(File mediaFile, String name) {
+        this.mediaFile = mediaFile;
         this.name = name;
     }
 
@@ -21,7 +27,14 @@ public abstract class AMedia extends BaseObservable {
      *
      * @return Obrázek náhledu média
      */
-    abstract Bitmap getImagePreview();
+    public abstract Bitmap getImagePreview();
+
+    /**
+     * Vrátí typ média
+     *
+     * @return Typ média
+     */
+    public abstract MediaType getMediaType();
 
     /**
      * Vrátí název média
@@ -33,11 +46,11 @@ public abstract class AMedia extends BaseObservable {
     }
 
     /**
-     * Nastaví nový název média
+     * Vrátí soubor, kde se nachází médium
      *
-     * @param name Nový název média
+     * @return Soubor
      */
-    public void setName(String name) {
-        this.name = name;
+    public File getMediaFile() {
+        return mediaFile;
     }
 }

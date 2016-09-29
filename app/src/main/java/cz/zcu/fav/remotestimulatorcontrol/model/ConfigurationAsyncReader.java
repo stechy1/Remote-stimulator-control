@@ -106,11 +106,6 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
                 // Zahájení samotné čtení ze souboru konfigurace
                 configuration.getHandler().read(new FileInputStream(configurationFile));
 
-                // Pokud konfigurace má nějaká externí média, je potřeba je načíst
-                if (hasMedia) {
-                    MediaManager.loadMediaFiles(configurationDirectoryFiles[1], configuration);
-                }
-
                 mItems.add(configuration);
 
                 success[0]++;

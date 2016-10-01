@@ -15,9 +15,14 @@ public class MediaHelper {
     private MediaHelper() {}
 
     public static AMedia from(File mediaFile, String name, MediaExtensionType extensionType) {
+        if (extensionType == null) {
+            return null;
+        }
+
         switch (extensionType) {
             case PNG:
             case JPEG:
+            case JPG:
             case GIF:
                 return new MediaImage(mediaFile, name);
             case MP3:

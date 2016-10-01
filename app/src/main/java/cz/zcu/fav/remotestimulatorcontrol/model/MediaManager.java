@@ -81,6 +81,10 @@ public class MediaManager {
 
         // Převedení koncovky na výčtový typ pro jednodušší práci
         MediaExtensionType extensionType = EnumUtil.lookup(MediaExtensionType.class, extension);
+        if (extensionType == null) {
+            Log.e(TAG, "Nebyla rozpoznána koncovka souboru. Původní typ na koncovku byl: " + extension);
+            return;
+        }
 
         AMedia media = MediaHelper.from(mediaFile, name, extensionType);
         mediaList.add(media);

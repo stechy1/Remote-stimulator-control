@@ -58,7 +58,7 @@ dependencies {
             [group: 'com.android.support', name: 'cardview-v7', version: supportLibVersion],
             [group: 'com.android.support', name: 'palette-v7', version: supportLibVersion]
     )
-    compile 'com.google.android:flexbox:0.2.2'
+    compile 'com.google.android:flexbox:0.2.3'
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
     testCompile([group: 'org.mockito', name: 'mockito-all', version: '1.10.19'])
     testCompile 'junit:junit:4.12'

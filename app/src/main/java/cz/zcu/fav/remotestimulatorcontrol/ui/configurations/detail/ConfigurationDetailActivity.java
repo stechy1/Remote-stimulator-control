@@ -43,7 +43,6 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoratio
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.cvep.ConfigurationFragmentCVEP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.ConfigurationFragmentERP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.fvep.ConfigurationFragmentFVEP;
-import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.mediaimport.MediaImportActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.rea.ConfigurationFragmentREA;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.tvep.ConfigurationFragmentTVEP;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;

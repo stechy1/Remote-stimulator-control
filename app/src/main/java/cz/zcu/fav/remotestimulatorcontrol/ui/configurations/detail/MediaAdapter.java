@@ -2,7 +2,6 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,11 +58,9 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         if (position < mediaList.size()) {
-            Log.d(TAG, "Vracím typ položky: STANDART");
             return ITEM_VIEW_TYPE_STANDART;
         }
 
-        Log.d(TAG, "Vracím typ položky: BUTTON");
         return ITEM_VIEW_TYPE_BUTTON;
     }
 

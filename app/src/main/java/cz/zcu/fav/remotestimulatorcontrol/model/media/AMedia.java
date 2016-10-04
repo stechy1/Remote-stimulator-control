@@ -13,6 +13,8 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
  */
 public abstract class AMedia extends BaseObservable {
 
+    public static final int THUMBNAIL_SIZE = 75;
+
     protected final File mediaFile;
     @Bindable
     protected final String name;

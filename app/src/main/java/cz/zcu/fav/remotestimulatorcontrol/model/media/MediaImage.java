@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model.media;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 
 import java.io.File;
 
@@ -17,15 +18,16 @@ public class MediaImage extends AMedia {
     /**
      * Vytvoří novou specifikaci média typu obrázek
      *
+     * @param mediaFile Soubor o obrázkem
      * @param name Název média
-     * @param preview Náhledový obrázek
      */
     public MediaImage(File mediaFile, String name) {
         super(mediaFile, name);
     }
 
     private void loadPreview() {
-        preview = BitmapFactory.decodeFile(mediaFile.getPath());
+        Bitmap fullImage = BitmapFactory.decodeFile(mediaFile.getPath());
+        preview = ThumbnailUtils.extractThumbnail(fullImage, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
     }
 
     /**

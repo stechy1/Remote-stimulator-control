@@ -341,7 +341,6 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         public boolean handleMessage(Message msg) {
             boolean success;
             int snackbarMessage = -1;
-            Log.d(TAG, "Přišla mi zpráva: " + msg.toString());
             switch (msg.what) {
                 case MediaManager.MESSAGE_MEDIA_IMPORT:
                     success = msg.arg1 == MediaManager.MESSAGE_SUCCESSFUL;

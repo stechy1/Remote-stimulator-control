@@ -114,9 +114,17 @@ public class ConfigurationBindings {
         view.setChecked((value & flag) == flag);
     }
 
-    @BindingAdapter({"preview"})
-    public static void setPreviewBitmap(ImageView imageView, Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
+    @BindingAdapter({"preview", "type"})
+    public static void setPreviewBitmap(ImageView imageView, Bitmap bitmap, MediaType mediaType) {
+        if (bitmap == null) {
+            if (mediaType == MediaType.IMAGE) {
+                imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_image_thumbnail));
+            } else {
+                imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_autio_thumbnail));
+            }
+        } else {
+            imageView.setImageBitmap(bitmap);
+        }
     }
 
     @BindingConversion

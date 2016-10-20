@@ -3,6 +3,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model.media;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.os.AsyncTask;
 
 import java.io.File;
 
@@ -13,7 +14,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
  */
 public class MediaImage extends AMedia {
 
-    private Bitmap preview;
+    private boolean thumbnailLoaded = false;
 
     /**
      * Vytvoří novou specifikaci média typu obrázek
@@ -25,25 +26,52 @@ public class MediaImage extends AMedia {
         super(mediaFile, name);
     }
 
-    private void loadPreview() {
-        Bitmap fullImage = BitmapFactory.decodeFile(mediaFile.getPath());
-        preview = ThumbnailUtils.extractThumbnail(fullImage, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Bitmap getImagePreview() {
-        if (preview == null) {
-            loadPreview();
+    public Bitmap getThumbnail() {
+        if (!thumbnailLoaded) {
+            new Loader(mListener).execute(mediaFile.getPath());
         }
-
-        return preview;
+        return super.getThumbnail();
     }
 
     @Override
     public MediaType getMediaType() {
         return MediaType.IMAGE;
     }
+
+    private final Loader.OnLoadedListener mListener = new Loader.OnLoadedListener() {
+        @Override
+        public void onLoaded(Bitmap bitmap) {
+            setThumbnail(bitmap);
+            thumbnailLoaded = true;
+        }
+    };
+
+    private static class Loader extends AsyncTask<String, Void, Bitmap> {
+
+        private final OnLoadedListener listener;
+
+        public Loader(OnLoadedListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... paths) {
+            Bitmap fullImage = BitmapFactory.decodeFile(paths[0]);
+            return ThumbnailUtils.extractThumbnail(fullImage, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (listener != null) {
+                listener.onLoaded(bitmap);
+            }
+        }
+
+        interface OnLoadedListener {
+            void onLoaded(Bitmap bitmap);
+        }
+    }
+
+
 }

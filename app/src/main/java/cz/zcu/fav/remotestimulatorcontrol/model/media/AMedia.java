@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 
 import java.io.File;
 
+import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
 /**
@@ -18,18 +19,22 @@ public abstract class AMedia extends BaseObservable {
     protected final File mediaFile;
     @Bindable
     protected final String name;
+    @Bindable
+    protected Bitmap thumbnail;
 
     public AMedia(File mediaFile, String name) {
         this.mediaFile = mediaFile;
         this.name = name;
     }
 
-    /**
-     * Vrátí obrázek náhledu media
-     *
-     * @return Obrázek náhledu média
-     */
-    public abstract Bitmap getImagePreview();
+    public Bitmap getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Bitmap thumbnail) {
+        this.thumbnail = thumbnail;
+        notifyPropertyChanged(BR.thumbnail);
+    }
 
     /**
      * Vrátí typ média

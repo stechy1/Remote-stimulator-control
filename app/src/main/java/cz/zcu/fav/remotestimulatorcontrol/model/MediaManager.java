@@ -186,7 +186,6 @@ public class MediaManager {
             return;
         }
 
-        Log.d(TAG, "Index mazaného souboru: " + index);
         deletedMedia = new Pair<>(index, mediaList.get(index));
         mediaList.remove(index);
 
@@ -205,7 +204,6 @@ public class MediaManager {
         }
 
         int index = deletedMedia.first;
-        Log.d(TAG, "Beru zpět smazaný soubor: " + index);
         mediaList.add(index, deletedMedia.second);
         deletedMedia = null;
 
@@ -219,12 +217,10 @@ public class MediaManager {
      */
     public void confirmDelete() {
         File file = buildMediaFilePath(mWorkingDirectory, deletedMedia.second);
-        Log.d(TAG, "Mažu soubor : " + file.getPath());
         if (!file.delete()) {
             Log.e(TAG, "Nepodařilo se smazat mediální soubor: " + deletedMedia.second);
         }
 
-        Log.d(TAG, "Mazání bylo úspěšné");
         deletedMedia = null;
     }
     // endregion

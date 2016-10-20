@@ -14,16 +14,20 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,7 +53,7 @@ import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar;
 
 public class ConfigurationDetailActivity extends AppCompatActivity
-        implements ConfigurationLoader.OnConfigurationLoaded, MediaAdapter.OnAddMediaClickListener {
+        implements ConfigurationLoader.OnConfigurationLoaded, MediaAdapter.OnAddMediaClickListener, RecyclerView.OnItemTouchListener {
 
     // region Constants
     public static final int CONFIGURATION_UNKNOWN_ID = -1;
@@ -74,6 +78,9 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     private ADetailFragment detailFragment;
     private AConfiguration configuration;
     private MediaManager mediaManager;
+    // Gesture detector
+    private GestureDetectorCompat gestureDetector;
+    private boolean deleteConfirmed = true;
     @SuppressWarnings("unused")
     // Listener pro změnu počtu výstupů
     public final EditableSeekBar.OnEditableSeekBarProgressChanged outputCountChange = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
@@ -124,6 +131,8 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.Orientation.VERTICAL));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnItemTouchListener(this);
+        gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
     }
 
     /**
@@ -332,6 +341,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         public boolean handleMessage(Message msg) {
             boolean success;
             int snackbarMessage = -1;
+            Log.d(TAG, "Přišla mi zpráva: " + msg.toString());
             switch (msg.what) {
                 case MediaManager.MESSAGE_MEDIA_IMPORT:
                     success = msg.arg1 == MediaManager.MESSAGE_SUCCESSFUL;
@@ -340,6 +350,37 @@ public class ConfigurationDetailActivity extends AppCompatActivity
                     if (success) {
                         adapter.notifyItemInserted(msg.arg2);
                     }
+                    break;
+                case MediaManager.MESSAGE_MEDIA_PREPARED_TO_DELETE:
+                    int deletedIndex = msg.arg2;
+
+                    adapter.notifyItemRemoved(deletedIndex);
+
+                    Snackbar.make(recyclerView, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                            .setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    mediaManager.undoDelete();
+
+                                    deleteConfirmed = false;
+                                }
+                            })
+                            .setCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar snackbar, int event) {
+                                    if (deleteConfirmed) {
+                                        mediaManager.confirmDelete();
+                                    } else {
+                                        deleteConfirmed = true;
+                                    }
+                                }
+                    }).show();
+
+                    break;
+                case MediaManager.MESSAGE_CONFIGURATION_UNDO_DELETE:
+                    int undoDeletedIndex = msg.arg2;
+
+                    adapter.notifyItemInserted(undoDeletedIndex);
                     break;
             }
 
@@ -352,5 +393,50 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     };
 
     private final Handler mediaManagerHandler = new Handler(mediaManagerCallback);
+    // endregion
+
+    // region RecyclerView handlers
+    // region Recycler view OnItemTouchListner
+    @Override
+    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+        gestureDetector.onTouchEvent(e);
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+        // Zde opravdu nic není
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        // Zde opravdu nic není
+    }
+
+    // endregion
+
+    // region GestureDetector for RecyclerView
+    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
+
+            Toast.makeText(ConfigurationDetailActivity.this, "Zobrazuji náhled", Toast.LENGTH_SHORT).show();
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
+            int position = recyclerView.getChildAdapterPosition(view);
+
+            if (position == -1) {
+                return;
+            }
+
+            mediaManager.prepareToDelete(position);
+        }
+    }
+    // endregion
     // endregion
 }

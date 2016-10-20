@@ -3,6 +3,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model;
 import android.databinding.ObservableList;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,8 @@ public class MediaManager {
     private static final String TAG = "MediaManager";
 
     public static final int MESSAGE_MEDIA_IMPORT = 1;
+    public static final int MESSAGE_MEDIA_PREPARED_TO_DELETE = 2;
+    public static final int MESSAGE_CONFIGURATION_UNDO_DELETE = 3;
 
     public static final int MESSAGE_SUCCESSFUL = 1;
     public static final int MESSAGE_UNSUCCESSFUL = 2;
@@ -38,6 +41,8 @@ public class MediaManager {
     public final ObservableList<AMedia> mediaList;
     // Handler posílající zprávy o stavu operace v manažeru
     private Handler mHandler;
+    private Pair<Integer, AMedia> deletedMedia = null;
+    //private AMedia mediaToDelete = null;
     // endregion
 
     // region Constructors
@@ -110,6 +115,10 @@ public class MediaManager {
             loadMediaFile(mediaFile, mediaList);
         }
     }
+
+    public static File buildMediaFilePath(File mediaDirectory, AMedia media) {
+        return new File(mediaDirectory, media.getName());
+    }
     // endregion
 
     // region Public methods
@@ -165,6 +174,58 @@ public class MediaManager {
      */
     public void setHandler(Handler handler) {
         mHandler = handler;
+    }
+
+    /**
+     * Připravý soubor na daném indexu ke smazání
+     *
+     * @param index Index souboru, který se má smazat
+     */
+    public void prepareToDelete(int index) {
+        if (index < 0) {
+            return;
+        }
+
+        Log.d(TAG, "Index mazaného souboru: " + index);
+        deletedMedia = new Pair<>(index, mediaList.get(index));
+        mediaList.remove(index);
+
+        if (mHandler != null) {
+            mHandler.obtainMessage(MESSAGE_MEDIA_PREPARED_TO_DELETE, MESSAGE_SUCCESSFUL, index).sendToTarget();
+        }
+    }
+
+    /**
+     * Zruší akci mazání
+     * Vrátí smezané medium zpět do kolekce
+     */
+    public void undoDelete() {
+        if (deletedMedia == null) {
+            return;
+        }
+
+        int index = deletedMedia.first;
+        Log.d(TAG, "Beru zpět smazaný soubor: " + index);
+        mediaList.add(index, deletedMedia.second);
+        deletedMedia = null;
+
+        if (mHandler != null) {
+            mHandler.obtainMessage(MESSAGE_CONFIGURATION_UNDO_DELETE, MESSAGE_SUCCESSFUL, index).sendToTarget();
+        }
+    }
+
+    /**
+     * Potvrzení smazání média
+     */
+    public void confirmDelete() {
+        File file = buildMediaFilePath(mWorkingDirectory, deletedMedia.second);
+        Log.d(TAG, "Mažu soubor : " + file.getPath());
+        if (!file.delete()) {
+            Log.e(TAG, "Nepodařilo se smazat mediální soubor: " + deletedMedia.second);
+        }
+
+        Log.d(TAG, "Mazání bylo úspěšné");
+        deletedMedia = null;
     }
     // endregion
 }

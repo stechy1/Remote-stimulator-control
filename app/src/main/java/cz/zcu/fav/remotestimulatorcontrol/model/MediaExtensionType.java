@@ -1,4 +1,4 @@
-package cz.zcu.fav.remotestimulatorcontrol;
+package cz.zcu.fav.remotestimulatorcontrol.model;
 
 public enum MediaExtensionType {
 

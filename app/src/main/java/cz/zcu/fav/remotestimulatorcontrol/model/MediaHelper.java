@@ -2,13 +2,12 @@ package cz.zcu.fav.remotestimulatorcontrol.model;
 
 import java.io.File;
 
-import cz.zcu.fav.remotestimulatorcontrol.MediaExtensionType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaImage;
 
 /**
- * Pomocní knihovní třída pro tvorbu konkrétních medií
+ * Pomocná knihovní třída pro tvorbu konkrétních medií
  */
 public class MediaHelper {
 

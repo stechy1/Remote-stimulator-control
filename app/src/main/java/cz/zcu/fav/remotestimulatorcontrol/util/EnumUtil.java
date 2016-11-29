@@ -16,14 +16,17 @@ public final class EnumUtil {
      * @param name Hledané slovo
      * @return Odpovídající typ
      */
-    public static <T extends Enum<?>> T lookup(Class<T> enumType,
-                                               String name) {
+    public static <T extends Enum<?>> T lookup(Class<T> enumType, String name) {
+        T result = null;
+
         for (T enumn : enumType.getEnumConstants()) {
-            if (enumn.name().equalsIgnoreCase(name)) {
-                return enumn;
+            String enumName = enumn.name();
+            if (enumName.equalsIgnoreCase(name) || enumName.contains(name)) {
+                result = enumn;
+                break;
             }
         }
-        return null;
-    }
 
+        return result;
+    }
 }

@@ -105,7 +105,7 @@ public class ConfigurationComparatorTest {
         AConfiguration configuration1 = ConfigurationHelper.from("a");
         AConfiguration configuration2 = ConfigurationHelper.from("a"); // Media == LED
 
-        configuration1.setMediaType(AConfiguration.MEDIA_AUDIO);
+        configuration1.setMediaType(MediaType.AUDIO);
 
         int result = comparator.compare(configuration1, configuration2);
         assertTrue("Chyba: Konfigurace č. 1 není 'větší' než konfigurace č. 2.", result >= 1);
@@ -117,7 +117,7 @@ public class ConfigurationComparatorTest {
         AConfiguration configuration1 = ConfigurationHelper.from("a"); // MEDIA == LED
         AConfiguration configuration2 = ConfigurationHelper.from("b");
 
-        configuration2.setMediaType(AConfiguration.MEDIA_AUDIO);
+        configuration2.setMediaType(MediaType.AUDIO);
 
         int result = comparator.compare(configuration1, configuration2);
         assertTrue("Chyba: Konfigurace č. 1 není 'větší' než konfigurace č. 2.", result <= -1);

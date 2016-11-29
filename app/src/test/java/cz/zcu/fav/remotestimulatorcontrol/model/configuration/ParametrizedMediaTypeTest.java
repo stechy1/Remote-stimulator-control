@@ -20,13 +20,13 @@ public class ParametrizedMediaTypeTest {
     @Parameters(name = "{index}: Media value: {0}, isInvalidCombination: {1}")
     public static Collection<Object[]> mediaTypes() {
         return Arrays.asList(new Object[][]{
-                {AConfiguration.MEDIA_LED, false},
-                {AConfiguration.MEDIA_AUDIO, false},
-                {AConfiguration.MEDIA_IMAGE, false},
-                {AConfiguration.MEDIA_LED | AConfiguration.MEDIA_AUDIO, true},
-                {AConfiguration.MEDIA_LED | AConfiguration.MEDIA_IMAGE, true},
-                {AConfiguration.MEDIA_AUDIO | AConfiguration.MEDIA_IMAGE, true},
-                {AConfiguration.MEDIA_LED | AConfiguration.MEDIA_AUDIO | AConfiguration.MEDIA_IMAGE, true},
+                {MediaType.LED.getOrdinal(), false},
+                {MediaType.AUDIO.getOrdinal(), false},
+                {MediaType.IMAGE.getOrdinal(), false},
+                {MediaType.LED.getOrdinal() | MediaType.AUDIO.getOrdinal(), true},
+                {MediaType.LED.getOrdinal() | MediaType.IMAGE.getOrdinal(), true},
+                {MediaType.AUDIO.getOrdinal() | MediaType.IMAGE.getOrdinal(), true},
+                {MediaType.LED.getOrdinal() | MediaType.AUDIO.getOrdinal() | MediaType.IMAGE.getOrdinal(), true},
         });
     }
 

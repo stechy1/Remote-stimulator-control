@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,7 @@ import java.io.IOException;
 
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.ConfigurationManager;
+import cz.zcu.fav.remotestimulatorcontrol.model.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MetaData;
 
@@ -39,11 +41,14 @@ class ConfigurationLoader extends AsyncTask<File, Void, Void> {
     protected Void doInBackground(File... params) {
         try {
             IOHandler handler = configuration.getHandler();
-            File file = ConfigurationManager.buildConfigurationFilePath(params[0], configuration);
-            handler.read(new FileInputStream(file));
+            Pair<File, File> files = ConfigurationManager.buildConfigurationFilePath(params[0], configuration);
+            File configurationFile = files.first;
+            handler.read(new FileInputStream(configurationFile));
 
             MetaData metaData = configuration.metaData;
-            metaData.changed.setTime(file.lastModified());
+            metaData.changed.setTime(configurationFile.lastModified());
+
+            MediaManager.loadMediaFiles(files.second, configuration);
 
         } catch (IOException e) {
             Log.e(TAG, "Nepodařilo se načíst konfiguraci: " + configuration.getName());

@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/launcher_icon"
@@ -53,6 +52,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.configurations.ConfigurationActivity" />
         </activity>
+        <!-- Configuration detail - Image preview activity -->
+        <activity
+            android:name=".ui.configurations.detail.MediaImagePreviewActivity"
+            android:label="Image preview"
+            android:theme="@style/AppTheme.Dialog.NoTitle">
+        </activity>
+        <!-- Configuration detail - Media import activity -->
+        <activity
+            android:name=".ui.configurations.detail.mediaimport.MediaImportActivity"
+            android:label="Media import"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->
         <activity
             android:name=".ui.configurations.factory.ConfigurationFactoryActivity"
@@ -77,7 +87,7 @@
         <activity
             android:name=".ui.configurations.importation.ConfigurationImportActivity"
             android:label="@string/activity_title_import_configuration"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Help activity -->
         <activity
             android:name=".ui.help.HelpActivity"

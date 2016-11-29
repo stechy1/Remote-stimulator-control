@@ -6,6 +6,8 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
 public class MediaAudio extends AMedia {
 
+    private boolean playing = false;
+
     public MediaAudio(File mediaFile, String name) {
         super(mediaFile, name);
     }
@@ -13,5 +15,14 @@ public class MediaAudio extends AMedia {
     @Override
     public MediaType getMediaType() {
         return MediaType.AUDIO;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+        setShowPlayingIcon(playing);
     }
 }

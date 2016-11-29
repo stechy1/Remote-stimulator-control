@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,8 @@ import cz.zcu.fav.remotestimulatorcontrol.model.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.cvep.ConfigurationFragmentCVEP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.ConfigurationFragmentERP;
@@ -62,6 +65,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     public static final String CONFIGURATION_TYPE = "type";
     public static final String CONFIGURATION_EXTENSION_TYPE = "extension_type";
     public static final String CONFIGURATION_RELOAD = "reload";
+    private static final String SELECTED_MEDIA_ID = "media_id";
     
     // Logovací tag
     @SuppressWarnings("unused")
@@ -69,6 +73,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     private static final String FRAGMENT = "fragment";
     private static final int REQUEST_FILE_PATH = 1;
     private static final int REQUEST_PERMISSION = 2;
+    private static final int REQUEST_WAIT_FOR_PREVIEW_RESULT = 3;
     // endregion
 
     // region Variables
@@ -78,6 +83,8 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     private ADetailFragment detailFragment;
     private AConfiguration configuration;
     private MediaManager mediaManager;
+    private MediaPlayer mediaPlayer;
+    private int selectedMedia = -1;
     // Gesture detector
     private GestureDetectorCompat gestureDetector;
     private boolean deleteConfirmed = true;
@@ -165,6 +172,9 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         intent.putExtra(CONFIGURATION_ID, id);
         intent.putExtra(CONFIGURATION_RELOAD, configuration.isChanged());
 
+        if (mediaPlayer != null)
+            mediaPlayer.release();
+
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -191,6 +201,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             configName = savedInstanceState.getString(CONFIGURATION_NAME);
             type = (ConfigurationType) savedInstanceState.getSerializable(CONFIGURATION_TYPE);
             extensionType = (ExtensionType) savedInstanceState.getSerializable(CONFIGURATION_EXTENSION_TYPE);
+            selectedMedia = savedInstanceState.getInt(SELECTED_MEDIA_ID);
         } else {
             Intent intent = getIntent();
             id = intent.getIntExtra(CONFIGURATION_ID, -1);
@@ -232,6 +243,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         outState.putString(CONFIGURATION_NAME, configuration.getName());
         outState.putSerializable(CONFIGURATION_TYPE, configuration.getConfigurationType());
         outState.putSerializable(CONFIGURATION_EXTENSION_TYPE, extensionType);
+        outState.putInt(SELECTED_MEDIA_ID, selectedMedia);
 
         saveConfiguration();
 
@@ -255,6 +267,9 @@ public class ConfigurationDetailActivity extends AppCompatActivity
 
                     mediaManager.importt(new File(path));
                 }
+                break;
+            case REQUEST_WAIT_FOR_PREVIEW_RESULT:
+                new ConfigurationLoader(configuration, this).execute(getFilesDir());
                 break;
         }
     }
@@ -280,6 +295,10 @@ public class ConfigurationDetailActivity extends AppCompatActivity
      */
     @Override
     public void onConfigurationLoaded() {
+        if (selectedMedia != -1) {
+            ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
+        }
+
         detailFragment = getFragment(configuration.getConfigurationType());
         detailFragment.setConfiguration(configuration);
         getSupportFragmentManager()
@@ -416,11 +435,58 @@ public class ConfigurationDetailActivity extends AppCompatActivity
 
     // region GestureDetector for RecyclerView
     private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private void playMediaPlayer(String filePath, int position) {
+            try {
+                mediaPlayer.setDataSource(filePath);
+                selectedMedia = position;
+                mediaPlayer.prepareAsync();
+            } catch (IOException ex) {
+                Toast.makeText(ConfigurationDetailActivity.this, "Zvuk nebylo možné přehrát", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private void stopMediaPlayer(int position) {
+            mediaPlayer.stop();
+            ((MediaAudio) (mediaManager.mediaList.get(position))).setPlaying(false);
+            selectedMedia = -1;
+            mediaPlayer.reset();
+        }
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
+            int position = recyclerView.getChildAdapterPosition(view);
 
-            Toast.makeText(ConfigurationDetailActivity.this, "Zobrazuji náhled", Toast.LENGTH_SHORT).show();
+            // Vyfiltrování poslední položky
+            if (position == mediaManager.mediaList.size()) {
+                return false;
+            }
+
+            AMedia media = mediaManager.mediaList.get(position);
+            String filePath = media.getMediaFile().getAbsolutePath();
+            if (media.getMediaType() == MediaType.AUDIO) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setOnPreparedListener(mediaPreparedListener);
+                }
+
+                if (mediaPlayer.isPlaying()) {
+                    final boolean nextPlay = position != selectedMedia;
+                    stopMediaPlayer(selectedMedia);
+                    if (nextPlay) {
+                        playMediaPlayer(filePath, position);
+                    }
+                    return true;
+                }
+
+                playMediaPlayer(filePath, position);
+
+            } else {
+                Intent intent = new Intent(ConfigurationDetailActivity.this, MediaImagePreviewActivity.class);
+                intent.putExtra(MediaImagePreviewActivity.IMAGE_PATH, filePath);
+                startActivityForResult(intent, REQUEST_WAIT_FOR_PREVIEW_RESULT);
+            }
             return super.onSingleTapConfirmed(e);
         }
 
@@ -429,13 +495,26 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
             int position = recyclerView.getChildAdapterPosition(view);
 
-            if (position == -1) {
+            if (position == mediaManager.mediaList.size()) {
+                return;
+            }
+
+            if (position == selectedMedia) {
+                Toast.makeText(ConfigurationDetailActivity.this, "Pro smazání zastavte přehrávání", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             mediaManager.prepareToDelete(position);
         }
     }
+
+    private final MediaPlayer.OnPreparedListener mediaPreparedListener = new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
+            mediaPlayer.start();
+        }
+    };
     // endregion
     // endregion
 }

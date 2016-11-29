@@ -21,6 +21,8 @@ public abstract class AMedia extends BaseObservable {
     protected final String name;
     @Bindable
     protected Bitmap thumbnail;
+    @Bindable
+    protected boolean showPlayingIcon = false;
 
     public AMedia(File mediaFile, String name) {
         this.mediaFile = mediaFile;
@@ -59,5 +61,14 @@ public abstract class AMedia extends BaseObservable {
      */
     public File getMediaFile() {
         return mediaFile;
+    }
+
+    public boolean isShowPlayingIcon() {
+        return showPlayingIcon;
+    }
+
+    public void setShowPlayingIcon(boolean showPlayingIcon) {
+        this.showPlayingIcon = showPlayingIcon;
+        notifyPropertyChanged(BR.showPlayingIcon);
     }
 }

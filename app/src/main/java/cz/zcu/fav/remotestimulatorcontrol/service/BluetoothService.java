@@ -75,26 +75,8 @@ public class BluetoothService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter != null) {
-            String macAddress = intent.getStringExtra(DEVICE_MAC);
-            if (macAddress != null && macAddress.length() > 0) {
-                connectToDevice(macAddress);
-            } else {
-                stopSelf();
-                return START_STICKY_COMPATIBILITY;
-            }
-        }
-        String stopservice = intent.getStringExtra("stopservice");
-        if (stopservice != null && stopservice.length() > 0) {
-            stop();
-        }
-        return START_STICKY;
+        return mBinder;
     }
 
     /**
@@ -102,7 +84,11 @@ public class BluetoothService extends Service {
      *
      * @param macAddress Mac adresa spojovaného zařízení
      */
-    private synchronized void connectToDevice(String macAddress) {
+    public synchronized void connectToDevice(String macAddress) {
+        if (mBluetoothAdapter == null) {
+            return;
+        }
+
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(macAddress);
         if (state == STATE_CONNECTING) {
             if (mConnectThread != null) {
@@ -305,9 +291,9 @@ public class BluetoothService extends Service {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                e.printStackTrace();
                 connectionFailed();
                 return;
-
             }
             synchronized (BluetoothService.this) {
                 mConnectThread = null;

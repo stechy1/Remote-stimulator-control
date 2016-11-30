@@ -355,9 +355,8 @@ public class ConfigurationActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK) {
                     try {
                         Log.d(TAG, "Pokus o vytvoření naslouchací služby bluetooth");
-                        Intent intent = new Intent(this, BluetoothService.class);
-                        intent.putExtra(BluetoothService.DEVICE_MAC, data.getStringExtra(BluetoothService.DEVICE_MAC));
-                        startService(intent);
+                        String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
+                        mService.connectToDevice(mac);
 
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();

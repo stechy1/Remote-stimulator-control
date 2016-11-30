@@ -370,11 +370,9 @@ public class ConfigurationActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
                 if (resultCode == RESULT_OK) {
                     Log.i(TAG, "Bluetooth je aktivovaný");
                 } else {
-                    // User did not enable Bluetooth or an error occurred
                     Log.i(TAG, "Bluetooth není aktivovaný");
                 }
                 break;
@@ -519,7 +517,7 @@ public class ConfigurationActivity extends AppCompatActivity
                     return false;
                 }
 
-                switch (BluetoothService.state) {
+                switch (mService.getState()) {
                     case STATE_NONE:
                     case STATE_LISTEN:
                         startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);

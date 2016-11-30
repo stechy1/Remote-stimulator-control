@@ -10,18 +10,28 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.wrappedviewpager.WrappedViewPag
 
 class ViewPagerPatternAdapter extends FragmentStatePagerAdapter {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "TVEPOutputAdapter";
+    // endregion
 
-    private final ConfigurationTVEP configuration;
+    // region Variables
+    private final ConfigurationTVEP mConfiguration;
     private int mCurrentPosition = -1;
+    // endregion
 
+    // region Constructors
+    /**
+     * Vytvoří nový viewPager adapter
+     *
+     * @param fm {@link FragmentManager}
+     * @param configuration Konfigurace TVEP
+     */
     ViewPagerPatternAdapter(FragmentManager fm, ConfigurationTVEP configuration) {
         super(fm);
-
-        this.configuration = configuration;
+        mConfiguration = configuration;
     }
+    // endregion
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
@@ -44,8 +54,8 @@ class ViewPagerPatternAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         PatternFragment fragment = new PatternFragment();
-        fragment.setConfiguration(configuration);
-        fragment.setPattern(configuration.patternList.get(position));
+        fragment.setConfiguration(mConfiguration);
+        fragment.setPattern(mConfiguration.patternList.get(position));
 
         return fragment;
     }
@@ -55,6 +65,6 @@ class ViewPagerPatternAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public int getCount() {
-        return configuration.patternList.size();
+        return mConfiguration.patternList.size();
     }
 }

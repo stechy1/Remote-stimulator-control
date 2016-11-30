@@ -13,14 +13,18 @@ import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityConfigurationRenam
 
 public class ConfigurationRenameActivity extends AppCompatActivity {
 
+    // region Constants
     // Validační příznak pro název
     public static final int FLAG_NAME = 1 << 0;
     public static final int CONFIGURATION_UNKNOWN_ID = -1;
     public static final String CONFIGURATION_ID = "id";
     public static final String CONFIGURATION_NAME = "name";
     public static final String OLD_CONFIGURATION_NAME = "old_name";
+    // endregion
 
-    private final ObservableConfiguration configuration = new ObservableConfiguration();
+    // region Variables
+    private final ObservableConfiguration mConfiguration = new ObservableConfiguration();
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +44,13 @@ public class ConfigurationRenameActivity extends AppCompatActivity {
             oldName = name;
         }
 
-        configuration.id = id;
-        configuration.setOldName(oldName);
-        configuration.setName(name);
-        configuration.setChanged(false);
+        mConfiguration.setId(id);
+        mConfiguration.setOldName(oldName);
+        mConfiguration.setName(name);
+        mConfiguration.setChanged(false);
 
         ActivityConfigurationRenameBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_configuration_rename);
-        binding.setConfiguration(configuration);
+        binding.setConfiguration(mConfiguration);
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -55,13 +59,14 @@ public class ConfigurationRenameActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        outState.putInt(CONFIGURATION_ID, configuration.id);
-        outState.putString(CONFIGURATION_NAME, configuration.getName());
-        outState.putSerializable(OLD_CONFIGURATION_NAME, configuration.getOldName());
+        outState.putInt(CONFIGURATION_ID, mConfiguration.getId());
+        outState.putString(CONFIGURATION_NAME, mConfiguration.getName());
+        outState.putSerializable(OLD_CONFIGURATION_NAME, mConfiguration.getOldName());
 
         super.onSaveInstanceState(outState);
     }
 
+    // region Public methods
     // Handler na tlačítko cancel
     public void onCancel(View view) {
         finish();
@@ -71,12 +76,12 @@ public class ConfigurationRenameActivity extends AppCompatActivity {
     public void onRename(View view) {
         Intent intent = new Intent();
 
-        intent.putExtra(CONFIGURATION_ID, configuration.id);
-        intent.putExtra(CONFIGURATION_NAME, configuration.name);
+        intent.putExtra(CONFIGURATION_ID, mConfiguration.getId());
+        intent.putExtra(CONFIGURATION_NAME, mConfiguration.getName());
 
         setResult(RESULT_OK, intent);
         finish();
     }
-
+    // endregion
 
 }

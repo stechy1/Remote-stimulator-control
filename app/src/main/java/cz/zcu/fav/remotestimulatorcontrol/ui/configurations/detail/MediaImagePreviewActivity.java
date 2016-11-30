@@ -12,34 +12,40 @@ import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMediaImagePreviewB
 
 public class MediaImagePreviewActivity extends AppCompatActivity {
 
+    // region Constants
     public static final String IMAGE_PATH = "image_path";
+    // endregion
 
-    String filePath;
+    // region Variables
+    private String mFilePath;
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            filePath = savedInstanceState.getString(IMAGE_PATH);
+            mFilePath = savedInstanceState.getString(IMAGE_PATH);
         } else {
             Intent intent = getIntent();
-            filePath = intent.getStringExtra(IMAGE_PATH);
+            mFilePath = intent.getStringExtra(IMAGE_PATH);
         }
 
         // TODO pokud bude potřeba, tak dodělat procházení v zadaně složce mezi obrázky
         ActivityMediaImagePreviewBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_media_image_preview);
-        mBinding.imagePreview.setImageBitmap(BitmapFactory.decodeFile(filePath));
+        mBinding.imagePreview.setImageBitmap(BitmapFactory.decodeFile(mFilePath));
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(IMAGE_PATH, filePath);
+        outState.putString(IMAGE_PATH, mFilePath);
 
         super.onSaveInstanceState(outState);
     }
 
+    // region Public methods
     public void onClose(View view) {
         finish();
     }
+    // endregion
 }

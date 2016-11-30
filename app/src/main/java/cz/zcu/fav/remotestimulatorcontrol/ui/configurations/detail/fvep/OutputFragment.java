@@ -16,19 +16,28 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
 
 public class OutputFragment extends Fragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "OutputFragmentFVEP";
+    // endregion
 
-    private ConfigurationFVEP.Output output;
-    @SuppressWarnings("unused")
+    // region Variables
+    private ConfigurationFVEP.Output mOutput;
+
     // Listener pro změnu intenzity jasu
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            output.setBrightness(progress);
+            mOutput.setBrightness(progress);
         }
     };
+    public final EditableSeekBar.OnEditableSeekBarProgressChanged frequencyChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
+        @Override
+        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
+            mOutput.setFrequency(progress);
+        }
+    };
+    // endregion
 
     @Nullable
     @Override
@@ -36,25 +45,19 @@ public class OutputFragment extends Fragment {
         FvepOutputConfigBinding mBinding = DataBindingUtil.inflate(inflater, R.layout.fvep_output_config, container, false);
 
         mBinding.setController(this);
-        mBinding.setOutput(output);
+        mBinding.setOutput(mOutput);
 
         return mBinding.getRoot();
     }
 
+    // region Public methods
     /**
      * Inicializuje output
      *
      * @param output Output
      */
     void setOutput(ConfigurationFVEP.Output output) {
-        this.output = output;
+        mOutput = output;
     }
-
-    @SuppressWarnings("unused")
-    public final EditableSeekBar.OnEditableSeekBarProgressChanged frequencyChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
-        @Override
-        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            output.setFrequency(progress);
-        }
-    };
+    // endregion
 }

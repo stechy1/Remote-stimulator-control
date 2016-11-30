@@ -18,35 +18,35 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.patternlayout.PatternWidget;
 
 public class ConfigurationFragmentCVEP extends ADetailFragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfiFragmentCVEP";
+    // endregion
 
-    private ConfigurationCVEP configuration;
-    @SuppressWarnings("unused")
+    // region Variables
+    private ConfigurationCVEP mConfiguration;
     // Listener pro změnu hodnoty parametru bit shift
     public final EditableSeekBar.OnEditableSeekBarProgressChanged bitShiftChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            configuration.setBitShift(progress);
+            mConfiguration.setBitShift(progress);
         }
     };
-    @SuppressWarnings("unused")
     // Listener pro změnu intenzity jasu
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            configuration.setBrightness(progress);
+            mConfiguration.setBrightness(progress);
         }
     };
-    @SuppressWarnings("unused")
     // Listener pro změnu hodnoty hlavního patternu
     public final PatternWidget.OnBitChangeListener patternValueChange = new PatternWidget.OnBitChangeListener() {
         @Override
         public void onBitChange(int oldValue, int newValue) {
-            configuration.mainPattern.setValue(newValue);
+            mConfiguration.mainPattern.setValue(newValue);
         }
     };
+    // endregion
 
     @Nullable
     @Override
@@ -54,8 +54,8 @@ public class ConfigurationFragmentCVEP extends ADetailFragment {
         FragmentConfigurationDetailCvepBinding mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration_detail_cvep, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
-        mBinding.setPattern(configuration.mainPattern);
+        mBinding.setConfiguration(mConfiguration);
+        mBinding.setPattern(mConfiguration.mainPattern);
 
         return mBinding.getRoot();
     }
@@ -67,20 +67,22 @@ public class ConfigurationFragmentCVEP extends ADetailFragment {
      */
     @Override
     public void setConfiguration(AConfiguration configuration) {
-        this.configuration = (ConfigurationCVEP) configuration;
+        mConfiguration = (ConfigurationCVEP) configuration;
     }
 
+    // region Public methods
     /**
      * Vymaže hodnotu patternu
      */
     public void clearBitPattern() {
-        configuration.mainPattern.setValue(ConfigurationCVEP.Pattern.DEF_VALUE);
+        mConfiguration.mainPattern.setValue(ConfigurationCVEP.Pattern.DEF_VALUE);
     }
 
     /**
      * Invertuje hodnotu patternu
      */
     public void toggleBitPattern() {
-        configuration.mainPattern.toggleValue();
+        mConfiguration.mainPattern.toggleValue();
     }
+    // endregion
 }

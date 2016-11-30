@@ -13,9 +13,17 @@ import android.view.View;
  */
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
 
+    // region Constructors
+    /**
+     * Konstruktor
+     *
+     * @param context {@link Context}
+     * @param attrs {@link AttributeSet attrs}
+     */
     public ScrollAwareFABBehavior(Context context, AttributeSet attrs) {
         super();
     }
+    // endregion
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout,

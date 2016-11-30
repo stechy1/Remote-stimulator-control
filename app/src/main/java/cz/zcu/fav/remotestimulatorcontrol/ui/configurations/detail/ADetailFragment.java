@@ -7,8 +7,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 /**
  * Předek tříd pro detail fragmentu konfigurace
  */
-public abstract class ADetailFragment extends Fragment
-        implements OnOutputCountChange {
+public abstract class ADetailFragment extends Fragment implements OnOutputCountChange {
 
     /**
      * Nastaví konfiguraci do fragmentu

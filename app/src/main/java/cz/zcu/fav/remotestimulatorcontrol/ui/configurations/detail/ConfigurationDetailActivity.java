@@ -99,7 +99,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             BluetoothService.LocalBinder binder = (BluetoothService.LocalBinder) iBinder;
             mService = binder.getService();
-            mService.setHandler(bluetoothServiceHandler);
+            mService.setHandler(mBluetoothServiceHandler);
             mBound = true;
         }
 
@@ -234,7 +234,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         configuration.metaData.extensionType = extensionType;
         Pair<File, File> files = ConfigurationManager.buildConfigurationFilePath(getFilesDir(), configuration);
         mediaManager = new MediaManager(files.second, configuration);
-        mediaManager.setHandler(mediaManagerHandler);
+        mediaManager.setHandler(mMediaManagerHandler);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration_detail);
         mBinding.setController(this);
@@ -353,7 +353,21 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("unused")
+    @Override
+    public void onAddMediaClick() {
+        if (!permissionGranted) {
+            Log.i(TAG, "Nebyla udělena práva pro přístup k úložišti");
+            verifyPermission();
+            return;
+        }
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*, audio/*");
+        startActivityForResult(Intent.createChooser(intent, "Vyberte externí médium"), REQUEST_FILE_PATH);
+    }
+
+    // region Public methods
     public void onMediaCheckBoxClick(View view) {
         boolean checked = ((CheckBox) view).isChecked();
 
@@ -371,24 +385,10 @@ public class ConfigurationDetailActivity extends AppCompatActivity
                 break;
         }
     }
-
-    @Override
-    public void onAddMediaClick() {
-//        startActivityForResult(new Intent(this, MediaImportActivity.class), REQUEST_PATH);
-        if (!permissionGranted) {
-            Log.i(TAG, "Nebyla udělena práva pro přístup k úložišti");
-            verifyPermission();
-            return;
-        }
-
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*, audio/*");
-        startActivityForResult(Intent.createChooser(intent, "Vyberte externí médium"), REQUEST_FILE_PATH);
-    }
+    // endregion
 
     // region MediaManager handler
-    private final Handler.Callback mediaManagerCallback = new Handler.Callback() {
+    private final Handler.Callback mMediaManagerCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             boolean success;
@@ -443,7 +443,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         }
     };
 
-    private final Handler mediaManagerHandler = new Handler(mediaManagerCallback);
+    private final Handler mMediaManagerHandler = new Handler(mMediaManagerCallback);
     // endregion
 
     // region RecyclerView handlers
@@ -469,6 +469,32 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     // region GestureDetector for RecyclerView
     private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 
+        // region Variables
+        private final MediaPlayer.OnPreparedListener mmMediaPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
+                mediaPlayer.start();
+            }
+        };
+
+        private final MediaPlayer.OnCompletionListener mmMediaCompletionListener = new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                ((MediaAudio) (mediaManager.mediaList.get(selectedMedia))).setPlaying(false);
+                selectedMedia = -1;
+                mediaPlayer.reset();
+            }
+        };
+        // endregion
+
+        // region Private methods
+        /**
+         * Odstartuje přehrávač
+         *
+         * @param filePath Cesta k souboru, který se má přehrát
+         * @param position Index media, který se bude přehrávat
+         */
         private void playMediaPlayer(String filePath, int position) {
             try {
                 mediaPlayer.setDataSource(filePath);
@@ -479,29 +505,18 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             }
         }
 
+        /**
+         * Zastaví přehrávání přehrávače
+         *
+         * @param position Index média, který se má zastavit
+         */
         private void stopMediaPlayer(int position) {
             mediaPlayer.stop();
             ((MediaAudio) (mediaManager.mediaList.get(position))).setPlaying(false);
             selectedMedia = -1;
             mediaPlayer.reset();
         }
-
-        private final MediaPlayer.OnPreparedListener mediaPreparedListener = new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
-                mediaPlayer.start();
-            }
-        };
-
-        private final MediaPlayer.OnCompletionListener mediaCompletionListener = new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                ((MediaAudio) (mediaManager.mediaList.get(selectedMedia))).setPlaying(false);
-                selectedMedia = -1;
-                mediaPlayer.reset();
-            }
-        };
+        // endregion
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -518,8 +533,8 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             if (media.getMediaType() == MediaType.AUDIO) {
                 if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setOnPreparedListener(mediaPreparedListener);
-                    mediaPlayer.setOnCompletionListener(mediaCompletionListener);
+                    mediaPlayer.setOnPreparedListener(mmMediaPreparedListener);
+                    mediaPlayer.setOnCompletionListener(mmMediaCompletionListener);
                 }
 
                 if (mediaPlayer.isPlaying()) {
@@ -562,12 +577,12 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     // endregion
     // endregion
 
-    private final Handler.Callback bluetoothServiceCallback = new Handler.Callback() {
+    private final Handler.Callback mBluetoothServiceCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
             return false;
         }
     };
 
-    private final Handler bluetoothServiceHandler = new Handler(bluetoothServiceCallback);
+    private final Handler mBluetoothServiceHandler = new Handler(mBluetoothServiceCallback);
 }

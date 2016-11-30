@@ -17,18 +17,20 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.labeledspinner.LabelledSpinner;
 
 public class ConfigurationFragmentERP extends ADetailFragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigFragmentERP";
+    // endregion
 
+    // region Variables
     private FragmentConfigurationDetailErpBinding mBinding;
-    private ConfigurationERP configuration;
+    private ConfigurationERP mConfiguration;
     @SuppressWarnings("unused")
     // Listener pro změnu hodnoty parametru random
     public final LabelledSpinner.OnItemSelected randomListener = new LabelledSpinner.OnItemSelected() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            configuration.setRandom(ConfigurationERP.Random.valueOf(position));
+            mConfiguration.setRandom(ConfigurationERP.Random.valueOf(position));
         }
     };
     @SuppressWarnings("unused")
@@ -36,9 +38,10 @@ public class ConfigurationFragmentERP extends ADetailFragment {
     public final LabelledSpinner.OnItemSelected edgeListener = new LabelledSpinner.OnItemSelected() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            configuration.setEdge(ConfigurationERP.Edge.valueOf(position));
+            mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(position));
         }
     };
+    // endregion
 
     @Nullable
     @Override
@@ -46,8 +49,8 @@ public class ConfigurationFragmentERP extends ADetailFragment {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration_detail_erp, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
-        mBinding.pagerOutput.setAdapter(new ViewPagerOutputAdapter(getChildFragmentManager(), configuration.outputList));
+        mBinding.setConfiguration(mConfiguration);
+        mBinding.pagerOutput.setAdapter(new ViewPagerOutputAdapter(getChildFragmentManager(), mConfiguration.outputList));
 
         return mBinding.getRoot();
     }
@@ -59,7 +62,7 @@ public class ConfigurationFragmentERP extends ADetailFragment {
      */
     @Override
     public void setConfiguration(AConfiguration configuration) {
-        this.configuration = (ConfigurationERP) configuration;
+        mConfiguration = (ConfigurationERP) configuration;
     }
 
     /**
@@ -69,7 +72,7 @@ public class ConfigurationFragmentERP extends ADetailFragment {
      */
     @Override
     public void onOutputCountChange(int outputCount) {
-        configuration.setOutputCount(outputCount);
+        mConfiguration.setOutputCount(outputCount);
         if (mBinding != null) {
             mBinding.pagerOutput.getAdapter().notifyDataSetChanged();
         }

@@ -15,12 +15,23 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.patternlayout.PatternWidget;
 
 public class PatternFragment extends Fragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "PatternFragment";
+    // endregion
 
-    private ConfigurationTVEP configuration;
-    private ConfigurationTVEP.Pattern pattern;
+    // region Variables
+    private ConfigurationTVEP mConfiguration;
+    private ConfigurationTVEP.Pattern mPattern;
+
+    // Listener pro změnu hodnoty patternu
+    public final PatternWidget.OnBitChangeListener patternValueChange = new PatternWidget.OnBitChangeListener() {
+        @Override
+        public void onBitChange(int oldValue, int newValue) {
+            mPattern.setValue(newValue);
+        }
+    };
+    // endregion
 
     @Nullable
     @Override
@@ -28,19 +39,20 @@ public class PatternFragment extends Fragment {
         TvepPatternConfigBinding mBinding = DataBindingUtil.inflate(inflater, R.layout.tvep_pattern_config, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
-        mBinding.setPattern(pattern);
+        mBinding.setConfiguration(mConfiguration);
+        mBinding.setPattern(mPattern);
 
         return mBinding.getRoot();
     }
 
+    // region Public methods
     /**
      * Nastaví konfiguraci
      *
      * @param configuration Konfigurace TVEP
      */
     void setConfiguration(ConfigurationTVEP configuration) {
-        this.configuration = configuration;
+        mConfiguration = configuration;
     }
 
     /**
@@ -49,15 +61,7 @@ public class PatternFragment extends Fragment {
      * @param pattern Pattern
      */
     void setPattern(ConfigurationTVEP.Pattern pattern) {
-        this.pattern = pattern;
+        mPattern = pattern;
     }
-
-    @SuppressWarnings("unused")
-    // Listener pro změnu hodnoty patternu
-    public final PatternWidget.OnBitChangeListener patternValueChange = new PatternWidget.OnBitChangeListener() {
-        @Override
-        public void onBitChange(int oldValue, int newValue) {
-            pattern.setValue(newValue);
-        }
-    };
+    // endregion
 }

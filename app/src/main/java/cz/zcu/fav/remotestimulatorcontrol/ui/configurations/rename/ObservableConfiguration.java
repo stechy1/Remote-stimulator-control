@@ -13,15 +13,23 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.rename.Config
  */
 public class ObservableConfiguration extends BaseObservable {
 
+    // region Variables
+    // Starý název konfigurace
     private String oldName;
+    // Validita konfigurace - 0 = validní
     @Bindable
-    int validity = FLAG_NAME;
+    private int validity = FLAG_NAME;
+    // Název konfigurace
     @Bindable
-    String name = "";
+    private String name = "";
+    // Příznak indikující, zda-li byla změněna interní datová struktura konfigurace
     @Bindable
-    boolean changed = false;
-    int id;
+    private boolean changed = false;
+    // Id konfigurace
+    private int id;
+    // endregion
 
+    // region Public methods
     /**
      * Vrátí původní název konfigurace
      *
@@ -103,4 +111,23 @@ public class ObservableConfiguration extends BaseObservable {
         this.validity = validity;
         notifyPropertyChanged(BR.validity);
     }
+
+    /**
+     * Vrátí Id konfigurace
+     *
+     * @return Id konfigurace
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Nastaví Id konfigurace
+     *
+     * @param id Id konfigurace
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    // endregion
 }

@@ -11,17 +11,28 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.wrappedviewpager.WrappedViewPag
 
 class ViewPagerOutputAdapter extends FragmentStatePagerAdapter {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ERPOutputAdapter";
+    // endregion
 
-    private final ObservableArrayList<ConfigurationERP.Output> outputs;
+    // region Variables
+    private final ObservableArrayList<ConfigurationERP.Output> mOutputs;
     private int mCurrentPosition = -1;
+    // endregion
 
+    // region Constructors
+    /**
+     * Vytvoří nový viewPager adapter
+     *
+     * @param fm {@link FragmentManager}
+     * @param outputs Kolekce erp výstupů
+     */
     ViewPagerOutputAdapter(FragmentManager fm, ObservableArrayList<ConfigurationERP.Output> outputs) {
         super(fm);
-        this.outputs = outputs;
+        this.mOutputs = outputs;
     }
+    // endregion
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
@@ -44,7 +55,7 @@ class ViewPagerOutputAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         OutputFragment fragment = new OutputFragment();
-        fragment.setOutput(outputs.get(position));
+        fragment.setOutput(mOutputs.get(position));
         return fragment;
     }
 
@@ -53,6 +64,6 @@ class ViewPagerOutputAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public int getCount() {
-        return outputs.size();
+        return mOutputs.size();
     }
 }

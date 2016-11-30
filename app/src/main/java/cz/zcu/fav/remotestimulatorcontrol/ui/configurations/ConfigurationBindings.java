@@ -23,11 +23,14 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
+/**
+ * Knihovní třída obsahující metody týkající se "data bindingu"
+ */
 @SuppressWarnings("unused")
-public class ConfigurationBindings {
+public final class ConfigurationBindings {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigurationBindings";
     
     private static final int[] drawable = {
@@ -37,6 +40,16 @@ public class ConfigurationBindings {
             R.drawable.bg_cvep,
             R.drawable.bg_rea
     };
+    // endregion
+
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private ConfigurationBindings() {
+        throw new AssertionError();
+    }
+    // endregion
 
     @InverseBindingAdapter(attribute = "value")
     public static String getTextFromEditText(TextInputEditText editText) {

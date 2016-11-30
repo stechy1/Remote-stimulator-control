@@ -13,14 +13,19 @@ import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityConfigurationDupli
 
 public class ConfigurationDuplicateActivity extends AppCompatActivity {
 
+    // region Constants
     // Validační příznak pro název
     public static final int FLAG_NAME = 1 << 0;
     public static final int CONFIGURATION_UNKNOWN_ID = -1;
+    // Proměnné, které konfigurace přijímá v intentu
     public static final String CONFIGURATION_ID = "id";
     public static final String CONFIGURATION_NAME = "name";
     public static final String OLD_CONFIGURATION_NAME = "old_name";
+    // endregion
 
+    // region Variables
     private final ObservableConfiguration configuration = new ObservableConfiguration();
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,7 @@ public class ConfigurationDuplicateActivity extends AppCompatActivity {
             oldName = name;
         }
 
-        configuration.id = id;
+        configuration.setId(id);
         configuration.setOldName(oldName);
         configuration.setName(name);
         configuration.setChanged(false);
@@ -54,13 +59,14 @@ public class ConfigurationDuplicateActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(CONFIGURATION_ID, configuration.id);
+        outState.putInt(CONFIGURATION_ID, configuration.getId());
         outState.putString(CONFIGURATION_NAME, configuration.getName());
         outState.putSerializable(OLD_CONFIGURATION_NAME, configuration.getOldName());
 
         super.onSaveInstanceState(outState);
     }
 
+    // region Public methods
     // Handler pro tlačítko cancel
     public void onCancel(View view) {
         finish();
@@ -69,10 +75,11 @@ public class ConfigurationDuplicateActivity extends AppCompatActivity {
     // Handler pro tlačítko duplicate
     public void onDuplicate(View view) {
         Intent intent = new Intent();
-        intent.putExtra(CONFIGURATION_ID, configuration.id);
+        intent.putExtra(CONFIGURATION_ID, configuration.getId());
         intent.putExtra(CONFIGURATION_NAME, configuration.getName());
 
         setResult(RESULT_OK, intent);
         finish();
     }
+    // endregion
 }

@@ -14,14 +14,30 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.factory.Confi
  */
 public class ObservableConfiguration extends BaseObservable {
 
+    // region Variables
+    // Validita konfigurace - 0 = validní
     @Bindable
-    int validity = FLAG_NAME;
+    private int validity = FLAG_NAME;
+    // Název konfigurace
     @Bindable
-    String name = "";
+    private String name = "";
+    // Typ konfigurace
     @Bindable
-    ConfigurationType configurationType = ConfigurationType.ERP;
+    private ConfigurationType configurationType = ConfigurationType.ERP;
+    // Příznak indikující, zda-li byla změněna interní datová struktura konfigurace
     @Bindable
-    boolean changed = false;
+    private boolean changed = false;
+    // endregion
+
+    // region Public methods
+    /**
+     * Vrátí typ konfigurace
+     *
+     * @return Typ konfigurace
+     */
+    public String getConfigurationType() {
+        return configurationType.name();
+    }
 
     /**
      * Nastaví typ konfigurace
@@ -32,15 +48,6 @@ public class ObservableConfiguration extends BaseObservable {
         this.configurationType = type;
 
         notifyPropertyChanged(BR.configurationType);
-    }
-
-    /**
-     * Vrátí typ konfigurace
-     *
-     * @return Typ konfigurace
-     */
-    public String getConfigurationType() {
-        return configurationType.name();
     }
 
     /**
@@ -96,4 +103,5 @@ public class ObservableConfiguration extends BaseObservable {
         this.validity = validity;
         notifyPropertyChanged(BR.validity);
     }
+    // endregion
 }

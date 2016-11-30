@@ -5,8 +5,19 @@ import android.support.v7.widget.AppCompatRadioButton;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea.ConfigurationREA;
 
-@SuppressWarnings("unused")
-public class ConfigurationREABindings {
+/**
+ * Knihovní třída obsahující metody týkající se "data bindingu"
+ */
+public final class ConfigurationREABindings {
+
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private ConfigurationREABindings() {
+        throw new AssertionError();
+    }
+    // endregion
 
     @BindingAdapter({"value", "flag"})
     public static void setCompatRadioButtonChecked(AppCompatRadioButton view, ConfigurationREA.Gender value , ConfigurationREA.Gender flag) {

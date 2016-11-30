@@ -17,10 +17,15 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.Configuration
 
 public class ConfigurationSortingActivity extends AppCompatActivity {
 
+    // region Constants
     public static final String SORTING_FLAG = "SortingFlag";
+    // endregion
 
+    // region Variables
     public final ObservableInt sortingFlag = new ObservableInt();
+    // endregion
 
+    // region Private methods
     /**
      * Nastaví správný příznak
      *
@@ -37,6 +42,7 @@ public class ConfigurationSortingActivity extends AppCompatActivity {
 
         sortingFlag.set(oldValue);
     }
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,7 @@ public class ConfigurationSortingActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
+    // region Public methods
     // Handler pro checkboxy
     public void onChecked(View view) {
         boolean checked = ((CheckBox) view).isChecked();
@@ -94,4 +101,5 @@ public class ConfigurationSortingActivity extends AppCompatActivity {
         setResult(RESULT_OK, intent);
         finish();
     }
+    // endregion
 }

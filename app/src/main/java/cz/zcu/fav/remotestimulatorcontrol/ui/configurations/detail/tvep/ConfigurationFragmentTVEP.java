@@ -17,12 +17,29 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
 
 public class ConfigurationFragmentTVEP extends ADetailFragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigFragmentTVEP";
+    // endregion
 
+    // region Variables
     private FragmentConfgurationDetailTvepBinding mBinding;
-    private ConfigurationTVEP configuration;
+    private ConfigurationTVEP mConfiguration;
+    // Listener pro změnu délky patternu
+    public final EditableSeekBar.OnEditableSeekBarProgressChanged patternLengthChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
+        @Override
+        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
+            mConfiguration.setPatternLength(progress);
+        }
+    };
+    // Listener pro změnu intenzity jasu
+    public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
+        @Override
+        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
+            mConfiguration.setBrightness(progress);
+        }
+    };
+    // endregion
 
     @Nullable
     @Override
@@ -30,8 +47,8 @@ public class ConfigurationFragmentTVEP extends ADetailFragment {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_confguration_detail_tvep, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
-        mBinding.pagerPattern.setAdapter(new ViewPagerPatternAdapter(getChildFragmentManager(), configuration));
+        mBinding.setConfiguration(mConfiguration);
+        mBinding.pagerPattern.setAdapter(new ViewPagerPatternAdapter(getChildFragmentManager(), mConfiguration));
 
         return mBinding.getRoot();
     }
@@ -43,7 +60,7 @@ public class ConfigurationFragmentTVEP extends ADetailFragment {
      */
     @Override
     public void setConfiguration(AConfiguration configuration) {
-        this.configuration = (ConfigurationTVEP) configuration;
+        mConfiguration = (ConfigurationTVEP) configuration;
     }
 
     /**
@@ -53,27 +70,9 @@ public class ConfigurationFragmentTVEP extends ADetailFragment {
      */
     @Override
     public void onOutputCountChange(int outputCount) {
-        configuration.setOutputCount(outputCount);
+        mConfiguration.setOutputCount(outputCount);
         if (mBinding != null) {
             mBinding.pagerPattern.getAdapter().notifyDataSetChanged();
         }
     }
-
-    @SuppressWarnings("unused")
-    // Listener pro změnu délky patternu
-    public final EditableSeekBar.OnEditableSeekBarProgressChanged patternLengthChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
-        @Override
-        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            configuration.setPatternLength(progress);
-        }
-    };
-
-    @SuppressWarnings("unused")
-    // Listener pro změnu intenzity jasu
-    public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
-        @Override
-        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            configuration.setBrightness(progress);
-        }
-    };
 }

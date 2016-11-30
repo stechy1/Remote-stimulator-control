@@ -19,19 +19,31 @@ import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
  */
 class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    // region Constants
     private static final String TAG = "MediaAdapter";
 
     private static final int ITEM_VIEW_TYPE_STANDART = 0;
     private static final int ITEM_VIEW_TYPE_BUTTON = 1;
+    // endregion
 
-    private final List<AMedia> mediaList;
+    // region Variables
+    private final List<AMedia> mMediaList;
 
-    private OnAddMediaClickListener mListener;
+    private final OnAddMediaClickListener mListener;
+    // endregion
 
+    // region Constructors
+    /**
+     * Vytvoří nový adapter
+     *
+     * @param mediaList Kolekce medií
+     * @param listener {@link OnAddMediaClickListener}
+     */
     MediaAdapter(List<AMedia> mediaList, OnAddMediaClickListener listener) {
-        this.mediaList = mediaList;
+        mMediaList = mediaList;
         mListener = listener;
     }
+    // endregion
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -48,16 +60,16 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position == mediaList.size())
+        if (position == mMediaList.size())
             return;
 
-        AMedia media = mediaList.get(position);
+        AMedia media = mMediaList.get(position);
         ((MediaHolder) holder).bindTo(media);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position < mediaList.size()) {
+        if (position < mMediaList.size()) {
             return ITEM_VIEW_TYPE_STANDART;
         }
 
@@ -67,37 +79,36 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         // Vracíme o 1 více, protože poslední prvek bude tlačítko pro přidání další položky
-        return mediaList.size() + 1;
+        return mMediaList.size() + 1;
     }
 
     class MediaHolder extends RecyclerView.ViewHolder {
-
-        private final MediaItemBinding mBinding;
+        private final MediaItemBinding mmBinding;
 
         MediaHolder(MediaItemBinding binding) {
             super(binding.getRoot());
 
-            mBinding = binding;
+            mmBinding = binding;
         }
 
         public void bindTo(AMedia media) {
-            mBinding.setMedia(media);
-            mBinding.executePendingBindings();
+            mmBinding.setMedia(media);
+            mmBinding.executePendingBindings();
         }
     }
 
     class MediaButtonHolder extends RecyclerView.ViewHolder {
-        private final MediaItemButtonBinding mBinding;
+        private final MediaItemButtonBinding mmBinding;
 
         public MediaButtonHolder(MediaItemButtonBinding binding) {
             super(binding.getRoot());
 
-            mBinding = binding;
+            mmBinding = binding;
             init();
         }
 
         private void init() {
-            Button addBtn = mBinding.buttonAddMedia;
+            Button addBtn = mmBinding.buttonAddMedia;
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

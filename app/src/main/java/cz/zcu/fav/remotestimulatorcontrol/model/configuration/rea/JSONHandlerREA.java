@@ -23,7 +23,7 @@ public class JSONHandlerREA extends JSONHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationREA configuration;
+    private final ConfigurationREA mConfiguration;
     // endregion
     
     /**
@@ -34,7 +34,7 @@ public class JSONHandlerREA extends JSONHandler {
     public JSONHandlerREA(ConfigurationREA configuration) {
         super(configuration);
         
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
 
     // region Public methods
@@ -57,16 +57,16 @@ public class JSONHandlerREA extends JSONHandler {
         try {
             JSONObject configurationObject = new JSONObject(src);
             super.readSelf(configurationObject);
-            configuration.setCycleCount(configurationObject.getInt(TAG_CYCLE_COUNT));
-            configuration.setWaitFixed(configurationObject.getInt(TAG_WAIT_FIXED));
-            configuration.setWaitRandom(configurationObject.getInt(TAG_WAIT_RANDOM));
-            configuration.setMissTime(configurationObject.getInt(TAG_MISS_TIME));
-            configuration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
-            configuration.setOnFail(ConfigurationREA.OnFail.valueOf(configurationObject.getInt(TAG_ON_FAIL)));
-            configuration.setGender(ConfigurationREA.Gender.valueOf(configurationObject.getInt(TAG_GENDER)));
-            configuration.setAge(configurationObject.getInt(TAG_A));
-            configuration.setHeight(configurationObject.getInt(TAG_H));
-            configuration.setWeight(configurationObject.getInt(TAG_W));
+            mConfiguration.setCycleCount(configurationObject.getInt(TAG_CYCLE_COUNT));
+            mConfiguration.setWaitFixed(configurationObject.getInt(TAG_WAIT_FIXED));
+            mConfiguration.setWaitRandom(configurationObject.getInt(TAG_WAIT_RANDOM));
+            mConfiguration.setMissTime(configurationObject.getInt(TAG_MISS_TIME));
+            mConfiguration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
+            mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(configurationObject.getInt(TAG_ON_FAIL)));
+            mConfiguration.setGender(ConfigurationREA.Gender.valueOf(configurationObject.getInt(TAG_GENDER)));
+            mConfiguration.setAge(configurationObject.getInt(TAG_A));
+            mConfiguration.setHeight(configurationObject.getInt(TAG_H));
+            mConfiguration.setWeight(configurationObject.getInt(TAG_W));
         } catch(JSONException e){
             e.printStackTrace();
         }
@@ -82,16 +82,16 @@ public class JSONHandlerREA extends JSONHandler {
 
         writer.beginObject();
         super.writeSelf(writer);
-        writer.name(TAG_CYCLE_COUNT).value(configuration.getCycleCount());
-        writer.name(TAG_WAIT_FIXED).value(configuration.getWaitFixed());
-        writer.name(TAG_WAIT_RANDOM).value(configuration.getWaitRandom());
-        writer.name(TAG_MISS_TIME).value(configuration.getMissTime());
-        writer.name(TAG_BRIGHTNESS).value(configuration.getBrightness());
-        writer.name(TAG_ON_FAIL).value(configuration.getOnFail().ordinal());
-        writer.name(TAG_GENDER).value(configuration.getGender().ordinal());
-        writer.name(TAG_A).value(configuration.getAge());
-        writer.name(TAG_H).value(configuration.getHeight());
-        writer.name(TAG_W).value(configuration.getWeight());
+        writer.name(TAG_CYCLE_COUNT).value(mConfiguration.getCycleCount());
+        writer.name(TAG_WAIT_FIXED).value(mConfiguration.getWaitFixed());
+        writer.name(TAG_WAIT_RANDOM).value(mConfiguration.getWaitRandom());
+        writer.name(TAG_MISS_TIME).value(mConfiguration.getMissTime());
+        writer.name(TAG_BRIGHTNESS).value(mConfiguration.getBrightness());
+        writer.name(TAG_ON_FAIL).value(mConfiguration.getOnFail().ordinal());
+        writer.name(TAG_GENDER).value(mConfiguration.getGender().ordinal());
+        writer.name(TAG_A).value(mConfiguration.getAge());
+        writer.name(TAG_H).value(mConfiguration.getHeight());
+        writer.name(TAG_W).value(mConfiguration.getWeight());
         writer.endObject();
 
         writer.close();

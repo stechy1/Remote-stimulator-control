@@ -31,7 +31,7 @@ public class XMLHandlerCVEP extends XMLHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private ConfigurationCVEP configuration;
+    private ConfigurationCVEP mConfiguration;
     // endregion
 
     /**
@@ -42,7 +42,7 @@ public class XMLHandlerCVEP extends XMLHandler {
     public XMLHandlerCVEP(ConfigurationCVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
 
     // region Public methods
@@ -74,22 +74,22 @@ public class XMLHandlerCVEP extends XMLHandler {
                     case END_TAG:
                         switch (tagName) {
                             case TAG_OUTPUT_COUNT:
-                                configuration.setOutputCount(Integer.valueOf(text));
+                                mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
                             case TAG_MEDIA:
-                                configuration.setMediaType(Integer.valueOf(text));
+                                mConfiguration.setMediaType(Integer.valueOf(text));
                                 break;
                             case TAG_PULSE_LENGHT:
-                                configuration.setPulsLength(Integer.valueOf(text));
+                                mConfiguration.setPulsLength(Integer.valueOf(text));
                                 break;
                             case TAG_BIT_SHIFT:
-                                configuration.setBitShift(Integer.valueOf(text));
+                                mConfiguration.setBitShift(Integer.valueOf(text));
                                 break;
                             case TAG_BRIGHTNESS:
-                                configuration.setBrightness(Integer.valueOf(text));
+                                mConfiguration.setBrightness(Integer.valueOf(text));
                                 break;
                             case TAG_MAIN_PATTERN_VALUE:
-                                configuration.mainPattern.setValue(Integer.valueOf(text));
+                                mConfiguration.mainPattern.setValue(Integer.valueOf(text));
                                 break;
                         }
                         break;
@@ -116,10 +116,10 @@ public class XMLHandlerCVEP extends XMLHandler {
         serializer.startTag(NAMESPACE, TAG_ROOT);
 
         super.writeSelf(serializer);
-        writeTag(serializer, TAG_PULSE_LENGHT, configuration.getPulsLength());
-        writeTag(serializer, TAG_BIT_SHIFT, configuration.getBitShift());
-        writeTag(serializer, TAG_BRIGHTNESS, configuration.getBrightness());
-        writeTag(serializer, TAG_MAIN_PATTERN_VALUE, configuration.mainPattern.getValue());
+        writeTag(serializer, TAG_PULSE_LENGHT, mConfiguration.getPulsLength());
+        writeTag(serializer, TAG_BIT_SHIFT, mConfiguration.getBitShift());
+        writeTag(serializer, TAG_BRIGHTNESS, mConfiguration.getBrightness());
+        writeTag(serializer, TAG_MAIN_PATTERN_VALUE, mConfiguration.mainPattern.getValue());
 
         serializer.endTag(NAMESPACE, TAG_ROOT);
         serializer.endDocument();

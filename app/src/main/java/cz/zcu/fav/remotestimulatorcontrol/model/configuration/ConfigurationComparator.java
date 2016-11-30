@@ -32,9 +32,9 @@ public enum ConfigurationComparator implements Comparator<AConfiguration> {
 
     /**
      * Porovná dvě čísla a vrátí výsledek
-     *      0  - čísla si jsou rovna
-     *      1  - první číslo je VĚTŠÍ než druhé
-     *      -1 - první číslo je MENŠÍ než druhé
+     *      0 - čísla si jsou rovna
+     *      1 - první číslo je VĚTŠÍ než druhé
+     *     -1 - první číslo je MENŠÍ než druhé
      *
      * @param lhs První porovnávané číslo
      * @param rhs Druhé porovnávané číslo

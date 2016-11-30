@@ -49,7 +49,6 @@ public final class ConfigurationManager extends BaseObservable implements Config
     public static final int MESSAGE_UNSUCCESSFUL = 2;
 
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigurationManager";
     // endregion
 

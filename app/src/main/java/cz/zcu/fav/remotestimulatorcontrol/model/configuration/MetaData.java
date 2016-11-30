@@ -11,13 +11,17 @@ import cz.zcu.fav.remotestimulatorcontrol.io.ExtensionType;
  */
 public final class MetaData extends BaseObservable {
 
+    // region Constants
     // Výchozí koncovka souboru
     private static ExtensionType defExtension = ExtensionType.XML;
+    // endregion
 
+    //region Variables
     // Použitá koncovka souboru
     public ExtensionType extensionType;
     // Datum změny souboru
     public final Date changed;
+    // endregion
 
     // TODO možná bude obsahovat i informace o použitých obrázcích/zvucích
 
@@ -41,6 +45,7 @@ public final class MetaData extends BaseObservable {
     }
     // endregion
 
+    // region Constructors
     /**
      * Konstruktor třídy {@link MetaData}
      */
@@ -67,6 +72,6 @@ public final class MetaData extends BaseObservable {
         this.extensionType = extensionType;
         this.changed = changed;
     }
-
+    // endregion
 
 }

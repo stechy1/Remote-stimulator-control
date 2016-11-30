@@ -5,7 +5,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea;
  */
 final class Tags {
 
-    public static final String TAG_OUTPUT_COUNT = "output-count";
+    // region Constants
     public static final String TAG_CYCLE_COUNT = "cycle-count";
     public static final String TAG_WAIT_FIXED = "wait-fixed";
     public static final String TAG_WAIT_RANDOM = "wait-random";
@@ -16,5 +16,14 @@ final class Tags {
     public static final String TAG_A = "age";
     public static final String TAG_H = "height";
     public static final String TAG_W = "weight";
+    // endregion
 
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private Tags() {
+        throw new AssertionError();
+    }
+    // endregion
 }

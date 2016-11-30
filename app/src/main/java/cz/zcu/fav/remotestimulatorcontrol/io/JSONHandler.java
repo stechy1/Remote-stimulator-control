@@ -21,7 +21,7 @@ public abstract class JSONHandler implements IOHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final AConfiguration configuration;
+    private final AConfiguration mConfiguration;
     // endregion
 
     // region Constructors
@@ -32,7 +32,7 @@ public abstract class JSONHandler implements IOHandler {
      * @param configuration Konfigurace
      */
     public JSONHandler(AConfiguration configuration) {
-        this.configuration = configuration;
+        mConfiguration = configuration;
     }
     // endregion
 
@@ -45,8 +45,8 @@ public abstract class JSONHandler implements IOHandler {
      * @throws IOException
      */
     protected void writeSelf(JsonWriter writer) throws IOException {
-        writer.name(TAG_OUTPUT_COUNT).value(configuration.getOutputCount());
-        writer.name(TAG_MEDIA).value(configuration.getMediaType());
+        writer.name(TAG_OUTPUT_COUNT).value(mConfiguration.getOutputCount());
+        writer.name(TAG_MEDIA).value(mConfiguration.getMediaType());
     }
 
     /**
@@ -56,8 +56,8 @@ public abstract class JSONHandler implements IOHandler {
      * @throws JSONException
      */
     protected void readSelf(JSONObject jsonConfiguration) throws JSONException {
-        configuration.setOutputCount(jsonConfiguration.getInt(TAG_OUTPUT_COUNT));
-        configuration.setMediaType(jsonConfiguration.getInt(TAG_MEDIA));
+        mConfiguration.setOutputCount(jsonConfiguration.getInt(TAG_OUTPUT_COUNT));
+        mConfiguration.setMediaType(jsonConfiguration.getInt(TAG_MEDIA));
     }
     // endregion
 }

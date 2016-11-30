@@ -46,6 +46,7 @@ public class ConfigurationERP extends AConfiguration {
     @SuppressWarnings("unused")
     private static final String TAG = "ConfiurationERP";
     // endregion
+
     // region Variables
     // Kolekce všech výstupů
     public final ObservableArrayList<Output> outputList;

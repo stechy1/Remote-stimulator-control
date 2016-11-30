@@ -27,7 +27,7 @@ public abstract class XMLHandler implements IOHandler {
 
     // region Variables
     private static boolean _minify = false;
-    private final AConfiguration configuration;
+    private final AConfiguration mConfiguration;
     // endregion
 
     // region Static methods
@@ -49,7 +49,7 @@ public abstract class XMLHandler implements IOHandler {
      * @param configuration Konfigurace
      */
     public XMLHandler(AConfiguration configuration) {
-        this.configuration = configuration;
+        mConfiguration = configuration;
     }
     // endregion
 
@@ -137,8 +137,8 @@ public abstract class XMLHandler implements IOHandler {
      * @throws IOException
      */
     protected void writeSelf(XmlSerializer serializer) throws IOException {
-        writeTag(serializer, TAG_OUTPUT_COUNT, configuration.getOutputCount());
-        writeTag(serializer, TAG_MEDIA, configuration.getMediaType());
+        writeTag(serializer, TAG_OUTPUT_COUNT, mConfiguration.getOutputCount());
+        writeTag(serializer, TAG_MEDIA, mConfiguration.getMediaType());
     }
     // endregion
 

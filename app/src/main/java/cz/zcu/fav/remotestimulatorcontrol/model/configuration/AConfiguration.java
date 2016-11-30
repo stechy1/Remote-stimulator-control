@@ -15,7 +15,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
 
     // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "AConfiguration";
     // Pattern pro název konfigurace:
     // - musí se jednat o neprázdné slovo
@@ -43,14 +42,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     public static final int MIN_PERCENT = 0;
     // Maximální hodnota v procentech
     public static final int MAX_PERCENT = 100;
-//    // Medium LED
-//    public static final int MEDIA_LED = 1 << 0;
-//    // Medium AUDIO
-//    public static final int MEDIA_AUDIO = 1 << 1;
-//    // Medium IMAGE
-//    public static final int MEDIA_IMAGE = 1 << 2;
-//    // Výchozí typ media
-//    public static final int DEF_MEDIA_TYPE = MEDIA_LED;
+    // Výchozí typ média
     public static final MediaType DEF_MEDIA_TYPE = MediaType.LED;
     // Minimální jas výstupu
     public static final int MIN_BRIGHTNESS = 0;
@@ -106,6 +98,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
 
     /**
      * Vytvoří novou konfiguraci s nedefinovaným typem
+     *
      * @param name Název konfigurace
      */
     public AConfiguration(String name) {

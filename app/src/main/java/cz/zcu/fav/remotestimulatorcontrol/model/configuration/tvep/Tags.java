@@ -5,6 +5,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration.tvep;
  */
 final class Tags {
 
+    // region Constants
     public static final String TAG_PATTERNS = "patterns";
     public static final String TAG_PATTERN = "pattern";
     public static final String TAG_PATTERN_VALUE = "pattern_value";
@@ -12,5 +13,14 @@ final class Tags {
     public static final String TAG_PULS_SKEW = "puls_skew";
     public static final String TAG_PULS_LENGHT = "puls_lenght";
     public static final String TAG_BRIGHTNESS = "brightness";
-    
+    // endregion
+
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private Tags() {
+        throw new AssertionError();
+    }
+    // endregion
 }

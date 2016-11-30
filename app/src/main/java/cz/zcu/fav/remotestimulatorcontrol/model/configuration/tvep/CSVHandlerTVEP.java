@@ -17,7 +17,7 @@ public class CSVHandlerTVEP extends CSVHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationTVEP configuration;
+    private final ConfigurationTVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -29,7 +29,7 @@ public class CSVHandlerTVEP extends CSVHandler {
     public CSVHandlerTVEP(ConfigurationTVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -40,9 +40,9 @@ public class CSVHandlerTVEP extends CSVHandler {
      * @param values {@link IndexedValues} Pole hodnot
      */
     private void readPatterns(IndexedValues values) {
-        List<ConfigurationTVEP.Pattern> patternList = configuration.patternList;
+        List<ConfigurationTVEP.Pattern> patternList = mConfiguration.patternList;
         patternList.clear();
-        int count = configuration.getOutputCount();
+        int count = mConfiguration.getOutputCount();
 
         for (int i = 0; i < count; i++) {
             patternList.add(new ConfigurationTVEP.Pattern(i, Integer.parseInt(values.getNext())));
@@ -54,7 +54,7 @@ public class CSVHandlerTVEP extends CSVHandler {
      * @param builder {@link StringBuilder} StringBuilder ve kterém se sestavuje výsledný řetězec
      */
     private void writePatterns(StringBuilder builder) {
-        for (ConfigurationTVEP.Pattern pattern : configuration.patternList) {
+        for (ConfigurationTVEP.Pattern pattern : mConfiguration.patternList) {
             writeValue(builder, pattern.getValue());
         }
     }
@@ -69,16 +69,16 @@ public class CSVHandlerTVEP extends CSVHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         String text = reader.readLine();
-        String[] stringValues = text.split(separator);
+        String[] stringValues = text.split(mSeparator);
         IndexedValues values = new IndexedValues(stringValues);
 
         reader.close();
 
         readSelf(values);
-        configuration.setPatternLength(Integer.parseInt(values.getNext()));
-        configuration.setTimeBetween(Integer.parseInt(values.getNext()));
-        configuration.setPulsLength(Integer.parseInt(values.getNext()));
-        configuration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.setPatternLength(Integer.parseInt(values.getNext()));
+        mConfiguration.setTimeBetween(Integer.parseInt(values.getNext()));
+        mConfiguration.setPulsLength(Integer.parseInt(values.getNext()));
+        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
 
         readPatterns(values);
     }
@@ -93,10 +93,10 @@ public class CSVHandlerTVEP extends CSVHandler {
         StringBuilder builder = new StringBuilder();
         writeSelf(builder);
 
-        writeValue(builder, configuration.getPatternLength());
-        writeValue(builder, configuration.getTimeBetween());
-        writeValue(builder, configuration.getPulsLength());
-        writeValue(builder, configuration.getBrightness());
+        writeValue(builder, mConfiguration.getPatternLength());
+        writeValue(builder, mConfiguration.getTimeBetween());
+        writeValue(builder, mConfiguration.getPulsLength());
+        writeValue(builder, mConfiguration.getBrightness());
 
         writePatterns(builder);
 

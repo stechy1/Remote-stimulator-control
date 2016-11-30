@@ -36,7 +36,7 @@ public class XMLHandlerFVEP extends XMLHandler {
     // endregion
 
     // region Variables
-    private ConfigurationFVEP configuration;
+    private ConfigurationFVEP mConfiguration;
     // endregion
 
     /**
@@ -47,14 +47,14 @@ public class XMLHandlerFVEP extends XMLHandler {
     public XMLHandlerFVEP(ConfigurationFVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
 
     // region Private methods
     private void writeOutputs(XmlSerializer serializer) throws IOException {
         serializer.startTag(NAMESPACE, TAG_OUTPUTS);
 
-        for (ConfigurationFVEP.Output output : configuration.outputList) {
+        for (ConfigurationFVEP.Output output : mConfiguration.outputList) {
             writeOutput(serializer, output);
         }
 
@@ -90,7 +90,7 @@ public class XMLHandlerFVEP extends XMLHandler {
             int eventType = parser.getEventType();
             int configID = 0;
             String text = "";
-            ConfigurationFVEP.Output output = new ConfigurationFVEP.Output(configuration, configID);
+            ConfigurationFVEP.Output output = new ConfigurationFVEP.Output(mConfiguration, configID);
 
             while (eventType != END_DOCUMENT) {
                 String tagName = parser.getName();
@@ -99,7 +99,7 @@ public class XMLHandlerFVEP extends XMLHandler {
                         break;
                     case START_TAG:
                         if (tagName.equals(TAG_OUTPUT)) {
-                            output = new ConfigurationFVEP.Output(configuration, configID++);
+                            output = new ConfigurationFVEP.Output(mConfiguration, configID++);
                         }
                         break;
                     case TEXT:
@@ -108,11 +108,11 @@ public class XMLHandlerFVEP extends XMLHandler {
                     case END_TAG:
                         switch (tagName) {
                             case TAG_OUTPUT_COUNT:
-                                configuration.setOutputCount(Integer.valueOf(text), false);
-                                configuration.outputList.clear();
+                                mConfiguration.setOutputCount(Integer.valueOf(text), false);
+                                mConfiguration.outputList.clear();
                                 break;
                             case TAG_MEDIA:
-                                configuration.setMediaType(Integer.valueOf(text));
+                                mConfiguration.setMediaType(Integer.valueOf(text));
                                 break;
                             case TAG_PULS_UP:
                                 output.setPulsUp(Integer.valueOf(text));
@@ -130,7 +130,7 @@ public class XMLHandlerFVEP extends XMLHandler {
                                 output.setBrightness(Integer.valueOf(text));
                                 break;
                             case TAG_OUTPUT:
-                                configuration.outputList.add(output);
+                                mConfiguration.outputList.add(output);
                         }
                         break;
                 }

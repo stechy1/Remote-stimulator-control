@@ -14,8 +14,19 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
  */
 public class MediaImage extends AMedia {
 
-    private boolean thumbnailLoaded = false;
+    // region Variables
+    private boolean mThumbnailLoaded = false;
 
+    private final Loader.OnLoadedListener mListener = new Loader.OnLoadedListener() {
+        @Override
+        public void onLoaded(Bitmap bitmap) {
+            setThumbnail(bitmap);
+            mThumbnailLoaded = true;
+        }
+    };
+    // endregion
+
+    // region Constructors
     /**
      * Vytvoří novou specifikaci média typu obrázek
      *
@@ -25,11 +36,12 @@ public class MediaImage extends AMedia {
     public MediaImage(File mediaFile, String name) {
         super(mediaFile, name);
     }
+    // endregion
 
     @Override
     public Bitmap getThumbnail() {
-        if (!thumbnailLoaded) {
-            new Loader(mListener).execute(mediaFile.getPath());
+        if (!mThumbnailLoaded) {
+            new Loader(mListener).execute(mMediaFile.getPath());
         }
         return super.getThumbnail();
     }
@@ -39,20 +51,11 @@ public class MediaImage extends AMedia {
         return MediaType.IMAGE;
     }
 
-    private final Loader.OnLoadedListener mListener = new Loader.OnLoadedListener() {
-        @Override
-        public void onLoaded(Bitmap bitmap) {
-            setThumbnail(bitmap);
-            thumbnailLoaded = true;
-        }
-    };
-
     private static class Loader extends AsyncTask<String, Void, Bitmap> {
-
-        private final OnLoadedListener listener;
+        private final OnLoadedListener mmListener;
 
         public Loader(OnLoadedListener listener) {
-            this.listener = listener;
+            mmListener = listener;
         }
 
         @Override
@@ -63,8 +66,8 @@ public class MediaImage extends AMedia {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            if (listener != null) {
-                listener.onLoaded(bitmap);
+            if (mmListener != null) {
+                mmListener.onLoaded(bitmap);
             }
         }
 
@@ -72,6 +75,5 @@ public class MediaImage extends AMedia {
             void onLoaded(Bitmap bitmap);
         }
     }
-
 
 }

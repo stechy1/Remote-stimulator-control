@@ -18,7 +18,7 @@ import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
  * Třída představující správce externích médii pro jednu konfiguraci
  * Pomocí manageru se spravují jednotlivá externí média
  */
-public class MediaManager {
+public final class MediaManager {
 
     // region Constants
     private static final String TAG = "MediaManager";
@@ -40,8 +40,7 @@ public class MediaManager {
     public final ObservableList<AMedia> mediaList;
     // Handler posílající zprávy o stavu operace v manažeru
     private Handler mHandler;
-    private Pair<Integer, AMedia> deletedMedia = null;
-    //private AMedia mediaToDelete = null;
+    private Pair<Integer, AMedia> mDeletedMedia = null;
     // endregion
 
     // region Constructors
@@ -60,7 +59,6 @@ public class MediaManager {
     // endregion
 
     // region Static methods
-
     /**
      * Načte jedeno externí médium
      *
@@ -115,6 +113,13 @@ public class MediaManager {
         }
     }
 
+    /**
+     * Sestaví cestu k médiu na základě kořenové složky medií a konkrétního média
+     *
+     * @param mediaDirectory Kořenová složka médií
+     * @param media Konkrétní médium
+     * @return Cesta k médiu
+     */
     public static File buildMediaFilePath(File mediaDirectory, AMedia media) {
         return new File(mediaDirectory, media.getName());
     }
@@ -185,7 +190,7 @@ public class MediaManager {
             return;
         }
 
-        deletedMedia = new Pair<>(index, mediaList.get(index));
+        mDeletedMedia = new Pair<>(index, mediaList.get(index));
         mediaList.remove(index);
 
         if (mHandler != null) {
@@ -198,13 +203,13 @@ public class MediaManager {
      * Vrátí smezané medium zpět do kolekce
      */
     public void undoDelete() {
-        if (deletedMedia == null) {
+        if (mDeletedMedia == null) {
             return;
         }
 
-        int index = deletedMedia.first;
-        mediaList.add(index, deletedMedia.second);
-        deletedMedia = null;
+        int index = mDeletedMedia.first;
+        mediaList.add(index, mDeletedMedia.second);
+        mDeletedMedia = null;
 
         if (mHandler != null) {
             mHandler.obtainMessage(MESSAGE_CONFIGURATION_UNDO_DELETE, MESSAGE_SUCCESSFUL, index).sendToTarget();
@@ -215,12 +220,12 @@ public class MediaManager {
      * Potvrzení smazání média
      */
     public void confirmDelete() {
-        File file = buildMediaFilePath(mWorkingDirectory, deletedMedia.second);
+        File file = buildMediaFilePath(mWorkingDirectory, mDeletedMedia.second);
         if (!file.delete()) {
-            Log.e(TAG, "Nepodařilo se smazat mediální soubor: " + deletedMedia.second);
+            Log.e(TAG, "Nepodařilo se smazat mediální soubor: " + mDeletedMedia.second);
         }
 
-        deletedMedia = null;
+        mDeletedMedia = null;
     }
     // endregion
 }

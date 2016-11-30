@@ -134,6 +134,8 @@ public class ConfigurationTVEP extends AConfiguration {
         switch (metaData.extensionType) {
             case XML:
                 return new XMLHandlerTVEP(this);
+            case CSV:
+                return new CSVHandlerTVEP(this);
             default:
                 return new JSONHandlerTVEP(this);
         }

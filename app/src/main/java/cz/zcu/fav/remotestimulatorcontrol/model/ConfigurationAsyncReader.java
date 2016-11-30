@@ -18,17 +18,21 @@ import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
  */
 final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Integer, Integer[]> {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigAsyncReader";
+    // endregion
 
+    // region Variables
     // Pracovní adresář
     private final File mWorkingDirectory;
     // Kolekce, do které se přidávají načtené konfigurace
     private final List<AConfiguration> mItems;
     // Listener, který se zavolá po dokončení načítacího procesu
     private final OnConfigurationLoadedListener mListener;
+    // endregion
 
+    // region Constructors
     /**
      * Vytvoří nový loader konfigurací
      *
@@ -41,7 +45,9 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
         mItems = items;
         mListener = listener;
     }
+    // endregion
 
+    // region Private methods
     /**
      * Načte konfigurace zadaného typu
      *
@@ -117,6 +123,7 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
 
         return success;
     }
+    // endregion
 
     @Override
     protected Integer[] doInBackground(ConfigurationType... types) {

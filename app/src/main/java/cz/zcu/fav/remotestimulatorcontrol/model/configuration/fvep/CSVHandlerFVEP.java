@@ -17,7 +17,7 @@ public class CSVHandlerFVEP extends CSVHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationFVEP configuration;
+    private final ConfigurationFVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -29,7 +29,7 @@ public class CSVHandlerFVEP extends CSVHandler {
     public CSVHandlerFVEP(ConfigurationFVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -40,9 +40,9 @@ public class CSVHandlerFVEP extends CSVHandler {
      * @param values {@link IndexedValues} Pole hodnot
      */
     private void readOutputs(IndexedValues values) {
-        List<ConfigurationFVEP.Output> outputList = configuration.outputList;
+        List<ConfigurationFVEP.Output> outputList = mConfiguration.outputList;
         outputList.clear();
-        int count = configuration.getOutputCount();
+        int count = mConfiguration.getOutputCount();
 
         for (int i = 0; i < count; i++) {
             outputList.add(readOutput(values, i));
@@ -63,7 +63,7 @@ public class CSVHandlerFVEP extends CSVHandler {
         int dutyCycle = Integer.parseInt(values.getNext());
         int brightness = Integer.parseInt(values.getNext());
 
-        return new ConfigurationFVEP.Output(configuration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
+        return new ConfigurationFVEP.Output(mConfiguration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
     }
 
     /**
@@ -72,7 +72,7 @@ public class CSVHandlerFVEP extends CSVHandler {
      * @param builder {@link StringBuilder} StringBuilder ve kterém se sestavuje výsledný řetězec
      */
     private void writeOutputs(StringBuilder builder) {
-        for (ConfigurationFVEP.Output output : configuration.outputList) {
+        for (ConfigurationFVEP.Output output : mConfiguration.outputList) {
             writeOutput(builder, output);
         }
     }
@@ -104,7 +104,7 @@ public class CSVHandlerFVEP extends CSVHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         String text = reader.readLine();
-        String[] stringValues = text.split(separator);
+        String[] stringValues = text.split(mSeparator);
         IndexedValues values = new IndexedValues(stringValues);
 
         reader.close();

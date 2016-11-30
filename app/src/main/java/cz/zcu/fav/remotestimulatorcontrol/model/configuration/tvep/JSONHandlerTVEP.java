@@ -30,7 +30,7 @@ public class JSONHandlerTVEP extends JSONHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationTVEP configuration;
+    private final ConfigurationTVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -42,7 +42,7 @@ public class JSONHandlerTVEP extends JSONHandler {
     public JSONHandlerTVEP(ConfigurationTVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -54,9 +54,9 @@ public class JSONHandlerTVEP extends JSONHandler {
      * @throws JSONException Pokud něco nevyjde
      */
     private void readPatterns(JSONArray patterns) throws JSONException {
-        List<ConfigurationTVEP.Pattern> patternList = configuration.patternList;
+        List<ConfigurationTVEP.Pattern> patternList = mConfiguration.patternList;
         patternList.clear();
-        int count = configuration.getOutputCount();
+        int count = mConfiguration.getOutputCount();
 
         for (int i = 0; i < count; i++) {
             JSONObject patternObject = patterns.getJSONObject(i);
@@ -74,7 +74,7 @@ public class JSONHandlerTVEP extends JSONHandler {
         writer.name(TAG_PATTERNS);
         writer.beginArray();
 
-        for (ConfigurationTVEP.Pattern a : configuration.patternList) {
+        for (ConfigurationTVEP.Pattern a : mConfiguration.patternList) {
             writer.beginObject();
 
             writer.name(TAG_PATTERN_VALUE).value(a.getValue());
@@ -107,10 +107,10 @@ public class JSONHandlerTVEP extends JSONHandler {
             JSONObject jsonConfiguration = new JSONObject(src);
 
             super.readSelf(jsonConfiguration);
-            configuration.setPatternLength(jsonConfiguration.getInt(TAG_PATTERN_LENGHT));
-            configuration.setTimeBetween(jsonConfiguration.getInt(TAG_PULS_SKEW));
-            configuration.setPulsLength(jsonConfiguration.getInt(TAG_PULS_LENGHT));
-            configuration.setBrightness(jsonConfiguration.getInt(TAG_BRIGHTNESS));
+            mConfiguration.setPatternLength(jsonConfiguration.getInt(TAG_PATTERN_LENGHT));
+            mConfiguration.setTimeBetween(jsonConfiguration.getInt(TAG_PULS_SKEW));
+            mConfiguration.setPulsLength(jsonConfiguration.getInt(TAG_PULS_LENGHT));
+            mConfiguration.setBrightness(jsonConfiguration.getInt(TAG_BRIGHTNESS));
 
             JSONArray patternArray = jsonConfiguration.getJSONArray(TAG_PATTERNS);
             readPatterns(patternArray);
@@ -130,10 +130,10 @@ public class JSONHandlerTVEP extends JSONHandler {
 
         writer.beginObject();
         super.writeSelf(writer);
-        writer.name(TAG_PATTERN_LENGHT).value(configuration.getPatternLength());
-        writer.name(TAG_PULS_SKEW).value(configuration.getTimeBetween());
-        writer.name(TAG_PULS_LENGHT).value(configuration.getPulsLength());
-        writer.name(TAG_BRIGHTNESS).value(configuration.getBrightness());
+        writer.name(TAG_PATTERN_LENGHT).value(mConfiguration.getPatternLength());
+        writer.name(TAG_PULS_SKEW).value(mConfiguration.getTimeBetween());
+        writer.name(TAG_PULS_LENGHT).value(mConfiguration.getPulsLength());
+        writer.name(TAG_BRIGHTNESS).value(mConfiguration.getBrightness());
 
         writePatterns(writer);
         writer.endObject();

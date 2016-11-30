@@ -16,7 +16,7 @@ public class CSVHandlerREA extends CSVHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationREA configuration;
+    private final ConfigurationREA mConfiguration;
     // endregion
 
     // region Constructors
@@ -29,7 +29,7 @@ public class CSVHandlerREA extends CSVHandler {
     public CSVHandlerREA(ConfigurationREA configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
 
     // endregion
@@ -44,22 +44,22 @@ public class CSVHandlerREA extends CSVHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         String text = reader.readLine();
-        String[] stringValues = text.split(separator);
+        String[] stringValues = text.split(mSeparator);
         IndexedValues values = new IndexedValues(stringValues);
 
         reader.close();
 
         readSelf(values);
-        configuration.setCycleCount(Integer.parseInt(values.getNext()));
-        configuration.setWaitFixed(Integer.parseInt(values.getNext()));
-        configuration.setWaitRandom(Integer.parseInt(values.getNext()));
-        configuration.setMissTime(Integer.parseInt(values.getNext()));
-        configuration.setBrightness(Integer.parseInt(values.getNext()));
-        configuration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.parseInt(values.getNext())));
-        configuration.setGender(ConfigurationREA.Gender.valueOf(Integer.parseInt(values.getNext())));
-        configuration.setAge(Integer.parseInt(values.getNext()));
-        configuration.setHeight(Integer.parseInt(values.getNext()));
-        configuration.setWeight(Integer.parseInt(values.getNext()));
+        mConfiguration.setCycleCount(Integer.parseInt(values.getNext()));
+        mConfiguration.setWaitFixed(Integer.parseInt(values.getNext()));
+        mConfiguration.setWaitRandom(Integer.parseInt(values.getNext()));
+        mConfiguration.setMissTime(Integer.parseInt(values.getNext()));
+        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.parseInt(values.getNext())));
+        mConfiguration.setGender(ConfigurationREA.Gender.valueOf(Integer.parseInt(values.getNext())));
+        mConfiguration.setAge(Integer.parseInt(values.getNext()));
+        mConfiguration.setHeight(Integer.parseInt(values.getNext()));
+        mConfiguration.setWeight(Integer.parseInt(values.getNext()));
     }
 
     /**
@@ -72,16 +72,16 @@ public class CSVHandlerREA extends CSVHandler {
         StringBuilder builder = new StringBuilder();
         writeSelf(builder);
 
-        writeValue(builder, configuration.getCycleCount());
-        writeValue(builder, configuration.getWaitFixed());
-        writeValue(builder, configuration.getWaitRandom());
-        writeValue(builder, configuration.getMissTime());
-        writeValue(builder, configuration.getBrightness());
-        writeValue(builder, configuration.getOnFail().ordinal());
-        writeValue(builder, configuration.getGender().ordinal());
-        writeValue(builder, configuration.getAge());
-        writeValue(builder, configuration.getHeight());
-        writeValue(builder, configuration.getWeight());
+        writeValue(builder, mConfiguration.getCycleCount());
+        writeValue(builder, mConfiguration.getWaitFixed());
+        writeValue(builder, mConfiguration.getWaitRandom());
+        writeValue(builder, mConfiguration.getMissTime());
+        writeValue(builder, mConfiguration.getBrightness());
+        writeValue(builder, mConfiguration.getOnFail().ordinal());
+        writeValue(builder, mConfiguration.getGender().ordinal());
+        writeValue(builder, mConfiguration.getAge());
+        writeValue(builder, mConfiguration.getHeight());
+        writeValue(builder, mConfiguration.getWeight());
 
         writer.write(builder.toString());
         writer.close();

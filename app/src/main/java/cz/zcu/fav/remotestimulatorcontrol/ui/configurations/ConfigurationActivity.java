@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations;
 
 import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -121,6 +122,8 @@ public class ConfigurationActivity extends AppCompatActivity
     private ActivityConfigurationBinding mBinding;
     // Název připojeného zařízení
     private String mConnectedDeviceName;
+    // Bluetooth adapter
+    private BluetoothAdapter mBluetoothAdapter;
     // Reference na bluetooth service
     private BluetoothService mService;
     // Reference na adapter pro recycler view
@@ -251,7 +254,8 @@ public class ConfigurationActivity extends AppCompatActivity
 
         fab = mBinding.fabNewConfiguration;
 
-        bluetoothSupport = BluetoothAdapter.getDefaultAdapter() != null;
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothSupport = mBluetoothAdapter != null;
         if (!bluetoothSupport) {
             if (!ConfigurationSharedPreferences.isBTNotSupportedAlertShowed(getApplicationContext(), false)) {
                 Snackbar.make(fab, R.string.bt_not_supported, Snackbar.LENGTH_LONG)
@@ -356,7 +360,8 @@ public class ConfigurationActivity extends AppCompatActivity
                     try {
                         Log.d(TAG, "Pokus o vytvoření naslouchací služby bluetooth");
                         String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
-                        mService.connectToDevice(mac);
+                        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
+                        mService.connectToDevice(device);
 
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
@@ -509,7 +514,7 @@ public class ConfigurationActivity extends AppCompatActivity
                     return false;
                 }
 
-                if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+                if (!mBluetoothAdapter.isEnabled()) {
                     requestBluetoothEnable();
                     return false;
                 }

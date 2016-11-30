@@ -15,7 +15,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
+import java.lang.reflect.Method;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 
@@ -26,8 +26,6 @@ public class BluetoothService extends Service {
     // Logovací tag
     @SuppressWarnings("unused")
     private static final String TAG = "BluetoothService";
-    // Bluetooth UUID
-    private static final String SPP_UUID = "00001101-0000-1000-8000-00805f9b34fb";
 
     // Typy zpráv, které prochází přes BluetoothCommunicationService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -52,8 +50,6 @@ public class BluetoothService extends Service {
     private static ConnectedThread mConnectedThread;
     // Handler posílající zprávy o změně stavu bluetoothu
     private static Handler mHandler = null;
-    // Název připojeného zařízení
-    private static String deviceName;
 
     // Stav připojení
     public static int state = STATE_NONE;
@@ -82,14 +78,13 @@ public class BluetoothService extends Service {
     /**
      * Pokusí se vytvořít spojení s zařízením
      *
-     * @param macAddress Mac adresa spojovaného zařízení
+     * @param device {@link BluetoothDevice}
      */
-    public synchronized void connectToDevice(String macAddress) {
+    public synchronized void connectToDevice(BluetoothDevice device) {
         if (mBluetoothAdapter == null) {
             return;
         }
 
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(macAddress);
         if (state == STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
@@ -148,8 +143,8 @@ public class BluetoothService extends Service {
      * Pokud dojde k selhání spojení
      */
     private void connectionFailed() {
-        Log.i(TAG, "Připojení selhalo");
-        BluetoothService.this.stop();
+        Log.w(TAG, "Připojení selhalo");
+        stop();
         Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
         bundle.putString(TOAST, getString(R.string.error_connect_failed));
@@ -173,10 +168,10 @@ public class BluetoothService extends Service {
     /**
      * Zavolá se v případě vytvořeného spojení
      *
-     * @param mmSocket Bluetooth socket
-     * @param mmDevice Bluetooth device
+     * @param socket Bluetooth socket
+     * @param device Bluetooth device
      */
-    private synchronized void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
+    private synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -189,18 +184,16 @@ public class BluetoothService extends Service {
             mConnectedThread = null;
         }
 
-        mConnectedThread = new ConnectedThread(mmSocket);
+        mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
-
-        deviceName = mmDevice.getName();
 
         Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(DEVICE_NAME, deviceName);
+        bundle.putString(DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-        setState(STATE_CONNECTED);
 
+        setState(STATE_CONNECTED);
     }
 
     @Override
@@ -272,8 +265,15 @@ public class BluetoothService extends Service {
             this.mmDevice = device;
             BluetoothSocket tmp = null;
             try {
-                tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
-            } catch (IOException e) {
+                // Vytvoření nezabezpečeného spojení
+                // Nikdo neví, proč to nejde jednoduššeji
+                Class[] clsArr = new Class[STATE_LISTEN];
+                clsArr[STATE_NONE] = Integer.TYPE;
+                Method method = device.getClass().getMethod("createRfcommSocket", clsArr);
+                Object[] objArr = new Object[STATE_LISTEN];
+                objArr[STATE_NONE] = STATE_LISTEN;
+                tmp = (BluetoothSocket) method.invoke(device, objArr);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             mmSocket = tmp;
@@ -333,8 +333,6 @@ public class BluetoothService extends Service {
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
-            String msg = "Hello world";
-            write(msg.getBytes());
 
             while (true) {
                 try {

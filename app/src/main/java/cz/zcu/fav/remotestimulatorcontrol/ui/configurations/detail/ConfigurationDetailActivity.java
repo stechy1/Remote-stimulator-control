@@ -453,6 +453,23 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             mediaPlayer.reset();
         }
 
+        private final MediaPlayer.OnPreparedListener mediaPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
+                mediaPlayer.start();
+            }
+        };
+
+        private final MediaPlayer.OnCompletionListener mediaCompletionListener = new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                ((MediaAudio) (mediaManager.mediaList.get(selectedMedia))).setPlaying(false);
+                selectedMedia = -1;
+                mediaPlayer.reset();
+            }
+        };
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
@@ -469,6 +486,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
                 if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayer();
                     mediaPlayer.setOnPreparedListener(mediaPreparedListener);
+                    mediaPlayer.setOnCompletionListener(mediaCompletionListener);
                 }
 
                 if (mediaPlayer.isPlaying()) {
@@ -507,14 +525,6 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             mediaManager.prepareToDelete(position);
         }
     }
-
-    private final MediaPlayer.OnPreparedListener mediaPreparedListener = new MediaPlayer.OnPreparedListener() {
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            ((MediaAudio)(mediaManager.mediaList.get(selectedMedia))).setPlaying(true);
-            mediaPlayer.start();
-        }
-    };
     // endregion
     // endregion
 }

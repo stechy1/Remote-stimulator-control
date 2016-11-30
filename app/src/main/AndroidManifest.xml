@@ -58,11 +58,6 @@
             android:label="Image preview"
             android:theme="@style/AppTheme.Dialog.NoTitle">
         </activity>
-        <!-- Configuration detail - Media import activity -->
-        <activity
-            android:name=".ui.configurations.detail.mediaimport.MediaImportActivity"
-            android:label="Media import"
-            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->
         <activity
             android:name=".ui.configurations.factory.ConfigurationFactoryActivity"

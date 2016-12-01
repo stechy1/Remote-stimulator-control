@@ -14,22 +14,37 @@ import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ConfigurationItemBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 
+/**
+ * Adapter spravující položky v recyclerView
+ */
 class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ConfigurationHolder> implements ISelectable {
 
+    // region Variables
     // Kolekce všech konfigurací
-    private final List<AConfiguration> configurations;
+    private final List<AConfiguration> mConfigurations;
     // Pole vybraných konfigurací
     private final SparseBooleanArray mSelectedItems;
-    private final ObservableBoolean showExtension;
+    // Udržuje informaci, zda-li se má zobrazit koncovka jednotlivých souborů, či nikoliv
+    private final ObservableBoolean mShowExtension;
     // Kopie pole vybraných konfigurací
     private SparseBooleanArray mCopyOfSelectedItems;
+    // endregion
 
+    // region Constructors
+    /**
+     * Vytvoří nový adapter
+     *
+     * @param configurations Kolekce obsahující konfigurace
+     * @param showExtension Pozorovatelná proměnná obsahující true, pokud se budou vykreslovat názvy
+     *                      souborů, jinak false
+     */
     ConfigurationAdapter(List<AConfiguration> configurations, ObservableBoolean showExtension) {
-        this.configurations = configurations;
-        this.showExtension = showExtension;
+        mConfigurations = configurations;
+        mShowExtension = showExtension;
         mSelectedItems = new SparseBooleanArray(configurations.size());
         mCopyOfSelectedItems = new SparseBooleanArray(configurations.size());
     }
+    // endregion
 
     @Override
     public ConfigurationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,7 +55,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
 
     @Override
     public void onBindViewHolder(ConfigurationHolder holder, int position) {
-        AConfiguration configuration = configurations.get(position);
+        AConfiguration configuration = mConfigurations.get(position);
         holder.bindTo(configuration);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
@@ -49,10 +64,11 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
 
     @Override
     public int getItemCount() {
-        return configurations.size();
+        return mConfigurations.size();
     }
 
     // region Selectable
+
     /**
      * Vloží, nebo odebere položky z vybraných
      *
@@ -74,7 +90,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     @Override
     public void selectAll() {
         mSelectedItems.clear();
-        for (int i = 0; i < configurations.size(); i++)
+        for (int i = 0; i < mConfigurations.size(); i++)
             mSelectedItems.put(i, true);
 
         notifyDataSetChanged();
@@ -87,7 +103,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     public void invertSelection() {
         SparseBooleanArray tempSelected = new SparseBooleanArray(mSelectedItems.size());
         // 1. Naplnit dočasné pole všemi prvky
-        for (int i = 0; i < configurations.size(); i++)
+        for (int i = 0; i < mConfigurations.size(); i++)
             tempSelected.put(i, true);
 
         // 2. Z dočasného pole odstranit takové indexy, které jsou v hlavním poli
@@ -162,6 +178,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     }
     // endregion
 
+    // region Public methods
     /**
      * Uloži vybrané itemy
      */
@@ -180,21 +197,21 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
             mSelectedItems.put(mCopyOfSelectedItems.keyAt(i), true);
         }
     }
+    // endregion
 
     class ConfigurationHolder extends RecyclerView.ViewHolder {
-
-        private final ConfigurationItemBinding mBinding;
+        private final ConfigurationItemBinding mmBinding;
 
         private ConfigurationHolder(final ConfigurationItemBinding binding) {
             super(binding.getRoot());
 
-            mBinding = binding;
+            mmBinding = binding;
         }
 
         void bindTo(AConfiguration configuration) {
-            mBinding.setConfiguration(configuration);
-            mBinding.executePendingBindings();
-            mBinding.setShowExtension(showExtension);
+            mmBinding.setConfiguration(configuration);
+            mmBinding.executePendingBindings();
+            mmBinding.setShowExtension(mShowExtension);
         }
     }
 }

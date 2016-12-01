@@ -22,25 +22,57 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.C
  */
 public class ObservableConfiguration extends BaseObservable implements IValidate {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ObservableConfiguration";
+    // endregion
 
+    // region Variables
+    // Validita konfigurace - 0 = validní
     @Bindable
     private int validityFlag = FLAG_NAME + FLAG_TYPE;
+    // Příznak validity konfigurace. True, pokud je validní, jinak false
     @Bindable
     private boolean valid;
+    // Název konfigurace
     @Bindable
     private String name = "";
+    // Typ souboru
     @Bindable
     private ExtensionType extensionType;
+    // Typ konfigurace
     @Bindable
     private ConfigurationType configurationType = ConfigurationType.UNDEFINED;
+    // Cesta k souboru
     @Bindable
     private String filePath = "...";
+    // Příznak indikující, zda-li byla změněna interní datová struktura konfigurace
     @Bindable
     boolean changed = false;
+    // endregion
 
+    @Override
+    public int getValidityFlag() {
+        return changed ? validityFlag : 0;
+    }
+
+    @Override
+    public boolean isFlagValid(int flag) {
+        return !((validityFlag & flag) == flag);
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public void setValid(boolean valid) {
+        this.valid = valid;
+        notifyPropertyChanged(BR.valid);
+    }
+
+    // region Public methods
     /**
      * Nastaví validitu zadanému příznaku
      *
@@ -207,25 +239,5 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
     public boolean isChanged() {
         return changed;
     }
-
-    @Override
-    public int getValidityFlag() {
-        return changed ? validityFlag : 0;
-    }
-
-    @Override
-    public boolean isFlagValid(int flag) {
-        return !((validityFlag & flag) == flag);
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public void setValid(boolean valid) {
-        this.valid = valid;
-        notifyPropertyChanged(BR.valid);
-    }
+    // endregion
 }

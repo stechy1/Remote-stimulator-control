@@ -7,14 +7,11 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
  */
 public abstract class CSVHandler implements IOHandler {
 
-    // region Constants
+    // region Variables
     // Výchozí oddělovací znak hodnot
     private static String _separator = ",";
-    // endregion
-
-    // region Variables
-    private final AConfiguration configuration;
-    protected String separator;
+    private final AConfiguration mConfiguration;
+    protected String mSeparator;
     // endregion
 
     // region Public static methods
@@ -54,8 +51,8 @@ public abstract class CSVHandler implements IOHandler {
      * @param separator Oddělovací znak hodnot
      */
     public CSVHandler(AConfiguration configuration, String separator) {
-        this.configuration = configuration;
-        this.separator = separator;
+        mConfiguration = configuration;
+        mSeparator = separator;
     }
     // endregion
 
@@ -68,7 +65,7 @@ public abstract class CSVHandler implements IOHandler {
      */
     protected void writeValue(StringBuilder builder, double value) {
         builder.append(value)
-                .append(separator);
+                .append(mSeparator);
     }
     /**
      * Zapíše hodnotu s oddělovačem
@@ -78,7 +75,7 @@ public abstract class CSVHandler implements IOHandler {
      */
     protected void writeValue(StringBuilder builder, int value) {
         builder.append(value)
-                .append(separator);
+                .append(mSeparator);
     }
 
     /**
@@ -87,10 +84,10 @@ public abstract class CSVHandler implements IOHandler {
      * @param builder {@link StringBuilder} StringBuilder ve kterém se sestavuje výsledný řetězec
      */
     protected void writeSelf(StringBuilder builder) {
-        builder.append(configuration.getOutputCount())
-                .append(separator);
-        builder.append(configuration.getMediaType())
-                .append(separator);
+        builder.append(mConfiguration.getOutputCount())
+                .append(mSeparator);
+        builder.append(mConfiguration.getMediaType())
+                .append(mSeparator);
     }
 
     /**
@@ -99,8 +96,8 @@ public abstract class CSVHandler implements IOHandler {
      * @param values {@link IndexedValues} Pole hodnot
      */
     protected void readSelf(IndexedValues values) {
-        configuration.setOutputCount(Integer.parseInt(values.getNext()));
-        configuration.setMediaType(Integer.parseInt(values.getNext()));
+        mConfiguration.setOutputCount(Integer.parseInt(values.getNext()));
+        mConfiguration.setMediaType(Integer.parseInt(values.getNext()));
     }
     // endregion
 
@@ -109,9 +106,9 @@ public abstract class CSVHandler implements IOHandler {
      */
     protected class IndexedValues {
         // Index, který ukazuje na aktuální hodnotu v poli hodnot
-        private int index = 0;
+        private int mmIndex = 0;
         // Pole čtených hodnot
-        private final String[] values;
+        private final String[] mmValues;
 
         /**
          * Vytvoří nový zásobník pro čtení hodnot z pole
@@ -119,7 +116,7 @@ public abstract class CSVHandler implements IOHandler {
          * @param values Pole hodnot, které se bude číst
          */
         public IndexedValues(String[] values) {
-            this.values = values;
+            this.mmValues = values;
         }
 
         /**
@@ -129,7 +126,7 @@ public abstract class CSVHandler implements IOHandler {
          * @throws IndexOutOfBoundsException Pokud je index mimo hranice pole
          */
         public String getNext() throws IndexOutOfBoundsException {
-            return values[index++];
+            return mmValues[mmIndex++];
         }
     }
 }

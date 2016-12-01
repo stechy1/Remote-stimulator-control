@@ -30,7 +30,7 @@ class JSONHandlerFVEP extends JSONHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationFVEP configuration;
+    private final ConfigurationFVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -42,7 +42,7 @@ class JSONHandlerFVEP extends JSONHandler {
     JSONHandlerFVEP(ConfigurationFVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -77,7 +77,7 @@ class JSONHandlerFVEP extends JSONHandler {
         writer.name(TAG_OUTPUTS);
         writer.beginArray();
 
-        for (ConfigurationFVEP.Output output : configuration.outputList) {
+        for (ConfigurationFVEP.Output output : mConfiguration.outputList) {
             writeOutput(writer, output);
         }
 
@@ -91,7 +91,7 @@ class JSONHandlerFVEP extends JSONHandler {
      * @throws JSONException
      */
     private void readOutputs(JSONArray outputs) throws JSONException {
-        List<ConfigurationFVEP.Output> outputList = configuration.outputList;
+        List<ConfigurationFVEP.Output> outputList = mConfiguration.outputList;
         outputList.clear();
         int length = outputs.length();
         for (int i = 0; i < length; i++) {
@@ -116,7 +116,7 @@ class JSONHandlerFVEP extends JSONHandler {
         int dutyCycle = outputObject.getInt(TAG_DUTY_CYCLE);
         int brightness = outputObject.getInt(TAG_BRIGHTNESS);
 
-        return new ConfigurationFVEP.Output(configuration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
+        return new ConfigurationFVEP.Output(mConfiguration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
     }
     // endregion
 

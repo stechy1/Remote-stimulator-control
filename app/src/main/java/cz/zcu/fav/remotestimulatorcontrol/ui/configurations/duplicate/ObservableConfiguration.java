@@ -13,15 +13,23 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.duplicate.Con
  */
 public class ObservableConfiguration extends BaseObservable {
 
+    // region Variables
+    // Validita konfigurace - 0 = validní
+    @Bindable
+    private int validity = 0;
+    // Název konfigurace
+    @Bindable
+    private String name = "";
+    // Příznak indikující, zda-li byla změněna interní datová struktura konfigurace
+    @Bindable
+    private boolean changed = false;
+    // Starý název
     private String oldName;
-    @Bindable
-    int validity = 0;
-    @Bindable
-    String name = "";
-    @Bindable
-    boolean changed = false;
-    int id;
+    // Id konfigurace
+    private int id;
+    // endregion
 
+    // region Public methods
     /**
      * Vrátí původní název konfigurace
      *
@@ -103,4 +111,23 @@ public class ObservableConfiguration extends BaseObservable {
         this.validity = validity;
         notifyPropertyChanged(BR.validity);
     }
+
+    /**
+     * Vrátí Id konfigurace
+     *
+     * @return Id konfigurace
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Nastaví Id konfigurace
+     *
+     * @param id Id konfigurace
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    // endregion
 }

@@ -5,6 +5,7 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp;
  */
 final class Tags {
 
+    // region Constants
     public static final String TAG_OUT = "out";
     public static final String TAG_WAIT = "wait";
     public static final String TAG_EDGE = "edge";
@@ -16,5 +17,15 @@ final class Tags {
     public static final String TAG_DISTRIBUTION_VALUE = "distribution_value";
     public static final String TAG_DISTRIBUTION_DELAY = "distribution_delay";
     public static final String TAG_BRIGHTNESS = "brightness";
-    
+    // endregion
+
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private Tags() {
+        throw new AssertionError();
+    }
+    // endregion
+
 }

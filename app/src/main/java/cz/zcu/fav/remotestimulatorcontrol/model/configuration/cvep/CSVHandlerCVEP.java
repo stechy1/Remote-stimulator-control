@@ -16,7 +16,7 @@ public class CSVHandlerCVEP extends CSVHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationCVEP configuration;
+    private final ConfigurationCVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -28,7 +28,7 @@ public class CSVHandlerCVEP extends CSVHandler {
     public CSVHandlerCVEP(ConfigurationCVEP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
 
     }
     // endregion
@@ -42,16 +42,16 @@ public class CSVHandlerCVEP extends CSVHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         String text = reader.readLine();
-        String[] stringValues = text.split(separator);
+        String[] stringValues = text.split(mSeparator);
         IndexedValues values = new IndexedValues(stringValues);
 
         reader.close();
 
         readSelf(values);
-        configuration.setPulsLength(Integer.parseInt(values.getNext()));
-        configuration.setBitShift(Integer.parseInt(values.getNext()));
-        configuration.setBrightness(Integer.parseInt(values.getNext()));
-        configuration.mainPattern.setValue(Integer.parseInt(values.getNext()));
+        mConfiguration.setPulsLength(Integer.parseInt(values.getNext()));
+        mConfiguration.setBitShift(Integer.parseInt(values.getNext()));
+        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.mainPattern.setValue(Integer.parseInt(values.getNext()));
     }
 
     /**
@@ -64,10 +64,10 @@ public class CSVHandlerCVEP extends CSVHandler {
         StringBuilder builder = new StringBuilder();
         writeSelf(builder);
 
-        writeValue(builder, configuration.getPulsLength());
-        writeValue(builder, configuration.getBitShift());
-        writeValue(builder, configuration.getBrightness());
-        writeValue(builder, configuration.mainPattern.getValue());
+        writeValue(builder, mConfiguration.getPulsLength());
+        writeValue(builder, mConfiguration.getBitShift());
+        writeValue(builder, mConfiguration.getBrightness());
+        writeValue(builder, mConfiguration.mainPattern.getValue());
 
         writer.write(builder.toString());
         writer.close();

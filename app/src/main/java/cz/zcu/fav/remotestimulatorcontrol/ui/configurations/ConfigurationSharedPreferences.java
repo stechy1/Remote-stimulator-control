@@ -10,12 +10,25 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public final class ConfigurationSharedPreferences {
 
+    // region Constants
     // Název souboru pro sdílené nastavení
     public static final String CONFIGURATION_PREFERENCE = "configuration_preference";
 
     private static final String KEY_SORTING = "sorting";
     private static final String KEY_BT_SUPPORT = "bt_not_supported_alert_showed";
+    // endregion
 
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private ConfigurationSharedPreferences() {
+        throw new AssertionError();
+    }
+
+    // endregion
+
+    // region Private static methods
     /**
      * Pomocná metoda, která získá {@link SharedPreferences}
      *
@@ -35,7 +48,9 @@ public final class ConfigurationSharedPreferences {
     private static SharedPreferences.Editor getEditor(Context context) {
         return getPreferences(context).edit();
     }
+    // endregion
 
+    // region Public static methods
     /**
      * Uloží způsob řazení do nastavení
      *
@@ -83,6 +98,6 @@ public final class ConfigurationSharedPreferences {
         SharedPreferences preferences = getPreferences(context);
         return preferences.getBoolean(KEY_BT_SUPPORT, defValue);
     }
-
+    // endregion
 
 }

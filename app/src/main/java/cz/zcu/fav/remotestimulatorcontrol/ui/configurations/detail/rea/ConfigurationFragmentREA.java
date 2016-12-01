@@ -18,11 +18,21 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
 
 public class ConfigurationFragmentREA extends ADetailFragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigFragmentREA";
+    // endregion
 
-    private ConfigurationREA configuration;
+    // region Variables
+    private ConfigurationREA mConfiguration;
+
+    public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
+        @Override
+        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
+            mConfiguration.setBrightness(progress);
+        }
+    };
+    // endregion
 
     @Nullable
     @Override
@@ -30,7 +40,7 @@ public class ConfigurationFragmentREA extends ADetailFragment {
         FragmentConfigurationDetailReaBinding mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration_detail_rea, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
+        mBinding.setConfiguration(mConfiguration);
 
         return mBinding.getRoot();
     }
@@ -42,42 +52,34 @@ public class ConfigurationFragmentREA extends ADetailFragment {
      */
     @Override
     public void setConfiguration(AConfiguration configuration) {
-        this.configuration = (ConfigurationREA) configuration;
+        mConfiguration = (ConfigurationREA) configuration;
     }
 
-    @SuppressWarnings("unused")
-    public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
-        @Override
-        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            configuration.setBrightness(progress);
-        }
-    };
-
-    @SuppressWarnings("unused")
+    // region Public methods
     public void onFailRadioButtonClicked(View view) {
         boolean checked = ((AppCompatRadioButton) view).isChecked();
 
         switch (view.getId()) {
             case R.id.radioOnFailWait:
-                configuration.setOnFail(checked ? ConfigurationREA.OnFail.WAIT : ConfigurationREA.OnFail.CONTINUE);
+                mConfiguration.setOnFail(checked ? ConfigurationREA.OnFail.WAIT : ConfigurationREA.OnFail.CONTINUE);
                 break;
             case R.id.radioOnFailContinue:
-                configuration.setOnFail(checked ? ConfigurationREA.OnFail.CONTINUE : ConfigurationREA.OnFail.WAIT);
+                mConfiguration.setOnFail(checked ? ConfigurationREA.OnFail.CONTINUE : ConfigurationREA.OnFail.WAIT);
                 break;
         }
     }
 
-    @SuppressWarnings("unused")
     public void onGenderRadioButtonClicked(View view) {
         boolean checked = ((AppCompatRadioButton) view).isChecked();
 
         switch (view.getId()) {
             case R.id.radioGenderMale:
-                configuration.setGender(checked ? ConfigurationREA.Gender.MALE : ConfigurationREA.Gender.FEMALE);
+                mConfiguration.setGender(checked ? ConfigurationREA.Gender.MALE : ConfigurationREA.Gender.FEMALE);
                 break;
             case R.id.radioGenderFemale:
-                configuration.setGender(checked ? ConfigurationREA.Gender.FEMALE : ConfigurationREA.Gender.MALE);
+                mConfiguration.setGender(checked ? ConfigurationREA.Gender.FEMALE : ConfigurationREA.Gender.MALE);
                 break;
         }
     }
+    // endregion
 }

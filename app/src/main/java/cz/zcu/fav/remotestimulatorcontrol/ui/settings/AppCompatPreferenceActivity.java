@@ -19,7 +19,9 @@ import android.view.ViewGroup;
  */
 abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
+    // region Variables
     private AppCompatDelegate mDelegate;
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

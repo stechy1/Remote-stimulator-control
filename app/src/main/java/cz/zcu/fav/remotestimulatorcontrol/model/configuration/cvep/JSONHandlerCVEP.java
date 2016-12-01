@@ -26,7 +26,7 @@ public class JSONHandlerCVEP extends JSONHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationCVEP configuration;
+    private final ConfigurationCVEP mConfiguration;
     // endregion
 
     // region Constructors
@@ -38,7 +38,7 @@ public class JSONHandlerCVEP extends JSONHandler {
     public JSONHandlerCVEP(ConfigurationCVEP configuration) {
         super(configuration);
         
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -63,10 +63,10 @@ public class JSONHandlerCVEP extends JSONHandler {
             JSONObject configurationObject = new JSONObject(src);
 
             super.readSelf(configurationObject);
-            configuration.setPulsLength(configurationObject.getInt(TAG_PULSE_LENGHT));
-            configuration.setBitShift(configurationObject.getInt(TAG_BIT_SHIFT));
-            configuration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
-            configuration.mainPattern.setValue(configurationObject.getInt(TAG_MAIN_PATTERN_VALUE));
+            mConfiguration.setPulsLength(configurationObject.getInt(TAG_PULSE_LENGHT));
+            mConfiguration.setBitShift(configurationObject.getInt(TAG_BIT_SHIFT));
+            mConfiguration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
+            mConfiguration.mainPattern.setValue(configurationObject.getInt(TAG_MAIN_PATTERN_VALUE));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -84,10 +84,10 @@ public class JSONHandlerCVEP extends JSONHandler {
         writer.beginObject();
 
         super.writeSelf(writer);
-        writer.name(TAG_PULSE_LENGHT).value(configuration.getPulsLength());
-        writer.name(TAG_BIT_SHIFT).value(configuration.getBitShift());
-        writer.name(TAG_BRIGHTNESS).value(configuration.getBrightness());
-        writer.name(TAG_MAIN_PATTERN_VALUE).value(configuration.mainPattern.getValue());
+        writer.name(TAG_PULSE_LENGHT).value(mConfiguration.getPulsLength());
+        writer.name(TAG_BIT_SHIFT).value(mConfiguration.getBitShift());
+        writer.name(TAG_BRIGHTNESS).value(mConfiguration.getBrightness());
+        writer.name(TAG_MAIN_PATTERN_VALUE).value(mConfiguration.mainPattern.getValue());
 
         writer.endObject();
         writer.close();

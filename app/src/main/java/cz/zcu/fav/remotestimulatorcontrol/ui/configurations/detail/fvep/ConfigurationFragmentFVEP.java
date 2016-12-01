@@ -15,19 +15,21 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.ADetailFragme
 
 public class ConfigurationFragmentFVEP extends ADetailFragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigFragmentFVEP";
+    // endregion
 
+    // region Variables
     private FragmentConfigurationDetailFvepBinding mBinding;
-    private ConfigurationFVEP configuration;
+    private ConfigurationFVEP mConfiguration;
+    // endregion
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration_detail_fvep, container, false);
-
-        mBinding.pagerOutput.setAdapter(new ViewPagerOutputAdapter(getChildFragmentManager(), configuration.outputList));
+        mBinding.pagerOutput.setAdapter(new ViewPagerOutputAdapter(getChildFragmentManager(), mConfiguration.outputList));
 
         return mBinding.getRoot();
     }
@@ -39,7 +41,7 @@ public class ConfigurationFragmentFVEP extends ADetailFragment {
      */
     @Override
     public void setConfiguration(AConfiguration configuration) {
-        this.configuration = (ConfigurationFVEP) configuration;
+        mConfiguration = (ConfigurationFVEP) configuration;
     }
 
     /**
@@ -49,7 +51,7 @@ public class ConfigurationFragmentFVEP extends ADetailFragment {
      */
     @Override
     public void onOutputCountChange(int outputCount) {
-        configuration.setOutputCount(outputCount);
+        mConfiguration.setOutputCount(outputCount);
         if (mBinding != null) {
             mBinding.pagerOutput.getAdapter().notifyDataSetChanged();
         }

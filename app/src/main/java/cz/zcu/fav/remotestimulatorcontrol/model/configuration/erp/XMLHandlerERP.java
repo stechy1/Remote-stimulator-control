@@ -41,7 +41,7 @@ public class XMLHandlerERP extends XMLHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private ConfigurationERP configuration;
+    private ConfigurationERP mConfiguration;
     // endregion
 
     // region Constructors
@@ -53,7 +53,7 @@ public class XMLHandlerERP extends XMLHandler {
     public XMLHandlerERP(ConfigurationERP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -67,7 +67,7 @@ public class XMLHandlerERP extends XMLHandler {
     private void writeOutputs(XmlSerializer serializer) throws IOException {
         serializer.startTag(NAMESPACE, TAG_OUTPUTS);
 
-        for (ConfigurationERP.Output output : configuration.outputList) {
+        for (ConfigurationERP.Output output : mConfiguration.outputList) {
             writeOutput(serializer, output);
         }
 
@@ -111,7 +111,7 @@ public class XMLHandlerERP extends XMLHandler {
             int eventType = parser.getEventType();
             int configID = 0;
             String text = "";
-            ConfigurationERP.Output output = new ConfigurationERP.Output(configuration, configID);
+            ConfigurationERP.Output output = new ConfigurationERP.Output(mConfiguration, configID);
 
             while (eventType != END_DOCUMENT) {
                 String tagName = parser.getName();
@@ -120,7 +120,7 @@ public class XMLHandlerERP extends XMLHandler {
                         break;
                     case START_TAG:
                         if (tagName.equals(TAG_OUTPUT)) {
-                            output = new ConfigurationERP.Output(configuration, configID++);
+                            output = new ConfigurationERP.Output(mConfiguration, configID++);
                         }
                         break;
                     case TEXT:
@@ -129,23 +129,23 @@ public class XMLHandlerERP extends XMLHandler {
                     case END_TAG:
                         switch (tagName) {
                             case TAG_OUTPUT_COUNT:
-                                configuration.setOutputCount(Integer.valueOf(text), false);
-                                configuration.outputList.clear();
+                                mConfiguration.setOutputCount(Integer.valueOf(text), false);
+                                mConfiguration.outputList.clear();
                                 break;
                             case TAG_MEDIA:
-                                configuration.setMediaType(Integer.valueOf(text));
+                                mConfiguration.setMediaType(Integer.valueOf(text));
                                 break;
                             case TAG_OUT:
-                                configuration.setOut(Integer.valueOf(text));
+                                mConfiguration.setOut(Integer.valueOf(text));
                                 break;
                             case TAG_WAIT:
-                                configuration.setWait(Integer.valueOf(text));
+                                mConfiguration.setWait(Integer.valueOf(text));
                                 break;
                             case TAG_EDGE:
-                                configuration.setEdge(ConfigurationERP.Edge.valueOf(Integer.valueOf(text)));
+                                mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_RANDOM:
-                                configuration.setRandom(ConfigurationERP.Random.valueOf(Integer.valueOf(text)));
+                                mConfiguration.setRandom(ConfigurationERP.Random.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_PULS_UP:
                                 output.setPulsUp(Integer.valueOf(text));
@@ -163,7 +163,7 @@ public class XMLHandlerERP extends XMLHandler {
                                 output.setBrightness(Integer.valueOf(text));
                                 break;
                             case TAG_OUTPUT:
-                                configuration.outputList.add(output);
+                                mConfiguration.outputList.add(output);
                         }
                         break;
                 }
@@ -189,10 +189,10 @@ public class XMLHandlerERP extends XMLHandler {
         serializer.startTag(NAMESPACE, TAG_ROOT);
 
         super.writeSelf(serializer);
-        writeTag(serializer, TAG_OUT, configuration.getOut());
-        writeTag(serializer, TAG_WAIT, configuration.getWait());
-        writeTag(serializer, TAG_EDGE, configuration.getEdge().ordinal());
-        writeTag(serializer, TAG_RANDOM, configuration.getRandom().ordinal());
+        writeTag(serializer, TAG_OUT, mConfiguration.getOut());
+        writeTag(serializer, TAG_WAIT, mConfiguration.getWait());
+        writeTag(serializer, TAG_EDGE, mConfiguration.getEdge().ordinal());
+        writeTag(serializer, TAG_RANDOM, mConfiguration.getRandom().ordinal());
 
         writeOutputs(serializer);
 

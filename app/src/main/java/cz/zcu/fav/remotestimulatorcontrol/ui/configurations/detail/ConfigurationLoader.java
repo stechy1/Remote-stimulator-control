@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,7 @@ import java.io.IOException;
 
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.ConfigurationManager;
+import cz.zcu.fav.remotestimulatorcontrol.model.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MetaData;
 
@@ -17,13 +19,17 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MetaData;
  */
 class ConfigurationLoader extends AsyncTask<File, Void, Void> {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigurationLoader";
+    // endregion
 
-    private final AConfiguration configuration;
-    private final OnConfigurationLoaded onLoaded;
+    // region Variables
+    private final AConfiguration mConfiguration;
+    private final OnConfigurationLoaded mOnLoaded;
+    // endregion
 
+    // region Constructors
     /**
      * Vytvoří nový loader konfigurace
      *
@@ -31,22 +37,26 @@ class ConfigurationLoader extends AsyncTask<File, Void, Void> {
      * @param onLoaded Handler, který se zavolá po úspěšném načtení konfigurace
      */
     ConfigurationLoader(AConfiguration configuration, OnConfigurationLoaded onLoaded) {
-        this.configuration = configuration;
-        this.onLoaded = onLoaded;
+        this.mConfiguration = configuration;
+        this.mOnLoaded = onLoaded;
     }
+    // endregion
 
     @Override
     protected Void doInBackground(File... params) {
         try {
-            IOHandler handler = configuration.getHandler();
-            File file = ConfigurationManager.buildConfigurationFilePath(params[0], configuration);
-            handler.read(new FileInputStream(file));
+            IOHandler handler = mConfiguration.getHandler();
+            Pair<File, File> files = ConfigurationManager.buildConfigurationFilePath(params[0], mConfiguration);
+            File configurationFile = files.first;
+            handler.read(new FileInputStream(configurationFile));
 
-            MetaData metaData = configuration.metaData;
-            metaData.changed.setTime(file.lastModified());
+            MetaData metaData = mConfiguration.metaData;
+            metaData.changed.setTime(configurationFile.lastModified());
+
+            MediaManager.loadMediaFiles(files.second, mConfiguration);
 
         } catch (IOException e) {
-            Log.e(TAG, "Nepodařilo se načíst konfiguraci: " + configuration.getName());
+            Log.e(TAG, "Nepodařilo se načíst konfiguraci: " + mConfiguration.getName());
         }
 
         return null;
@@ -54,8 +64,8 @@ class ConfigurationLoader extends AsyncTask<File, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if (onLoaded != null) {
-            onLoaded.onConfigurationLoaded();
+        if (mOnLoaded != null) {
+            mOnLoaded.onConfigurationLoaded();
         }
     }
 

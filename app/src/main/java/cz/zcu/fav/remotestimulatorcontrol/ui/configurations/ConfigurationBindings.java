@@ -5,6 +5,7 @@ import android.databinding.BindingConversion;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.TextInputEditText;
@@ -20,12 +21,16 @@ import android.widget.Toolbar;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
+/**
+ * Knihovní třída obsahující metody týkající se "data bindingu"
+ */
 @SuppressWarnings("unused")
-public class ConfigurationBindings {
+public final class ConfigurationBindings {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigurationBindings";
     
     private static final int[] drawable = {
@@ -35,6 +40,16 @@ public class ConfigurationBindings {
             R.drawable.bg_cvep,
             R.drawable.bg_rea
     };
+    // endregion
+
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private ConfigurationBindings() {
+        throw new AssertionError();
+    }
+    // endregion
 
     @InverseBindingAdapter(attribute = "value")
     public static String getTextFromEditText(TextInputEditText editText) {
@@ -86,14 +101,14 @@ public class ConfigurationBindings {
     }
 
     @BindingAdapter({"media_type", "media_mask"})
-    public static void setLedImageOverlay(ImageView imageView, int mediaType, int mediaMask) {
-        boolean visible = (mediaType & mediaMask) == mediaMask;
+    public static void setLedImageOverlay(ImageView imageView, int mediaType, MediaType mediaMask) {
+        boolean visible = (mediaType & mediaMask.getOrdinal()) == mediaMask.getOrdinal();
         imageView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @BindingAdapter({"media_type", "media_flag"})
-    public static void mediaTypeProccess(CheckBox checkBox, int mediaType, int mediaFlag) {
-        boolean checked = (mediaType & mediaFlag) == mediaFlag;
+    public static void mediaTypeProccess(CheckBox checkBox, int mediaType, MediaType mediaFlag) {
+        boolean checked = (mediaType & mediaFlag.getOrdinal()) == mediaFlag.getOrdinal();
         checkBox.setChecked(checked);
 
         boolean invalid = AConfiguration.isInvalidMediaCombination(mediaType);
@@ -110,6 +125,19 @@ public class ConfigurationBindings {
     @BindingAdapter({"value", "flag"})
     public static void setCheckBoxChecked(CheckBox view, int value, int flag) {
         view.setChecked((value & flag) == flag);
+    }
+
+    @BindingAdapter({"preview", "type"})
+    public static void setPreviewBitmap(ImageView imageView, Bitmap bitmap, MediaType mediaType) {
+        if (bitmap == null) {
+            if (mediaType == MediaType.IMAGE) {
+                imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_image_thumbnail));
+            } else {
+                imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_autio_thumbnail));
+            }
+        } else {
+            imageView.setImageBitmap(bitmap);
+        }
     }
 
     @BindingConversion

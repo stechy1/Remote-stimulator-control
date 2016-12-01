@@ -34,7 +34,7 @@ class JSONHandlerERP extends JSONHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private final ConfigurationERP configuration;
+    private final ConfigurationERP mConfiguration;
     // endregion
 
     // region Constructors
@@ -46,7 +46,7 @@ class JSONHandlerERP extends JSONHandler {
     JSONHandlerERP(ConfigurationERP configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
     // endregion
 
@@ -58,9 +58,9 @@ class JSONHandlerERP extends JSONHandler {
      * @throws JSONException Pokud něco nevyjde
      */
     private void readOutputs(JSONArray outputs) throws JSONException {
-        List<ConfigurationERP.Output> outputList = configuration.outputList;
+        List<ConfigurationERP.Output> outputList = mConfiguration.outputList;
         outputList.clear();
-        int count = configuration.getOutputCount();
+        int count = mConfiguration.getOutputCount();
 
         for (int i = 0; i < count; i++) {
             JSONObject outputObject = outputs.getJSONObject(i);
@@ -84,7 +84,7 @@ class JSONHandlerERP extends JSONHandler {
         int distDelay = outputObject.getInt(TAG_DISTRIBUTION_DELAY);
         int brightness = outputObject.getInt(TAG_BRIGHTNESS);
 
-        return new ConfigurationERP.Output(configuration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
+        return new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
     }
 
     /**
@@ -97,7 +97,7 @@ class JSONHandlerERP extends JSONHandler {
         writer.name(TAG_OUTPUTS);
         writer.beginArray();
 
-        for (ConfigurationERP.Output output : configuration.outputList) {
+        for (ConfigurationERP.Output output : mConfiguration.outputList) {
             writeOutput(writer, output);
         }
 
@@ -144,10 +144,10 @@ class JSONHandlerERP extends JSONHandler {
             JSONObject jsonConfiguration = new JSONObject(src);
 
             readSelf(jsonConfiguration);
-            configuration.setOut(jsonConfiguration.getInt(TAG_OUT));
-            configuration.setWait(jsonConfiguration.getInt(TAG_WAIT));
-            configuration.setEdge(ConfigurationERP.Edge.valueOf(jsonConfiguration.getInt(TAG_EDGE)));
-            configuration.setRandom(ConfigurationERP.Random.valueOf(jsonConfiguration.getInt(TAG_RANDOM)));
+            mConfiguration.setOut(jsonConfiguration.getInt(TAG_OUT));
+            mConfiguration.setWait(jsonConfiguration.getInt(TAG_WAIT));
+            mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(jsonConfiguration.getInt(TAG_EDGE)));
+            mConfiguration.setRandom(ConfigurationERP.Random.valueOf(jsonConfiguration.getInt(TAG_RANDOM)));
 
             JSONArray outputArray = jsonConfiguration.getJSONArray(TAG_OUTPUTS);
             readOutputs(outputArray);
@@ -167,10 +167,10 @@ class JSONHandlerERP extends JSONHandler {
 
         writer.beginObject();
         super.writeSelf(writer);
-        writer.name(TAG_OUT).value(configuration.getOut());
-        writer.name(TAG_WAIT).value(configuration.getWait());
-        writer.name(TAG_EDGE).value(configuration.getEdge().ordinal());
-        writer.name(TAG_RANDOM).value(configuration.getRandom().ordinal());
+        writer.name(TAG_OUT).value(mConfiguration.getOut());
+        writer.name(TAG_WAIT).value(mConfiguration.getWait());
+        writer.name(TAG_EDGE).value(mConfiguration.getEdge().ordinal());
+        writer.name(TAG_RANDOM).value(mConfiguration.getRandom().ordinal());
 
         writeOutputs(writer);
         writer.endObject();

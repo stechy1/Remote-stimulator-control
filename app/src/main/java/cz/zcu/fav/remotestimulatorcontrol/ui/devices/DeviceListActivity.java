@@ -19,11 +19,35 @@ import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
 public class DeviceListActivity extends Activity {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "DeviceListActivity";
+    // endregion
 
+    // region Variables
     private BluetoothAdapter mBtAdapter;
+
+    /**
+     * Click listener pro položky v listView
+     */
+    private final AdapterView.OnItemClickListener mDeviceClickListener
+            = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+            // Zrušit vyhledávání ostatních zařízení, protože už jsme si vybrali
+            mBtAdapter.cancelDiscovery();
+
+            // Získání MAC adresy zařízení. Najdeme jí jako posledních 17 znaků ve View
+            String info = ((TextView) v).getText().toString();
+            String address = info.substring(info.length() - 17);
+
+            Intent intent = new Intent();
+            intent.putExtra(BluetoothService.DEVICE_MAC, address);
+
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
+    };
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,25 +80,4 @@ public class DeviceListActivity extends Activity {
             pairedDevicesArrayAdapter.add(noDevices);
         }
     }
-
-    /**
-     * Click listener pro položky v listView
-     */
-    private final AdapterView.OnItemClickListener mDeviceClickListener
-            = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-            // Zrušit vyhledávání ostatních zařízení, protože už jsme si vybrali
-            mBtAdapter.cancelDiscovery();
-
-            // Získání MAC adresy zařízení. Najdeme jí jako posledních 17 znaků ve View
-            String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
-
-            Intent intent = new Intent();
-            intent.putExtra(BluetoothService.DEVICE_MAC, address);
-
-            setResult(Activity.RESULT_OK, intent);
-            finish();
-        }
-    };
 }

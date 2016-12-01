@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="controller"
+            type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.MediaImagePreviewActivity" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/activity_image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.MediaImagePreviewActivity">
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:contentDescription="@string/image_preview_description"
+            app:srcCompat="@drawable/default_media_image_thumbnail" />
+
+        <LinearLayout
+            style="?android:actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="?android:actionButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClose"
+                android:text="@string/close_preview" />
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

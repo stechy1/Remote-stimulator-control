@@ -15,7 +15,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
+import java.lang.reflect.Method;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 
@@ -26,8 +26,6 @@ public class BluetoothService extends Service {
     // Logovací tag
     @SuppressWarnings("unused")
     private static final String TAG = "BluetoothService";
-    // Bluetooth UUID
-    private static final String SPP_UUID = "00001101-0000-1000-8000-00805f9b34fb";
 
     // Typy zpráv, které prochází přes BluetoothCommunicationService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -41,10 +39,14 @@ public class BluetoothService extends Service {
     public static final String DEVICE_MAC = "device_mac";
     public static final String TOAST = "toast";
 
-    public static final int STATE_NONE = 0; // we're doing nothing
-    public static final int STATE_LISTEN = 1; // now listening for incoming
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing
-    public static final int STATE_CONNECTED = 3; // now connected to a remote
+    // Výchozí stav
+    public static final int STATE_NONE = 0;
+    // Čekám na příchozí spojení
+    public static final int STATE_LISTEN = 1;
+    // Připojuji se k zařízení
+    public static final int STATE_CONNECTING = 2;
+    // Jsem spojený a můžu komunikovat
+    public static final int STATE_CONNECTED = 3;
     // endregion
 
     // region Variables
@@ -52,11 +54,6 @@ public class BluetoothService extends Service {
     private static ConnectedThread mConnectedThread;
     // Handler posílající zprávy o změně stavu bluetoothu
     private static Handler mHandler = null;
-    // Název připojeného zařízení
-    private static String deviceName;
-
-    // Stav připojení
-    public static int state = STATE_NONE;
 
     // Binder
     private final IBinder mBinder = new LocalBinder();
@@ -65,62 +62,11 @@ public class BluetoothService extends Service {
     private ConnectThread mConnectThread;
     // Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter;
+    // Stav připojení
+    private int mState = STATE_NONE;
     // endregion
 
-    @Override
-    public void onCreate() {
-        Log.d("BluetoothService", "Služba spuštěna");
-        super.onCreate();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter != null) {
-            String macAddress = intent.getStringExtra(DEVICE_MAC);
-            if (macAddress != null && macAddress.length() > 0) {
-                connectToDevice(macAddress);
-            } else {
-                stopSelf();
-                return START_STICKY_COMPATIBILITY;
-            }
-        }
-        String stopservice = intent.getStringExtra("stopservice");
-        if (stopservice != null && stopservice.length() > 0) {
-            stop();
-        }
-        return START_STICKY;
-    }
-
-    /**
-     * Pokusí se vytvořít spojení s zařízením
-     *
-     * @param macAddress Mac adresa spojovaného zařízení
-     */
-    private synchronized void connectToDevice(String macAddress) {
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(macAddress);
-        if (state == STATE_CONNECTING) {
-            if (mConnectThread != null) {
-                mConnectThread.cancel();
-                mConnectThread = null;
-            }
-        }
-
-        // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {
-            mConnectedThread.cancel();
-            mConnectedThread = null;
-        }
-        mConnectThread = new ConnectThread(device);
-        mConnectThread.start();
-        setState(STATE_CONNECTING);
-    }
-
+    // region Private methods
     /**
      * Nastaví interní stav, ve kterém se spojení nachází
      *
@@ -131,7 +77,7 @@ public class BluetoothService extends Service {
      *              @see #STATE_CONNECTED
      */
     private void setState(int state) {
-        BluetoothService.state = state;
+        mState = state;
         if (mHandler != null) {
             mHandler.obtainMessage(MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
         }
@@ -162,8 +108,8 @@ public class BluetoothService extends Service {
      * Pokud dojde k selhání spojení
      */
     private void connectionFailed() {
-        Log.i(TAG, "Připojení selhalo");
-        BluetoothService.this.stop();
+        Log.w(TAG, "Připojení selhalo");
+        stop();
         Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
         bundle.putString(TOAST, getString(R.string.error_connect_failed));
@@ -187,10 +133,10 @@ public class BluetoothService extends Service {
     /**
      * Zavolá se v případě vytvořeného spojení
      *
-     * @param mmSocket Bluetooth socket
-     * @param mmDevice Bluetooth device
+     * @param socket Bluetooth socket
+     * @param device Bluetooth device
      */
-    private synchronized void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
+    private synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -203,18 +149,30 @@ public class BluetoothService extends Service {
             mConnectedThread = null;
         }
 
-        mConnectedThread = new ConnectedThread(mmSocket);
+        mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
-
-        deviceName = mmDevice.getName();
 
         Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(DEVICE_NAME, deviceName);
+        bundle.putString(DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-        setState(STATE_CONNECTED);
 
+        setState(STATE_CONNECTED);
+    }
+
+    // endregion
+
+    @Override
+    public void onCreate() {
+        Log.d("BluetoothService", "Služba spuštěna");
+        super.onCreate();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return mBinder;
     }
 
     @Override
@@ -241,26 +199,17 @@ public class BluetoothService extends Service {
     }
 
     // region Public methods
-    public void setHandler(Handler handler) {
-        mHandler = handler;
-    }
-
-    public void write(byte[] out) {
-        // Create temporary object
-        ConnectedThread r;
-        // Synchronize a copy of the ConnectedThread
-        synchronized (lock) {
-            if (state != STATE_CONNECTED) {
-                return;
-            }
-            r = mConnectedThread;
+    /**
+     * Pokusí se vytvořít spojení s zařízením
+     *
+     * @param device {@link BluetoothDevice}
+     */
+    public synchronized void connectToDevice(BluetoothDevice device) {
+        if (mBluetoothAdapter == null) {
+            return;
         }
-        // Perform the write unsynchronized
-        r.write(out);
-    }
 
-    public synchronized void disconnect() {
-        if (state == STATE_CONNECTING) {
+        if (mState == STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -272,8 +221,41 @@ public class BluetoothService extends Service {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
+        mConnectThread = new ConnectThread(device);
+        mConnectThread.start();
+        setState(STATE_CONNECTING);
+    }
 
-        setState(STATE_LISTEN);
+    /**
+     * Pošle data přes bluetooth
+     *
+     * @param out Data
+     */
+    public void write(byte[] out) {
+        // Create temporary object
+        ConnectedThread r;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (lock) {
+            if (mState != STATE_CONNECTED) {
+                return;
+            }
+            r = mConnectedThread;
+        }
+        // Perform the write unsynchronized
+        r.write(out);
+    }
+
+    /**
+     * Nastaví handler
+     *
+     * @param handler {@link Handler}
+     */
+    public void setHandler(Handler handler) {
+        mHandler = handler;
+    }
+
+    public int getState() {
+        return mState;
     }
 
     // endregion
@@ -286,8 +268,15 @@ public class BluetoothService extends Service {
             this.mmDevice = device;
             BluetoothSocket tmp = null;
             try {
-                tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
-            } catch (IOException e) {
+                // Vytvoření nezabezpečeného spojení
+                // Nikdo neví, proč to nejde jednoduššeji
+                Class[] clsArr = new Class[STATE_LISTEN];
+                clsArr[STATE_NONE] = Integer.TYPE;
+                Method method = device.getClass().getMethod("createRfcommSocket", clsArr);
+                Object[] objArr = new Object[STATE_LISTEN];
+                objArr[STATE_NONE] = STATE_LISTEN;
+                tmp = (BluetoothSocket) method.invoke(device, objArr);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             mmSocket = tmp;
@@ -305,9 +294,9 @@ public class BluetoothService extends Service {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                e.printStackTrace();
                 connectionFailed();
                 return;
-
             }
             synchronized (BluetoothService.this) {
                 mConnectThread = null;
@@ -347,8 +336,6 @@ public class BluetoothService extends Service {
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
-            String msg = "Hello world";
-            write(msg.getBytes());
 
             while (true) {
                 try {

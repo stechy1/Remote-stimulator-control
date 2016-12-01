@@ -105,13 +105,15 @@ public class ConfigurationFVEP extends AConfiguration {
     /**
      * Vrátí handler na základě typu souboru
      *
-     * @return IO handler pro prási se souborem
+     * @return IO handler pro práci se souborem
      */
     @Override
     public IOHandler getHandler() {
         switch (metaData.extensionType) {
             case XML:
                 return new XMLHandlerFVEP(this);
+            case CSV:
+                return new CSVHandlerFVEP(this);
             default:
                 return new JSONHandlerFVEP(this);
         }

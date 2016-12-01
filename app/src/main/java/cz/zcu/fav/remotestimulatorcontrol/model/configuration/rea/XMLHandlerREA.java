@@ -40,7 +40,7 @@ public class XMLHandlerREA extends XMLHandler {
 
     // region Variables
     // Pracovní konfigurace
-    private ConfigurationREA configuration;
+    private ConfigurationREA mConfiguration;
     // endregion
 
     /**
@@ -51,7 +51,7 @@ public class XMLHandlerREA extends XMLHandler {
     public XMLHandlerREA(ConfigurationREA configuration) {
         super(configuration);
 
-        this.configuration = configuration;
+        this.mConfiguration = configuration;
     }
 
     // region Public methods
@@ -83,40 +83,40 @@ public class XMLHandlerREA extends XMLHandler {
                     case END_TAG:
                         switch (tagName) {
                             case TAG_OUTPUT_COUNT:
-                                configuration.setOutputCount(Integer.valueOf(text));
+                                mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
                             case TAG_MEDIA:
-                                configuration.setMediaType(Integer.valueOf(text));
+                                mConfiguration.setMediaType(Integer.valueOf(text));
                                 break;
                             case TAG_CYCLE_COUNT:
-                                configuration.setCycleCount(Integer.valueOf(text));
+                                mConfiguration.setCycleCount(Integer.valueOf(text));
                                 break;
                             case TAG_WAIT_FIXED:
-                                configuration.setWaitFixed(Integer.valueOf(text));
+                                mConfiguration.setWaitFixed(Integer.valueOf(text));
                                 break;
                             case TAG_WAIT_RANDOM:
-                                configuration.setWaitRandom(Integer.valueOf(text));
+                                mConfiguration.setWaitRandom(Integer.valueOf(text));
                                 break;
                             case TAG_MISS_TIME:
-                                configuration.setMissTime(Integer.valueOf(text));
+                                mConfiguration.setMissTime(Integer.valueOf(text));
                                 break;
                             case TAG_BRIGHTNESS:
-                                configuration.setBrightness(Integer.valueOf(text));
+                                mConfiguration.setBrightness(Integer.valueOf(text));
                                 break;
                             case TAG_ON_FAIL:
-                                configuration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.valueOf(text)));
+                                mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_GENDER:
-                                configuration.setGender(ConfigurationREA.Gender.valueOf(Integer.valueOf(text)));
+                                mConfiguration.setGender(ConfigurationREA.Gender.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_A:
-                                configuration.setAge(Integer.valueOf(text));
+                                mConfiguration.setAge(Integer.valueOf(text));
                                 break;
                             case TAG_H:
-                                configuration.setHeight(Integer.valueOf(text));
+                                mConfiguration.setHeight(Integer.valueOf(text));
                                 break;
                             case TAG_W:
-                                configuration.setWeight(Integer.valueOf(text));
+                                mConfiguration.setWeight(Integer.valueOf(text));
                                 break;
                         }
                         break;
@@ -143,16 +143,16 @@ public class XMLHandlerREA extends XMLHandler {
         serializer.startTag(NAMESPACE, TAG_ROOT);
 
         super.writeSelf(serializer);
-        writeTag(serializer, TAG_CYCLE_COUNT, configuration.getCycleCount());
-        writeTag(serializer, TAG_WAIT_FIXED, configuration.getWaitFixed());
-        writeTag(serializer, TAG_WAIT_RANDOM, configuration.getWaitRandom());
-        writeTag(serializer, TAG_MISS_TIME, configuration.getMissTime());
-        writeTag(serializer, TAG_BRIGHTNESS, configuration.getBrightness());
-        writeTag(serializer, TAG_ON_FAIL, configuration.getOnFail().ordinal());
-        writeTag(serializer, TAG_GENDER, configuration.getGender().ordinal());
-        writeTag(serializer, TAG_A, configuration.getAge());
-        writeTag(serializer, TAG_H, configuration.getHeight());
-        writeTag(serializer, TAG_W, configuration.getWeight());
+        writeTag(serializer, TAG_CYCLE_COUNT, mConfiguration.getCycleCount());
+        writeTag(serializer, TAG_WAIT_FIXED, mConfiguration.getWaitFixed());
+        writeTag(serializer, TAG_WAIT_RANDOM, mConfiguration.getWaitRandom());
+        writeTag(serializer, TAG_MISS_TIME, mConfiguration.getMissTime());
+        writeTag(serializer, TAG_BRIGHTNESS, mConfiguration.getBrightness());
+        writeTag(serializer, TAG_ON_FAIL, mConfiguration.getOnFail().ordinal());
+        writeTag(serializer, TAG_GENDER, mConfiguration.getGender().ordinal());
+        writeTag(serializer, TAG_A, mConfiguration.getAge());
+        writeTag(serializer, TAG_H, mConfiguration.getHeight());
+        writeTag(serializer, TAG_W, mConfiguration.getWeight());
 
         serializer.endTag(NAMESPACE, TAG_ROOT);
         serializer.endDocument();

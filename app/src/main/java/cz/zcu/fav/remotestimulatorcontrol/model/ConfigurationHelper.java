@@ -14,8 +14,21 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.tvep.Configuration
  */
 public final class ConfigurationHelper {
 
-    private ConfigurationHelper() {}
+    // region Constructors
+    /**
+     * Privátní konstruktor k zabránění vytvoření instance knihovní třídy
+     */
+    private ConfigurationHelper() {
+        throw new AssertionError();
+    }
+    // endregion
 
+    /**
+     * Vytvoří prázdnou implementaci třídy {@link AConfiguration}
+     *
+     * @param name Název konfigurace
+     * @return {@link AConfiguration}
+     */
     private static AConfiguration build(String name) {
         return new AConfiguration(name) {
             @Override
@@ -30,6 +43,12 @@ public final class ConfigurationHelper {
         };
     }
 
+    /**
+     * Vytvoří novou konfiguraci s nedefinovaným typem konfigurace
+     *
+     * @param name Název konfigurace
+     * @return {@link AConfiguration} Nedefinovanou konfiguraci
+     */
     public static AConfiguration from(String name) {
         return build(name);
     }

@@ -101,7 +101,7 @@ public class CSVHandlerERP extends CSVHandler {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         String text = reader.readLine();
-        String[] stringValues = text.split(separator);
+        String[] stringValues = text.split(mSeparator);
         IndexedValues values = new IndexedValues(stringValues);
 
         reader.close();

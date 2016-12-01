@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations;
 
 import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -75,20 +76,16 @@ public class ConfigurationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, RecyclerView.OnItemTouchListener {
 
     // region Constants
+    // Přiznaky pro řezení konfigurací
+    public static final int FLAG_SORT_NAME = 1 << 0;
+    public static final int FLAG_SORT_TYPE = 1 << 1;
+    public static final int FLAG_SORT_MEDIA = 1 << 2;
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigActivity";
-
     // Stringy pro ukládání stavu instance
     private static final String SAVE_STATE_IN_ACTION_MODE = "action_mode";
     private static final String SAVE_STATE_SELECTED_ITEMS_COUNT = "selected_items_count";
     private static final String SAVE_STATE_SORTING = "sorting";
-
-    // Přiznaky pro řezení konfigurací
-    public static final int FLAG_SORT_NAME  = 1 << 0;
-    public static final int FLAG_SORT_TYPE  = 1 << 1;
-    public static final int FLAG_SORT_MEDIA = 1 << 2;
-
     // Seznam requestů
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
@@ -99,45 +96,14 @@ public class ConfigurationActivity extends AppCompatActivity
     private static final int REQUEST_SORTING = 7;
     private static final int REQUEST_SETTINGS = 8;
     private static final int REQUEST_IMPORT = 9;
-
     // endregion
 
     // region Variables
-    // Reference na hlavní layout
-    private DrawerLayout mDrawerLayout;
-    // Reference na menu
-    private Menu menu;
-    // Action bar
-    private ActionMode actionMode;
-    // Reference na recycler view
-    private RecyclerView recyclerView;
-    // FAB pro přidání nové konfigurace
-    private FloatingActionButton fab;
-    // Gesture detector
-    private GestureDetectorCompat gestureDetector;
-    // Správce experimentů
-    private ConfigurationManager manager;
-    // Binding do hlavní aktivity
-    private ActivityConfigurationBinding mBinding;
-    // Název připojeného zařízení
-    private String mConnectedDeviceName;
-    // Reference na bluetooth service
-    private BluetoothService mService;
-    // Reference na adapter pro recycler view
-    private ConfigurationAdapter adapter;
-    // Příznak uřčující, zda-li je vytvořeno připojení se zařízením
-    private boolean mBound;
-    // Příznak určující, zda-li je potvrzeno smazání vybraných konfigurací
-    private boolean deleteConfirmed = true;
-    // Přiznak určující, podle čeho se budou konfigurace řadit
-    private int sortingFlag;
-    // Příznak určující, zda-li zařízení podporuje bluetooth
-    private boolean bluetoothSupport = false;
-
     // Udržuje informaci, zda-li je recyclerView prázdný, či nikoliv
     public final ObservableBoolean isRecyclerViewEmpty = new ObservableBoolean(false);
+
     // Udržuje informaci, zda-li se má zobrazit koncovka jednotlivých souborů, či nikoliv
-    private final ObservableBoolean showExtension = new ObservableBoolean(false);
+    private final ObservableBoolean mShowExtension = new ObservableBoolean(false);
     // Přijímač reagující na změnu stavu bluetoothu
     private final BroadcastReceiver mReciever = new BroadcastReceiver() {
         @Override
@@ -158,25 +124,238 @@ public class ConfigurationActivity extends AppCompatActivity
             }
         }
     };
+    // Reference na hlavní layout
+    private DrawerLayout mDrawerLayout;
+    // Reference na menu
+    private Menu mMenu;
+    // Action bar
+    private ActionMode mActionMode;
+    // Reference na recycler view
+    private RecyclerView mRecyclerView;
+    // FAB pro přidání nové konfigurace
+    private FloatingActionButton mFab;
+    // Gesture detector
+    private GestureDetectorCompat mGestureDetector;
+    // Správce experimentů
+    private ConfigurationManager mManager;
+    @SuppressWarnings("unused")
+    public final SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            mManager.refresh();
+        }
+    };
+    // Binding do hlavní aktivity
+    private ActivityConfigurationBinding mBinding;
+    // Název připojeného zařízení
+    private String mConnectedDeviceName;
+    private final Handler.Callback bluetoothServiceCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case BluetoothService.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            mMenu.getItem(0).setIcon(R.drawable.bluetooth_connected);
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            setStatus(R.string.title_connecting);
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                        case STATE_NONE:
+                            setStatus(R.string.title_not_connected);
+                            mMenu.getItem(0).setIcon(R.drawable.bluetooth_connect);
+                            break;
+                    }
+                    break;
+
+                case BluetoothService.MESSAGE_DEVICE_NAME:
+                    mConnectedDeviceName = msg.getData().getString(BluetoothService.DEVICE_NAME);
+                    break;
+
+                case BluetoothService.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Toast.makeText(ConfigurationActivity.this, readMessage, Toast.LENGTH_SHORT).show();
+                    break;
+
+                case BluetoothService.MESSAGE_SHOW:
+                    Toast.makeText(ConfigurationActivity.this, msg.getData().getString(BluetoothService.TOAST), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+            return true;
+        }
+    };
+    private final Handler bluetoothServiceHandler = new Handler(bluetoothServiceCallback);
+    // Bluetooth adapter
+    private BluetoothAdapter mBluetoothAdapter;
+    // Reference na bluetooth service
+    private BluetoothService mService;
+    // Reference na adapter pro recycler view
+    private ConfigurationAdapter mConfigurationAdapter;
+
+    // Příznak uřčující, zda-li je vytvořeno připojení se zařízením
+    private boolean mBound;
+    /**
+     * Definice callbacku pro binding do service
+     */
+    private final ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            BluetoothService.LocalBinder binder = (BluetoothService.LocalBinder) service;
+            mService = binder.getService();
+            mService.setHandler(bluetoothServiceHandler);
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+    // Příznak určující, zda-li je potvrzeno smazání vybraných konfigurací
+    private boolean mDeleteConfirmed = true;
+
+    private final Handler.Callback managerCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            boolean success;
+            int snackbarMessage = -1;
+            switch (msg.what) {
+                case ConfigurationManager.MESSAGE_CONFIGURATIONS_LOADED:
+                    mBinding.swipeRefreshLayout.setRefreshing(false);
+                    isRecyclerViewEmpty.set(mConfigurationAdapter.getItemCount() == 0);
+                    mBinding.recyclerViewConfigurations.getAdapter().notifyDataSetChanged();
+                    break;
+                case ConfigurationManager.MESSAGE_NAME_EXISTS:
+                    snackbarMessage = R.string.error_name_exists;
+                    break;
+                case ConfigurationManager.MESSAGE_INVALID_NAME:
+                    snackbarMessage = R.string.error_invalid_name;
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_CREATE:
+                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
+
+                    if (success) {
+                        isRecyclerViewEmpty.set(false);
+                        mConfigurationAdapter.notifyItemInserted(msg.arg2);
+                    }
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_IMPORT:
+                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+
+                    if (success) {
+                        isRecyclerViewEmpty.set(false);
+                        mConfigurationAdapter.notifyItemInserted(msg.arg2);
+                    }
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_RENAME:
+                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
+
+                    if (success) {
+                        mConfigurationAdapter.notifyItemChanged(msg.arg2);
+                    }
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_PREPARED_TO_DELETE:
+                    List<Integer> itemsToDelete = mConfigurationAdapter.getSelectedItemsIndex();
+                    mConfigurationAdapter.saveSelectedItems();
+
+                    for (Integer item : itemsToDelete)
+                        mConfigurationAdapter.notifyItemRemoved(item);
+
+                    mConfigurationAdapter.clearSelections();
+                    mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
+
+                    Snackbar.make(mFab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                            .setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mManager.undoDelete();
+
+                                    mDeleteConfirmed = false;
+                                }
+                            })
+                            .setCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar snackbar, int event) {
+                                    if (mDeleteConfirmed) {
+                                        mManager.confirmDelete();
+                                        boolean empty = mConfigurationAdapter.getItemCount() == 0;
+                                        isRecyclerViewEmpty.set(empty);
+                                        if (empty && mActionMode != null) {
+                                            mActionMode.finish();
+                                        }
+                                    } else {
+                                        mDeleteConfirmed = true;
+                                    }
+
+                                    super.onDismissed(snackbar, event);
+                                }
+                            })
+                            .show();
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_UNDO_DELETE:
+                    mConfigurationAdapter.restoreSelectedItems();
+                    List<Integer> itemsToUndo = mConfigurationAdapter.getSelectedItemsIndex();
+
+                    for (Integer item : itemsToUndo)
+                        mConfigurationAdapter.notifyItemInserted(item);
+
+                    if (mActionMode != null) {
+                        mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
+                    }
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_UPDATE:
+                    mConfigurationAdapter.notifyItemChanged(msg.arg1);
+                    break;
+                case ConfigurationManager.MESSAGE_CONFIGURATION_DUPLICATE:
+                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
+
+                    if (success) {
+                        mConfigurationAdapter.notifyItemChanged(msg.arg2);
+                    }
+                    break;
+            }
+
+            if (snackbarMessage != -1) {
+                Snackbar.make(mFab, snackbarMessage, Snackbar.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+    };
+    private final Handler managerhandler = new Handler(managerCallback);
+
+
+    // Přiznak určující, podle čeho se budou konfigurace řadit
+    private int mSortingFlag;
+    // Příznak určující, zda-li zařízení podporuje bluetooth
+    private boolean mBluetoothSupport = false;
     // endregion
 
     // region Private methods
-
     /**
      * Inicializuje Recycler view
      * Nastaví Layout manager, Item decoration, Item animator, adapter a onClickListener
      */
     private void initRecyclerView() {
-        recyclerView = mBinding.recyclerViewConfigurations;
-        adapter = new ConfigurationAdapter(manager.configurations, showExtension);
+        mRecyclerView = mBinding.recyclerViewConfigurations;
+        mConfigurationAdapter = new ConfigurationAdapter(mManager.configurations, mShowExtension);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this));
-        recyclerView.setItemAnimator(new LandingAnimator(new FastOutLinearInInterpolator()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(new AlphaInAnimationAdapter(adapter));
-        recyclerView.addOnItemTouchListener(this);
-        gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
+        mRecyclerView.setItemAnimator(new LandingAnimator(new FastOutLinearInInterpolator()));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(new AlphaInAnimationAdapter(mConfigurationAdapter));
+        mRecyclerView.addOnItemTouchListener(this);
+        mGestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
     }
 
     /**
@@ -194,8 +373,8 @@ public class ConfigurationActivity extends AppCompatActivity
         GlobalPreferences.setDefaultExtension(this, GlobalPreferences.getDefaultExtension(this, MetaData.getDefaultExtension().name()));
         MetaData.setDefaultExtension(ExtensionType.valueOf(GlobalPreferences.getDefaultExtension(this, MetaData.getDefaultExtension().name())));
 
-        GlobalPreferences.setExtensionVisible(this, GlobalPreferences.isExtensionVisible(this, showExtension.get()));
-        showExtension.set(GlobalPreferences.isExtensionVisible(this, showExtension.get()));
+        GlobalPreferences.setExtensionVisible(this, GlobalPreferences.isExtensionVisible(this, mShowExtension.get()));
+        mShowExtension.set(GlobalPreferences.isExtensionVisible(this, mShowExtension.get()));
     }
 
     /**
@@ -203,10 +382,8 @@ public class ConfigurationActivity extends AppCompatActivity
      */
     private void refreshRecyclerView() {
         mBinding.swipeRefreshLayout.setRefreshing(true);
-        manager.refresh();
+        mManager.refresh();
     }
-
-    // region Sorting stuff
 
     private boolean isFlagValid(int flag, int value) {
         return (value & flag) == flag;
@@ -220,239 +397,18 @@ public class ConfigurationActivity extends AppCompatActivity
     private Comparator<AConfiguration> parseComparator() {
         List<ConfigurationComparator> comparators = new ArrayList<>();
 
-        if (isFlagValid(FLAG_SORT_MEDIA, sortingFlag)) {
+        if (isFlagValid(FLAG_SORT_MEDIA, mSortingFlag)) {
             comparators.add(ConfigurationComparator.MEDIA_COMPARATOR);
         }
-        if (isFlagValid(FLAG_SORT_TYPE, sortingFlag)) {
+        if (isFlagValid(FLAG_SORT_TYPE, mSortingFlag)) {
             comparators.add(ConfigurationComparator.TYPE_COMPARATOR);
         }
-        if (isFlagValid(FLAG_SORT_NAME, sortingFlag)) {
+        if (isFlagValid(FLAG_SORT_NAME, mSortingFlag)) {
             comparators.add(ConfigurationComparator.NAME_COMPARATOR);
         }
 
         return ConfigurationComparator.getComparator(comparators);
     }
-    // endregion
-
-    // endregion
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        manager = new ConfigurationManager(getFilesDir());
-        manager.setHandler(managerhandler);
-
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration);
-        mBinding.setController(this);
-        mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
-
-        initRecyclerView();
-
-        fab = mBinding.fabNewConfiguration;
-
-        bluetoothSupport = BluetoothAdapter.getDefaultAdapter() != null;
-        if (!bluetoothSupport) {
-            if (!ConfigurationSharedPreferences.isBTNotSupportedAlertShowed(getApplicationContext(), false)) {
-                Snackbar.make(fab, R.string.bt_not_supported, Snackbar.LENGTH_LONG)
-                        .setCallback(new Snackbar.Callback() {
-                            @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                ConfigurationSharedPreferences.setBTNotSupportedAlertShowed(getApplicationContext(), true);
-                                super.onDismissed(snackbar, event);
-                            }
-                        })
-                        .show();
-            }
-        }
-
-        Toolbar toolbar = mBinding.toolbar;
-        setSupportActionBar(toolbar);
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
-        }
-
-        if (savedInstanceState != null) {
-            sortingFlag = savedInstanceState.getInt(SAVE_STATE_SORTING);
-            boolean isInActionMode = savedInstanceState.getBoolean(SAVE_STATE_IN_ACTION_MODE);
-            if (isInActionMode && actionMode == null) {
-                startSupportActionMode(new ActionBarCallback());
-                List<Integer> selectedItems = savedInstanceState.getIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT);
-                adapter.selectItems(selectedItems);
-                assert selectedItems != null;
-                actionMode.setTitle(getString(R.string.selected_count, selectedItems.size()));
-            }
-        } else {
-            sortingFlag = ConfigurationSharedPreferences.getSortingFlag(this, FLAG_SORT_NAME);
-        }
-
-        manager.setConfigurationComparator(parseComparator());
-
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReciever, filter);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        loadGlobalSettings();
-        refreshRecyclerView();
-
-        if (bluetoothSupport) {
-            // Bind to Bluetooth service
-            Intent intent = new Intent(this, BluetoothService.class);
-            bindService(intent, mConnection, BIND_AUTO_CREATE);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, actionMode != null);
-        outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, adapter.getSelectedItemsIndex());
-        outState.putInt(SAVE_STATE_SORTING, sortingFlag);
-
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        unregisterReceiver(mReciever);
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE:
-                if (resultCode == RESULT_OK) {
-                    try {
-                        Log.d(TAG, "Pokus o vytvoření naslouchací služby bluetooth");
-                        Intent intent = new Intent(this, BluetoothService.class);
-                        intent.putExtra(BluetoothService.DEVICE_MAC, data.getStringExtra(BluetoothService.DEVICE_MAC));
-                        startService(intent);
-
-                    } catch (Exception e) {
-                        Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Nastala neočekávaná vyjímka při vytváření naslouchací služby bluetooth", e);
-                    }
-                }
-                break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == RESULT_OK) {
-                    Log.i(TAG, "Bluetooth je aktivovaný");
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    Log.i(TAG, "Bluetooth není aktivovaný");
-                }
-                break;
-            case REQUEST_NEW_CONFIGURATION:
-                if (resultCode == RESULT_OK) {
-                    String name = data.getStringExtra(ConfigurationFactoryActivity.CONFIGURATION_NAME);
-                    ConfigurationType type = ConfigurationType.valueOf((String) data.getSerializableExtra(ConfigurationFactoryActivity.CONFIGURATION_TYPE));
-                    manager.create(name, type);
-                }
-                break;
-            case REQUEST_DETAIL_CONFIGURATION:
-                if (resultCode == RESULT_OK) {
-                    boolean reload = data.getBooleanExtra(ConfigurationDetailActivity.CONFIGURATION_RELOAD, false);
-                    int id = data.getIntExtra(ConfigurationDetailActivity.CONFIGURATION_ID, ConfigurationDetailActivity.CONFIGURATION_UNKNOWN_ID);
-                    if (id == ConfigurationDetailActivity.CONFIGURATION_UNKNOWN_ID) {
-                        return;
-                    }
-
-                    if (reload) {
-                        manager.update(id);
-                    }
-                }
-                break;
-            case REQUEST_RENAME_CONFIGURATION:
-                if (resultCode == RESULT_OK) {
-                    int id = data.getIntExtra(ConfigurationRenameActivity.CONFIGURATION_ID, ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID);
-                    String name = data.getStringExtra(ConfigurationRenameActivity.CONFIGURATION_NAME);
-
-                    if (id == ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID) {
-                        return;
-                    }
-
-                    manager.rename(id, name);
-
-                    if (actionMode != null) {
-                        actionMode.finish();
-                    }
-                }
-                break;
-            case REQUEST_DUPLICATE_CONFIGURATION:
-                if (resultCode == RESULT_OK) {
-                    int id = data.getIntExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, ConfigurationDuplicateActivity.CONFIGURATION_UNKNOWN_ID);
-                    String name = data.getStringExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME);
-
-                    if (id == ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID) {
-                        return;
-                    }
-
-                    manager.duplicate(id, name);
-
-                    if (actionMode != null) {
-                        actionMode.finish();
-                    }
-                }
-                break;
-            case REQUEST_SORTING:
-                if (resultCode == RESULT_OK) {
-                    int sortingFlagNew = data.getIntExtra(ConfigurationSortingActivity.SORTING_FLAG, sortingFlag);
-                    if (sortingFlagNew == sortingFlag) {
-                        return;
-                    }
-
-                    sortingFlag = sortingFlagNew;
-                    ConfigurationSharedPreferences.setSortingFlag(this, sortingFlag);
-                    manager.setConfigurationComparator(parseComparator());
-                    manager.refresh();
-                }
-                break;
-            case REQUEST_IMPORT:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_FILE_PATH);
-                    String name = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_NAME);
-                    ConfigurationType configurationType = (ConfigurationType) data.getSerializableExtra(ConfigurationImportActivity.CONFIGURATION_TYPE);
-                    ExtensionType extensionType = (ExtensionType) data.getSerializableExtra(ConfigurationImportActivity.CONFIGURATION_EXTENSION);
-
-                    manager.importt(name, path, configurationType, extensionType);
-                }
-                break;
-        }
-    }
-
-    // region Statusbar subtitle method
 
     /**
      * Updates the status on the action bar.
@@ -483,17 +439,255 @@ public class ConfigurationActivity extends AppCompatActivity
 
         actionBar.setSubtitle(subTitle);
     }
+
+    private void setEnabledPropertyOnActionModeItems(boolean enabled) {
+        if (mActionMode == null) {
+            return;
+        }
+
+        View duplicateBtn = findViewById(R.id.context_duplicate);
+        View renameBtn = findViewById(R.id.context_rename);
+
+        if (duplicateBtn == null || renameBtn == null) {
+            return;
+        }
+
+        duplicateBtn.setEnabled(enabled);
+        renameBtn.setEnabled(enabled);
+    }
+
+    private void toggleSelection(int index) {
+        mConfigurationAdapter.toggleSelection(index);
+        String title = getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount());
+        mActionMode.setTitle(title);
+
+        setEnabledPropertyOnActionModeItems(mConfigurationAdapter.getSelectedItemCount() == 1);
+    }
     // endregion
 
-    // region Menu handling
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mManager = new ConfigurationManager(getFilesDir());
+        mManager.setHandler(managerhandler);
+
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration);
+        mBinding.setController(this);
+        mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
+
+        initRecyclerView();
+
+        mFab = mBinding.fabNewConfiguration;
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothSupport = mBluetoothAdapter != null;
+        if (!mBluetoothSupport) {
+            if (!ConfigurationSharedPreferences.isBTNotSupportedAlertShowed(getApplicationContext(), false)) {
+                Snackbar.make(mFab, R.string.bt_not_supported, Snackbar.LENGTH_LONG)
+                        .setCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                ConfigurationSharedPreferences.setBTNotSupportedAlertShowed(getApplicationContext(), true);
+                                super.onDismissed(snackbar, event);
+                            }
+                        })
+                        .show();
+            }
+        }
+
+        Toolbar toolbar = mBinding.toolbar;
+        setSupportActionBar(toolbar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+        }
+
+        if (savedInstanceState != null) {
+            mSortingFlag = savedInstanceState.getInt(SAVE_STATE_SORTING);
+            boolean isInActionMode = savedInstanceState.getBoolean(SAVE_STATE_IN_ACTION_MODE);
+            if (isInActionMode && mActionMode == null) {
+                startSupportActionMode(new ActionBarCallback());
+                List<Integer> selectedItems = savedInstanceState.getIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT);
+                mConfigurationAdapter.selectItems(selectedItems);
+                assert selectedItems != null;
+                mActionMode.setTitle(getString(R.string.selected_count, selectedItems.size()));
+            }
+        } else {
+            mSortingFlag = ConfigurationSharedPreferences.getSortingFlag(this, FLAG_SORT_NAME);
+        }
+
+        mManager.setConfigurationComparator(parseComparator());
+
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReciever, filter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        loadGlobalSettings();
+        refreshRecyclerView();
+
+        if (mBluetoothSupport) {
+            // Bind to Bluetooth service
+            Intent intent = new Intent(this, BluetoothService.class);
+            bindService(intent, mConnection, BIND_AUTO_CREATE);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, mActionMode != null);
+        outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, mConfigurationAdapter.getSelectedItemsIndex());
+        outState.putInt(SAVE_STATE_SORTING, mSortingFlag);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unregisterReceiver(mReciever);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Log.d(TAG, "Pokus o vytvoření naslouchací služby bluetooth");
+                        String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
+                        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
+                        mService.connectToDevice(device);
+
+                    } catch (Exception e) {
+                        Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Nastala neočekávaná vyjímka při vytváření naslouchací služby bluetooth", e);
+                    }
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK) {
+                    Log.i(TAG, "Bluetooth je aktivovaný");
+                } else {
+                    Log.i(TAG, "Bluetooth není aktivovaný");
+                }
+                break;
+            case REQUEST_NEW_CONFIGURATION:
+                if (resultCode == RESULT_OK) {
+                    String name = data.getStringExtra(ConfigurationFactoryActivity.CONFIGURATION_NAME);
+                    ConfigurationType type = ConfigurationType.valueOf((String) data.getSerializableExtra(ConfigurationFactoryActivity.CONFIGURATION_TYPE));
+                    mManager.create(name, type);
+                }
+                break;
+            case REQUEST_DETAIL_CONFIGURATION:
+                if (resultCode == RESULT_OK) {
+                    boolean reload = data.getBooleanExtra(ConfigurationDetailActivity.CONFIGURATION_RELOAD, false);
+                    int id = data.getIntExtra(ConfigurationDetailActivity.CONFIGURATION_ID, ConfigurationDetailActivity.CONFIGURATION_UNKNOWN_ID);
+                    if (id == ConfigurationDetailActivity.CONFIGURATION_UNKNOWN_ID) {
+                        return;
+                    }
+
+                    if (reload) {
+                        mManager.update(id);
+                    }
+                }
+                break;
+            case REQUEST_RENAME_CONFIGURATION:
+                if (resultCode == RESULT_OK) {
+                    int id = data.getIntExtra(ConfigurationRenameActivity.CONFIGURATION_ID, ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID);
+                    String name = data.getStringExtra(ConfigurationRenameActivity.CONFIGURATION_NAME);
+
+                    if (id == ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID) {
+                        return;
+                    }
+
+                    mManager.rename(id, name);
+
+                    if (mActionMode != null) {
+                        mActionMode.finish();
+                    }
+                }
+                break;
+            case REQUEST_DUPLICATE_CONFIGURATION:
+                if (resultCode == RESULT_OK) {
+                    int id = data.getIntExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, ConfigurationDuplicateActivity.CONFIGURATION_UNKNOWN_ID);
+                    String name = data.getStringExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME);
+
+                    if (id == ConfigurationRenameActivity.CONFIGURATION_UNKNOWN_ID) {
+                        return;
+                    }
+
+                    mManager.duplicate(id, name);
+
+                    if (mActionMode != null) {
+                        mActionMode.finish();
+                    }
+                }
+                break;
+            case REQUEST_SORTING:
+                if (resultCode == RESULT_OK) {
+                    int sortingFlagNew = data.getIntExtra(ConfigurationSortingActivity.SORTING_FLAG, mSortingFlag);
+                    if (sortingFlagNew == mSortingFlag) {
+                        return;
+                    }
+
+                    mSortingFlag = sortingFlagNew;
+                    ConfigurationSharedPreferences.setSortingFlag(this, mSortingFlag);
+                    mManager.setConfigurationComparator(parseComparator());
+                    mManager.refresh();
+                }
+                break;
+            case REQUEST_IMPORT:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_FILE_PATH);
+                    String name = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_NAME);
+                    ConfigurationType configurationType = (ConfigurationType) data.getSerializableExtra(ConfigurationImportActivity.CONFIGURATION_TYPE);
+                    ExtensionType extensionType = (ExtensionType) data.getSerializableExtra(ConfigurationImportActivity.CONFIGURATION_EXTENSION);
+
+                    mManager.importt(name, path, configurationType, extensionType);
+                }
+                break;
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
+        mMenu = menu;
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
         MenuItem bluetoothMenuItem = menu.findItem(R.id.menu_main_connect);
-        bluetoothMenuItem.setEnabled(bluetoothSupport);
+        bluetoothMenuItem.setEnabled(mBluetoothSupport);
 
         return true;
     }
@@ -506,16 +700,16 @@ public class ConfigurationActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_main_connect:
-                if (!bluetoothSupport) {
+                if (!mBluetoothSupport) {
                     return false;
                 }
 
-                if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+                if (!mBluetoothAdapter.isEnabled()) {
                     requestBluetoothEnable();
                     return false;
                 }
 
-                switch (BluetoothService.state) {
+                switch (mService.getState()) {
                     case STATE_NONE:
                     case STATE_LISTEN:
                         startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
@@ -527,7 +721,7 @@ public class ConfigurationActivity extends AppCompatActivity
                 break;
             case R.id.menu_main_sort:
                 Intent intent = new Intent(this, ConfigurationSortingActivity.class);
-                intent.putExtra(ConfigurationSortingActivity.SORTING_FLAG, sortingFlag);
+                intent.putExtra(ConfigurationSortingActivity.SORTING_FLAG, mSortingFlag);
                 startActivityForResult(intent, REQUEST_SORTING);
                 break;
             case R.id.menu_main_import:
@@ -557,158 +751,9 @@ public class ConfigurationActivity extends AppCompatActivity
         return false;
     }
 
-    // region ActionMode
-    private void setEnabledPropertyOnActionModeItems(boolean enabled) {
-        if (actionMode == null) {
-            return;
-        }
-
-        View duplicateBtn = findViewById(R.id.context_duplicate);
-        View renameBtn = findViewById(R.id.context_rename);
-
-        if (duplicateBtn == null || renameBtn == null) {
-            return;
-        }
-
-        duplicateBtn.setEnabled(enabled);
-        renameBtn.setEnabled(enabled);
-    }
-
-    private void toggleSelection(int index) {
-        adapter.toggleSelection(index);
-        String title = getString(R.string.selected_count, adapter.getSelectedItemCount());
-        actionMode.setTitle(title);
-
-        setEnabledPropertyOnActionModeItems(adapter.getSelectedItemCount() == 1);
-    }
-
-    class ActionBarCallback implements ActionMode.Callback {
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.experiments_context_menu, menu);
-            actionMode = mode;
-
-            fab.setVisibility(View.GONE);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            final List<Integer> selectedItems = adapter.getSelectedItemsIndex();
-            if (selectedItems.size() == 0) {
-                return false;
-            }
-
-            String name = manager.configurations.get(selectedItems.get(0)).getName();
-            Intent intent;
-            switch (item.getItemId()) {
-                case R.id.context_duplicate: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-                    intent = new Intent(ConfigurationActivity.this, ConfigurationDuplicateActivity.class);
-                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, selectedItems.get(0));
-                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME, name);
-                    startActivityForResult(intent, REQUEST_DUPLICATE_CONFIGURATION);
-
-                    return true;
-                case R.id.context_delete: // Smažeme konfigurace
-                    manager.prepareToDelete(selectedItems);
-
-                    return true;
-                case R.id.context_rename: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-                    intent = new Intent(ConfigurationActivity.this, ConfigurationRenameActivity.class);
-                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_ID, selectedItems.get(0));
-                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_NAME, name);
-                    startActivityForResult(intent, REQUEST_RENAME_CONFIGURATION);
-
-                    return true;
-                case R.id.context_select_all:
-                    adapter.selectAll();
-                    actionMode.setTitle(getString(R.string.selected_count, adapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_inverse:
-                    adapter.invertSelection();
-                    actionMode.setTitle(getString(R.string.selected_count, adapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_none:
-                    adapter.selectNone();
-                    actionMode.setTitle(getString(R.string.selected_count, adapter.getSelectedItemCount()));
-
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            actionMode = null;
-            adapter.clearSelections();
-            fab.setVisibility(View.VISIBLE);
-
-            isRecyclerViewEmpty.set(adapter.getItemCount() == 0);
-        }
-    }
-
-    // region GestureDetector for RecyclerView
-    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private void internal_toggleSelection(View v) {
-            int index = recyclerView.getChildAdapterPosition(v);
-            toggleSelection(index);
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
-
-            if (actionMode != null) {
-                internal_toggleSelection(view);
-                return false;
-            }
-
-            onItemClick(view);
-            return super.onSingleTapConfirmed(e);
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
-            if (actionMode != null) {
-                return;
-            }
-
-            startSupportActionMode(new ActionBarCallback());
-            internal_toggleSelection(view);
-            super.onLongPress(e);
-        }
-
-
-    }
-    // endregion
-
-    // endregion
-
-    // endregion
-
-    // region Recycler view OnItemTouchListner
-
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        gestureDetector.onTouchEvent(e);
+        mGestureDetector.onTouchEvent(e);
         return false;
     }
 
@@ -721,9 +766,8 @@ public class ConfigurationActivity extends AppCompatActivity
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         // Zde opravdu nic není
     }
-    // endregion
 
-    // region Data binding
+    // region Public methods
     // Kliknutí na FAB tlačítko pro vytvoření nové konfigurace
     public void fabClick(View v) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -741,7 +785,7 @@ public class ConfigurationActivity extends AppCompatActivity
             return;
         }
 
-        AConfiguration configuration = manager.configurations.get(position);
+        AConfiguration configuration = mManager.configurations.get(position);
         Intent intent = new Intent(this, ConfigurationDetailActivity.class);
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_ID, position);
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_NAME, configuration.getName());
@@ -755,195 +799,120 @@ public class ConfigurationActivity extends AppCompatActivity
 
         ActivityCompat.startActivityForResult(this, intent, REQUEST_DETAIL_CONFIGURATION, options.toBundle());
     }
-
-    @SuppressWarnings("unused")
-    public final SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            manager.refresh();
-        }
-    };
     // endregion
 
-    // region Bluetooth service handler and connection
-    /**
-     * Definice callbacku pro binding do service
-     */
-    private final ServiceConnection mConnection = new ServiceConnection() {
-
+    class ActionBarCallback implements ActionMode.Callback {
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            BluetoothService.LocalBinder binder = (BluetoothService.LocalBinder) service;
-            mService = binder.getService();
-            mService.setHandler(bluetoothServiceHandler);
-            mBound = true;
-        }
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.experiments_context_menu, menu);
+            mActionMode = mode;
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
-
-    private final Handler.Callback bluetoothServiceCallback = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case BluetoothService.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case BluetoothService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            menu.getItem(0).setIcon(R.drawable.bluetooth_connected);
-                            break;
-                        case BluetoothService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
-                            break;
-                        case BluetoothService.STATE_LISTEN:
-                        case STATE_NONE:
-                            setStatus(R.string.title_not_connected);
-                            menu.getItem(0).setIcon(R.drawable.bluetooth_connect);
-                            break;
-                    }
-                    break;
-
-                case BluetoothService.MESSAGE_DEVICE_NAME:
-                    mConnectedDeviceName = msg.getData().getString(BluetoothService.DEVICE_NAME);
-                    break;
-
-                case BluetoothService.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    Toast.makeText(ConfigurationActivity.this, readMessage, Toast.LENGTH_SHORT).show();
-                    break;
-
-                case BluetoothService.MESSAGE_SHOW:
-                    Toast.makeText(ConfigurationActivity.this, msg.getData().getString(BluetoothService.TOAST), Toast.LENGTH_SHORT).show();
-                    break;
-            }
-
+            mFab.setVisibility(View.GONE);
             return true;
         }
-    };
 
-    private final Handler bluetoothServiceHandler = new Handler(bluetoothServiceCallback);
-
-    // endregion
-
-    // region Configuration manager handler
-    private final Handler.Callback managerCallback = new Handler.Callback() {
         @Override
-        public boolean handleMessage(Message msg) {
-            boolean success;
-            int snackbarMessage = -1;
-            switch (msg.what) {
-                case ConfigurationManager.MESSAGE_CONFIGURATIONS_LOADED:
-                    mBinding.swipeRefreshLayout.setRefreshing(false);
-                    isRecyclerViewEmpty.set(adapter.getItemCount() == 0);
-                    mBinding.recyclerViewConfigurations.getAdapter().notifyDataSetChanged();
-                    break;
-                case ConfigurationManager.MESSAGE_NAME_EXISTS:
-                    snackbarMessage = R.string.error_name_exists;
-                    break;
-                case ConfigurationManager.MESSAGE_INVALID_NAME:
-                    snackbarMessage = R.string.error_invalid_name;
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_CREATE:
-                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
-
-                    if (success) {
-                        isRecyclerViewEmpty.set(false);
-                        adapter.notifyItemInserted(msg.arg2);
-                    }
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_IMPORT:
-                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
-
-                    if (success) {
-                        isRecyclerViewEmpty.set(false);
-                        adapter.notifyItemInserted(msg.arg2);
-                    }
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_RENAME:
-                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
-
-                    if (success) {
-                        adapter.notifyItemChanged(msg.arg2);
-                    }
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_PREPARED_TO_DELETE:
-                    List<Integer> itemsToDelete = adapter.getSelectedItemsIndex();
-                    adapter.saveSelectedItems();
-
-                    for (Integer item : itemsToDelete)
-                        adapter.notifyItemRemoved(item);
-
-                    adapter.clearSelections();
-                    actionMode.setTitle(getString(R.string.selected_count, adapter.getSelectedItemCount()));
-
-                    Snackbar.make(fab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
-                            .setAction("UNDO", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    manager.undoDelete();
-
-                                    deleteConfirmed = false;
-                                }
-                            })
-                            .setCallback(new Snackbar.Callback() {
-                                @Override
-                                public void onDismissed(Snackbar snackbar, int event) {
-                                    if (deleteConfirmed) {
-                                        manager.confirmDelete();
-                                        boolean empty = adapter.getItemCount() == 0;
-                                        isRecyclerViewEmpty.set(empty);
-                                        if (empty && actionMode != null) {
-                                            actionMode.finish();
-                                        }
-                                    }
-                                    else {
-                                        deleteConfirmed = true;
-                                    }
-
-                                    super.onDismissed(snackbar, event);
-                                }
-                            })
-                            .show();
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_UNDO_DELETE:
-                    adapter.restoreSelectedItems();
-                    List<Integer> itemsToUndo = adapter.getSelectedItemsIndex();
-
-                    for (Integer item : itemsToUndo)
-                        adapter.notifyItemInserted(item);
-
-                    if (actionMode != null) {
-                        actionMode.setTitle(getString(R.string.selected_count, adapter.getSelectedItemCount()));
-                    }
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_UPDATE:
-                    adapter.notifyItemChanged(msg.arg1);
-                    break;
-                case ConfigurationManager.MESSAGE_CONFIGURATION_DUPLICATE:
-                    success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
-
-                    if (success) {
-                        adapter.notifyItemChanged(msg.arg2);
-                    }
-                    break;
-            }
-
-            if (snackbarMessage != -1) {
-                Snackbar.make(fab, snackbarMessage, Snackbar.LENGTH_SHORT).show();
-            }
-            return true;
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
         }
-    };
 
-    private final Handler managerhandler = new Handler(managerCallback);
-    // endregion
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            final List<Integer> selectedItems = mConfigurationAdapter.getSelectedItemsIndex();
+            if (selectedItems.size() == 0) {
+                return false;
+            }
+
+            String name = mManager.configurations.get(selectedItems.get(0)).getName();
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.context_duplicate: // Spustime novou aktivitu ve formě dialogu
+                    if (selectedItems.size() > 1) {
+                        return false;
+                    }
+
+                    intent = new Intent(ConfigurationActivity.this, ConfigurationDuplicateActivity.class);
+                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, selectedItems.get(0));
+                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME, name);
+                    startActivityForResult(intent, REQUEST_DUPLICATE_CONFIGURATION);
+
+                    return true;
+                case R.id.context_delete: // Smažeme konfigurace
+                    mManager.prepareToDelete(selectedItems);
+
+                    return true;
+                case R.id.context_rename: // Spustime novou aktivitu ve formě dialogu
+                    if (selectedItems.size() > 1) {
+                        return false;
+                    }
+
+                    intent = new Intent(ConfigurationActivity.this, ConfigurationRenameActivity.class);
+                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_ID, selectedItems.get(0));
+                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_NAME, name);
+                    startActivityForResult(intent, REQUEST_RENAME_CONFIGURATION);
+
+                    return true;
+                case R.id.context_select_all:
+                    mConfigurationAdapter.selectAll();
+                    mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
+
+                    return true;
+                case R.id.context_select_inverse:
+                    mConfigurationAdapter.invertSelection();
+                    mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
+
+                    return true;
+                case R.id.context_select_none:
+                    mConfigurationAdapter.selectNone();
+                    mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
+
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            mConfigurationAdapter.clearSelections();
+            mFab.setVisibility(View.VISIBLE);
+
+            isRecyclerViewEmpty.set(mConfigurationAdapter.getItemCount() == 0);
+        }
+    }
+
+    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private void internal_toggleSelection(View v) {
+            int index = mRecyclerView.getChildAdapterPosition(v);
+            toggleSelection(index);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+
+            if (mActionMode != null) {
+                internal_toggleSelection(view);
+                return false;
+            }
+
+            onItemClick(view);
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+            if (mActionMode != null) {
+                return;
+            }
+
+            startSupportActionMode(new ActionBarCallback());
+            internal_toggleSelection(view);
+            super.onLongPress(e);
+        }
+
+
+    }
 }

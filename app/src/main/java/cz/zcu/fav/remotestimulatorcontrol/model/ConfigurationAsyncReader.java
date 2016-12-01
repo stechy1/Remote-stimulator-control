@@ -18,17 +18,21 @@ import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
  */
 final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Integer, Integer[]> {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ConfigAsyncReader";
+    // endregion
 
+    // region Variables
     // Pracovní adresář
     private final File mWorkingDirectory;
     // Kolekce, do které se přidávají načtené konfigurace
     private final List<AConfiguration> mItems;
     // Listener, který se zavolá po dokončení načítacího procesu
     private final OnConfigurationLoadedListener mListener;
+    // endregion
 
+    // region Constructors
     /**
      * Vytvoří nový loader konfigurací
      *
@@ -41,7 +45,9 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
         mItems = items;
         mListener = listener;
     }
+    // endregion
 
+    // region Private methods
     /**
      * Načte konfigurace zadaného typu
      *
@@ -53,16 +59,35 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
      */
     private int[] loadConfigurations(File[] files, ConfigurationType type) {
         final int[] success = {0, 0};
-        for (File file : files) {
-            Log.d(TAG, "Otevírám soubor: " + file);
-            if (file.isDirectory()) {
+        for (File configurationDirectory : files) {
+            Log.d(TAG, "Otevírám soubor: " + configurationDirectory);
+
+            // Získám seznam souborů ve složce, která odpovídá názvu konfigurace
+            File[] configurationDirectoryFiles = configurationDirectory.listFiles();
+            // Pokud nejsou nalezeny žádné soubory
+            if (configurationDirectoryFiles == null)
                 continue;
+            final boolean hasMedia = configurationDirectoryFiles.length > 1;
+            // Pokud konfigurace obsahuje přídavná média
+            if (hasMedia) {
+                // Pokud soubor na prvním indexu v poli je složka
+                if (configurationDirectoryFiles[0].isDirectory()) {
+                    // Pak se prohodí soubor se složkou, aby soubor byl na prvním místě
+                    File temp = configurationDirectoryFiles[0];
+                    configurationDirectoryFiles[0] = configurationDirectoryFiles[1];
+                    configurationDirectoryFiles[1] = temp;
+                }
             }
-            String name = file.getName();
+
+            // Víme, že na prvním indexu v poli je soubor, který obsahuje informace o konfiguraci
+            File configurationFile = configurationDirectoryFiles[0];
+
+            // Získání názvu konfigurace ze souboru
+            String name = configurationFile.getName();
 
             // Ošetření na existenci nějaké koncovky. Pokud soubor nemá koncovku, přeskočí se.
             if (name.indexOf(".") <= 0) {
-                Log.i(TAG, "Přeskakuji soubor: " + file);
+                Log.i(TAG, "Přeskakuji soubor: " + configurationFile);
                 continue;
             }
 
@@ -70,30 +95,35 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
                 // Získání koncovky souboru jako podřetězec začínající o 1 větším indexem tečky.
                 String extension = name.substring(name.indexOf(".") + 1);
 
+                // Převedení koncovky na výčtový typ pro jednodušší práci
                 ExtensionType extensionType = EnumUtil.lookup(ExtensionType.class, extension);
-                // Získání přesného názvu souboru bet koncovky
+                // Získání přesného názvu souboru bez koncovky
                 assert extensionType != null;
                 name = name.replace(extensionType.toString(), "");
 
+                // Získání správného typu konfigurace pomocí helperu
                 AConfiguration configuration = ConfigurationHelper.from(name, type);
 
+                // Získání metadat konfigurace
                 MetaData metaData = configuration.metaData;
                 metaData.extensionType = extensionType;
-                metaData.changed.setTime(file.lastModified());
+                metaData.changed.setTime(configurationFile.lastModified());
 
-                configuration.getHandler().read(new FileInputStream(file));
+                // Zahájení samotné čtení ze souboru konfigurace
+                configuration.getHandler().read(new FileInputStream(configurationFile));
 
                 mItems.add(configuration);
 
                 success[0]++;
             } catch (Exception e) {
-                Log.e(TAG, "Konfigurace: " + file.getName() + " nebyla načtena");
+                Log.e(TAG, "Konfigurace: " + configurationFile.getName() + " nebyla načtena");
                 success[1]++;
             }
         }
 
         return success;
     }
+    // endregion
 
     @Override
     protected Integer[] doInBackground(ConfigurationType... types) {

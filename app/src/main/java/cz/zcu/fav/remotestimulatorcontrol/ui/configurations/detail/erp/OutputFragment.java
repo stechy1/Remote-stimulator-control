@@ -16,17 +16,19 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
 
 public class OutputFragment extends Fragment {
 
+    // region Constants
     // Logovací tag
-    @SuppressWarnings("unused")
     private static final String TAG = "ERPOutputFragment";
+    // endregion
 
-    private ConfigurationERP.Output output;
+    // region Variables
+    private ConfigurationERP.Output mOutput;
     @SuppressWarnings("unused")
     // Listener pro změnu hodnoty parametru distribution value
     public final EditableSeekBar.OnEditableSeekBarProgressChanged distributionValueChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            output.setDistributionValue(progress);
+            mOutput.setDistributionValue(progress);
         }
     };
     @SuppressWarnings("unused")
@@ -34,9 +36,10 @@ public class OutputFragment extends Fragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            output.setBrightness(progress);
+            mOutput.setBrightness(progress);
         }
     };
+    // endregion
 
     @Nullable
     @Override
@@ -44,8 +47,8 @@ public class OutputFragment extends Fragment {
         ErpOutputConfigBinding mBinding = DataBindingUtil.inflate(inflater, R.layout.erp_output_config, container, false);
 
         mBinding.setController(this);
-        mBinding.setConfiguration(output.getParentConfiguration());
-        mBinding.setOutput(output);
+        mBinding.setConfiguration(mOutput.getParentConfiguration());
+        mBinding.setOutput(mOutput);
 
         return mBinding.getRoot();
     }
@@ -56,6 +59,6 @@ public class OutputFragment extends Fragment {
      * @param output Output
      */
     void setOutput(ConfigurationERP.Output output) {
-        this.output = output;
+        mOutput = output;
     }
 }

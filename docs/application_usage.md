@@ -1,2 +1,0 @@
-# Použití aplikace
-

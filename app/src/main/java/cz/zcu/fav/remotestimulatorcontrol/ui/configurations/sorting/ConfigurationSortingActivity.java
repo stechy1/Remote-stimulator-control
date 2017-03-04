@@ -11,9 +11,9 @@ import android.widget.CheckBox;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityConfigurationSortingBinding;
 
-import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationActivity.FLAG_SORT_MEDIA;
-import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationActivity.FLAG_SORT_NAME;
-import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationActivity.FLAG_SORT_TYPE;
+import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity.FLAG_SORT_MEDIA;
+import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity.FLAG_SORT_NAME;
+import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity.FLAG_SORT_TYPE;
 
 public class ConfigurationSortingActivity extends AppCompatActivity {
 

@@ -5,7 +5,7 @@
     <!-- Navigace -->
     <string name="nav_drawer_open">Otevřít navigaci</string>
     <string name="nav_drawer_close">Zavřít navigaci</string>
-    <string name="nav_configurations">Experimenty</string>
+    <string name="nav_configurations">Konfigurace</string>
     <string name="nav_text_settings">Nastavení</string>
     <string name="nav_text_help">Nápověda</string>
     <string name="nav_text_about">O aplikaci</string>
@@ -59,7 +59,7 @@
     <string name="title_paired_devices">Spárovaná zařízení</string>
 
     <!-- Activity - configuration factory -->
-    <string name="activity_title_new_configuration">Nová configurace</string>
+    <string name="activity_title_new_configuration">Nová konfigurace</string>
     <string name="configuration_name">Název</string>
     <string name="configuration_type">Typ konfigurace</string>
     <string name="configuration_configm_create">Vytvořit</string>

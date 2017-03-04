@@ -3,16 +3,17 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.File;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.ExtensionType;
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
 import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration.isNameValid;
 import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.ConfigurationImportActivity.FLAG_NAME;
 import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.ConfigurationImportActivity.FLAG_PATH;
 import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.ConfigurationImportActivity.FLAG_TYPE;
@@ -30,7 +31,7 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
     // region Variables
     // Validita konfigurace - 0 = validní
     @Bindable
-    private int validityFlag = FLAG_NAME + FLAG_TYPE;
+    private int validityFlag = FLAG_NAME | FLAG_TYPE;
     // Příznak validity konfigurace. True, pokud je validní, jinak false
     @Bindable
     private boolean valid;
@@ -72,7 +73,7 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
         notifyPropertyChanged(BR.valid);
     }
 
-    // region Public methods
+    // region Getters & Setters
     /**
      * Nastaví validitu zadanému příznaku
      *
@@ -80,6 +81,7 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
      * @param value True, pokud je příznak validní, jinak false
      */
     protected void setValidityFlag(int flag, boolean value) {
+        Log.d("obsimpconf", String.valueOf(value));
         int oldFlagValue = this.validityFlag;
         if (value) {
             validityFlag |= flag;
@@ -117,7 +119,7 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
         changed = true;
         notifyPropertyChanged(BR.name);
 
-        if (!isNameValid(name)) {
+        if (!AConfiguration.isNameValid(name)) {
             setValid(false);
             setValidityFlag(FLAG_NAME, true);
         } else {

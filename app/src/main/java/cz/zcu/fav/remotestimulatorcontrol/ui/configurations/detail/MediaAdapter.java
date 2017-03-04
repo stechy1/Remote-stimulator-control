@@ -10,6 +10,7 @@ import android.widget.Button;
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.MediaItem2Binding;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.MediaItemBinding;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.MediaItemButtonBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
@@ -30,6 +31,8 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<AMedia> mMediaList;
 
     private final OnAddMediaClickListener mListener;
+
+    private final boolean mShowAddButton;
     // endregion
 
     // region Constructors
@@ -42,15 +45,22 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     MediaAdapter(List<AMedia> mediaList, OnAddMediaClickListener listener) {
         mMediaList = mediaList;
         mListener = listener;
+        mShowAddButton = listener != null;
     }
     // endregion
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_VIEW_TYPE_STANDART) {
-            MediaItemBinding bindings = DataBindingUtil.inflate(
-                    LayoutInflater.from(parent.getContext()), R.layout.media_item, parent, false);
-            return new MediaHolder(bindings);
+            if (mShowAddButton) {
+                MediaItemBinding bindings = DataBindingUtil.inflate(
+                        LayoutInflater.from(parent.getContext()), R.layout.media_item, parent, false);
+                return new MediaHolder(bindings);
+            } else {
+                MediaItem2Binding bindings = DataBindingUtil.inflate(
+                        LayoutInflater.from(parent.getContext()), R.layout.media_item_2, parent, false);
+                return new MediaHolder2(bindings);
+            }
         } else {
             MediaItemButtonBinding bindings = DataBindingUtil.inflate(
                     LayoutInflater.from(parent.getContext()), R.layout.media_item_button, parent, false);
@@ -64,7 +74,7 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return;
 
         AMedia media = mMediaList.get(position);
-        ((MediaHolder) holder).bindTo(media);
+        ((BaseMediaHolder) holder).bindTo(media);
     }
 
     @Override
@@ -79,15 +89,38 @@ class MediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         // Vracíme o 1 více, protože poslední prvek bude tlačítko pro přidání další položky
-        return mMediaList.size() + 1;
+        return mShowAddButton ? mMediaList.size() + 1 : mMediaList.size();
     }
 
-    class MediaHolder extends RecyclerView.ViewHolder {
+    abstract class BaseMediaHolder extends RecyclerView.ViewHolder {
+
+        public BaseMediaHolder(View itemView) {
+            super(itemView);
+        }
+
+        abstract void bindTo(AMedia media);
+    }
+
+    class MediaHolder extends BaseMediaHolder {
         private final MediaItemBinding mmBinding;
 
         MediaHolder(MediaItemBinding binding) {
             super(binding.getRoot());
 
+            mmBinding = binding;
+        }
+
+        public void bindTo(AMedia media) {
+            mmBinding.setMedia(media);
+            mmBinding.executePendingBindings();
+        }
+    }
+
+    class MediaHolder2 extends BaseMediaHolder {
+        private final MediaItem2Binding mmBinding;
+
+        MediaHolder2(MediaItem2Binding binding) {
+            super(binding.getRoot());
             mmBinding = binding;
         }
 

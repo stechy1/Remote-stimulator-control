@@ -19,6 +19,7 @@ public class ConfigurationFactoryActivity extends AppCompatActivity {
     // region Constants
     // Logovací tag
     public static final int FLAG_NAME = 1 << 0;
+    public static final int FLAG_TYPE = 1 << 1;
     // Proměnné, které konfigurace přijímá v intentu
     public static final String CONFIGURATION_NAME = "name";
     public static final String CONFIGURATION_TYPE = "type";
@@ -27,12 +28,12 @@ public class ConfigurationFactoryActivity extends AppCompatActivity {
 
     // region Variables
     // Konfigurace
-    public final ObservableConfiguration configuration = new ObservableConfiguration();
+    public final ObservableConfiguration mConfiguration = new ObservableConfiguration();
     // Listener pro změnu typu konfigurace
     public final LabelledSpinner.OnItemSelected typeListener = new LabelledSpinner.OnItemSelected() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            configuration.setConfigurationType(ConfigurationType.valueOf(position));
+            mConfiguration.setConfigurationType(ConfigurationType.valueOf(position));
         }
     };
     // endregion
@@ -43,13 +44,13 @@ public class ConfigurationFactoryActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
 
         if (savedInstanceState != null) {
-            configuration.setName(savedInstanceState.getString(CONFIGURATION_NAME));
-            configuration.setConfigurationType(ConfigurationType.valueOf(savedInstanceState.getString(CONFIGURATION_TYPE)));
+            mConfiguration.setName(savedInstanceState.getString(CONFIGURATION_NAME));
+            mConfiguration.setConfigurationType(ConfigurationType.valueOf(savedInstanceState.getString(CONFIGURATION_TYPE)));
         }
 
         ActivityConfigurationFactoryBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration_factory);
         mBinding.setController(this);
-        mBinding.setConfiguration(configuration);
+        mBinding.setConfiguration(mConfiguration);
 
         mBinding.editConfigurationName.requestFocus();
 
@@ -59,8 +60,8 @@ public class ConfigurationFactoryActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(CONFIGURATION_NAME, configuration.getName());
-        outState.putString(CONFIGURATION_TYPE, configuration.getConfigurationType());
+        outState.putString(CONFIGURATION_NAME, mConfiguration.getName());
+        outState.putString(CONFIGURATION_TYPE, mConfiguration.getConfigurationType());
 
         super.onSaveInstanceState(outState);
     }
@@ -69,8 +70,8 @@ public class ConfigurationFactoryActivity extends AppCompatActivity {
     // Handler pro tlačítko create
     public void onCreate(View view) {
         Intent intent = new Intent();
-        intent.putExtra(CONFIGURATION_NAME, configuration.getName());
-        intent.putExtra(CONFIGURATION_TYPE, configuration.getConfigurationType());
+        intent.putExtra(CONFIGURATION_NAME, mConfiguration.getName());
+        intent.putExtra(CONFIGURATION_TYPE, mConfiguration.getConfigurationType());
 
         setResult(RESULT_OK, intent);
         finish();

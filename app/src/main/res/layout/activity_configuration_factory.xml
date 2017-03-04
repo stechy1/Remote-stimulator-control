@@ -38,7 +38,7 @@
             app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
             app:errorEnabled="true"
             app:errorText="@{@string/error_invalid_name}"
-            app:validity="@{configuration.validity}"
+            app:validity="@{configuration.validityFlag}"
             app:validityFlag="@{ConfigurationFactoryActivity.FLAG_NAME}">
 
             <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
@@ -50,7 +50,6 @@
                 android:hint="@string/configuration_name"
                 android:inputType="textPersonName"
                 android:text="@={configuration.name}" />
-
         </android.support.design.widget.TextInputLayout>
 
         <cz.zcu.fav.remotestimulatorcontrol.widget.labeledspinner.LabelledSpinner
@@ -72,7 +71,7 @@
             style="?android:actionButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="@{configuration.changed &amp;&amp; configuration.validity == 0}"
+            android:enabled="@{configuration.valid}"
             android:onClick="onCreate"
             android:text="@string/configuration_configm_create" />
         </LinearLayout>

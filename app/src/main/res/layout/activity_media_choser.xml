@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+    <data>
+        <variable
+            name="controller"
+            type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.MediaChoserActivity" />
+    </data>
+
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recyclerViewMedia"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.MediaChoserActivity">
+
+</android.support.v7.widget.RecyclerView>
+</layout>

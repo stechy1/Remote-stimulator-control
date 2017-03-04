@@ -3,7 +3,6 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
-import android.databinding.ObservableList;
 
 import java.util.regex.Pattern;
 
@@ -89,7 +88,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     // Příznak, zda-li se změníl stav konfigurace od posledního načteníprotected boolean changed;
     protected boolean changed;
     // Kolekce medií
-    public final ObservableList<AMedia> mediaList;
+    public final ObservableArrayList<AMedia> mediaList;
     // Dodatečné informace o konfiguraci
     public final MetaData metaData = new MetaData();
     // endregion
@@ -130,7 +129,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         setName(name);
         this.configurationType = configurationType;
         setOutputCount(outputCount);
-        setMediaType(DEF_MEDIA_TYPE);
+        setMediaType(DEF_MEDIA_TYPE.getOrdinal());
     }
 
     // endregion
@@ -359,18 +358,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      *
      * @param mediaType Typ media
      */
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = (mediaType.getOrdinal());
-        notifyPropertyChanged(BR.mediaType);
-        setMedia();
-    }
-
-    /**
-     * Nastaví, jaky typ media bude podporovaný
-     *
-     * @param mediaType Typ media
-     */
-    public void setMediaType(int mediaType) {
+    public synchronized void setMediaType(int mediaType) {
         this.mediaType = mediaType;
         notifyPropertyChanged(BR.mediaType);
         setMedia();
@@ -392,7 +380,7 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      * @param mediaFlag Typ media
      * @param value     True, pokud se bude používat, jinak false
      */
-    public void setMediaType(MediaType mediaFlag, boolean value) {
+    public synchronized void setMediaType(MediaType mediaFlag, boolean value) {
         if (value) {
             this.mediaType |= (mediaFlag.getOrdinal());
         } else {

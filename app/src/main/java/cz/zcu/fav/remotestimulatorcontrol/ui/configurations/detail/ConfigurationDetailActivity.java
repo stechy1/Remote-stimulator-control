@@ -241,6 +241,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
         mBinding.setConfiguration(configuration);
 
         setSupportActionBar(mBinding.toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -294,6 +295,8 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             case REQUEST_WAIT_FOR_PREVIEW_RESULT:
                 new ConfigurationLoader(configuration, this).execute(getFilesDir());
                 break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -524,7 +527,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             int position = recyclerView.getChildAdapterPosition(view);
 
             // Vyfiltrování poslední položky
-            if (position == mediaManager.mediaList.size()) {
+            if (position == -1 || position == mediaManager.mediaList.size()) {
                 return false;
             }
 

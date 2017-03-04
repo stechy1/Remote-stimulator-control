@@ -47,7 +47,7 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.GlobalPreferences;
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityConfigurationBinding;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityConfigurationsBinding;
 import cz.zcu.fav.remotestimulatorcontrol.io.ExtensionType;
 import cz.zcu.fav.remotestimulatorcontrol.model.ConfigurationManager;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
@@ -72,7 +72,7 @@ import static cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService.STATE_
 import static cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService.STATE_LISTEN;
 import static cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService.STATE_NONE;
 
-public class ConfigurationActivity extends AppCompatActivity
+public class ConfigurationsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, RecyclerView.OnItemTouchListener {
 
     // region Constants
@@ -146,7 +146,7 @@ public class ConfigurationActivity extends AppCompatActivity
         }
     };
     // Binding do hlavní aktivity
-    private ActivityConfigurationBinding mBinding;
+    private ActivityConfigurationsBinding mBinding;
     // Název připojeného zařízení
     private String mConnectedDeviceName;
     private final Handler.Callback bluetoothServiceCallback = new Handler.Callback() {
@@ -177,11 +177,11 @@ public class ConfigurationActivity extends AppCompatActivity
                 case BluetoothService.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    Toast.makeText(ConfigurationActivity.this, readMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConfigurationsActivity.this, readMessage, Toast.LENGTH_SHORT).show();
                     break;
 
                 case BluetoothService.MESSAGE_SHOW:
-                    Toast.makeText(ConfigurationActivity.this, msg.getData().getString(BluetoothService.TOAST), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConfigurationsActivity.this, msg.getData().getString(BluetoothService.TOAST), Toast.LENGTH_SHORT).show();
                     break;
             }
 
@@ -472,7 +472,7 @@ public class ConfigurationActivity extends AppCompatActivity
         mManager = new ConfigurationManager(getFilesDir());
         mManager.setHandler(managerhandler);
 
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_configurations);
         mBinding.setController(this);
         mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
 
@@ -772,9 +772,9 @@ public class ConfigurationActivity extends AppCompatActivity
     public void fabClick(View v) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, v, "transition_fab");
-            startActivityForResult(new Intent(ConfigurationActivity.this, ConfigurationFactoryActivity.class), REQUEST_NEW_CONFIGURATION, options.toBundle());
+            startActivityForResult(new Intent(ConfigurationsActivity.this, ConfigurationFactoryActivity.class), REQUEST_NEW_CONFIGURATION, options.toBundle());
         } else
-            startActivityForResult(new Intent(ConfigurationActivity.this, ConfigurationFactoryActivity.class), REQUEST_NEW_CONFIGURATION);
+            startActivityForResult(new Intent(ConfigurationsActivity.this, ConfigurationFactoryActivity.class), REQUEST_NEW_CONFIGURATION);
     }
 
     // Kliknutí na položku v recyclerView
@@ -831,7 +831,7 @@ public class ConfigurationActivity extends AppCompatActivity
                         return false;
                     }
 
-                    intent = new Intent(ConfigurationActivity.this, ConfigurationDuplicateActivity.class);
+                    intent = new Intent(ConfigurationsActivity.this, ConfigurationDuplicateActivity.class);
                     intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, selectedItems.get(0));
                     intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME, name);
                     startActivityForResult(intent, REQUEST_DUPLICATE_CONFIGURATION);
@@ -846,7 +846,7 @@ public class ConfigurationActivity extends AppCompatActivity
                         return false;
                     }
 
-                    intent = new Intent(ConfigurationActivity.this, ConfigurationRenameActivity.class);
+                    intent = new Intent(ConfigurationsActivity.this, ConfigurationRenameActivity.class);
                     intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_ID, selectedItems.get(0));
                     intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_NAME, name);
                     startActivityForResult(intent, REQUEST_RENAME_CONFIGURATION);

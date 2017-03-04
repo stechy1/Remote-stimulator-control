@@ -17,6 +17,9 @@ final class Tags {
     public static final String TAG_DISTRIBUTION_VALUE = "distribution_value";
     public static final String TAG_DISTRIBUTION_DELAY = "distribution_delay";
     public static final String TAG_BRIGHTNESS = "brightness";
+    public static final String TAG_MEDIA_OUTPUT = "output_media";
+    public static final String TAG_MEDIA_OUTPUT_NAME = "media_name";
+    public static final String TAG_MEDIA_OUTPUT_TYPE = "media_type";
     // endregion
 
     // region Constructors

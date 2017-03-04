@@ -9,6 +9,7 @@ import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MAX_DISTRIBUTION_VALUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MIN_DISTRIBUTION_VALUE;
@@ -454,6 +455,9 @@ public class ConfigurationERP extends AConfiguration {
         // Příznak validity jednotlivých hodnot
         @Bindable
         private int validityFlag;
+        @Bindable
+        private AMedia media;
+        private String mediaName;
         // endregion
 
         // region Constructors
@@ -670,10 +674,11 @@ public class ConfigurationERP extends AConfiguration {
          * @param value Distribution value [%]
          */
         public void setDistributionValue(int value) {
+            if (value == distributionValue) {return; }
             distributionValue = value;
             notifyPropertyChanged(BR.distributionValue);
 
-            if (config.calculateSumOfDistributionValue() > MAX_DISTRIBUTION_VALUE || value < MIN_DISTRIBUTION_VALUE || value > MAX_DISTRIBUTION_VALUE) {
+            if (/*config.calculateSumOfDistributionValue() > MAX_DISTRIBUTION_VALUE ||*/ value < MIN_DISTRIBUTION_VALUE || value > MAX_DISTRIBUTION_VALUE) {
                 setValid(false);
                 setValidityFlag(FLAG_DISTRIBUTION_VALUE, true);
             } else {
@@ -732,6 +737,63 @@ public class ConfigurationERP extends AConfiguration {
                 setValidityFlag(FLAG_BRIGHTNESS, false);
             }
         }
+
+        /**
+         * Vrátí médium, které je přidružené k tomuto výstupu
+         *
+         * @return {@link AMedia}
+         */
+        public AMedia getMedia() {
+            return media;
+        }
+
+        /**
+         * Nastaví médium, které bude přidružené k tomuto výstupu
+         *
+         * @param media {@link AMedia}
+         */
+        public void setMedia(AMedia media) {
+            this.media = media;
+            notifyPropertyChanged(BR.media);
+        }
+
+        /**
+         * Nastaví médium, které bude přidružené k tomuto výstupu podle indexu
+         *
+         * @param index Index do kolekce všech medií pro aktuální konfiguraci
+         */
+        public void setMediaByIndex(int index) {
+            setMedia(getParentConfiguration().mediaList.get(index));
+        }
+
+        /**
+         * Nastaví název média pro pozdější načtení z kolekce
+         *
+         * @param name Název média
+         */
+        public void setMediaName(String name) {
+            this.mediaName = name;
+            ObservableArrayList<AMedia> mediaList = getParentConfiguration().mediaList;
+            if (mediaList == null) {
+                return;
+            }
+
+            for (AMedia aMedia : mediaList) {
+                if (aMedia.getName().equals(name)) {
+                    setMedia(aMedia);
+                }
+            }
+        }
+
+        /**
+         * Vrátí název média, které se má přidružit k tomuto výstupu
+         *
+         * @return Název média
+         */
+        public String getMediaName() {
+            return mediaName;
+        }
+
         // endregion
     }
 }

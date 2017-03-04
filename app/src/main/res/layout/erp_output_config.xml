@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
     <data>
-
+        <import type="android.view.View" />
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
 
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP" />
@@ -23,9 +22,10 @@
     </data>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.OutputFragment">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -136,6 +136,14 @@
                     app:esbTitle="@string/parameter_brightness"
                     app:esbValue="@{output.brightness}"
                     app:onProgressChanged="@{controller.brightnessChanged}"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{configuration.media ? View.VISIBLE : View.GONE}"
+                    app:preview="@{output.media == null ? null : output.media.thumbnail}"
+                    app:type="@{output.media == null ? null : output.media.getMediaType()}"
+                    android:onClick="@{controller::onChoseMedia}"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </android.support.design.widget.CoordinatorLayout>

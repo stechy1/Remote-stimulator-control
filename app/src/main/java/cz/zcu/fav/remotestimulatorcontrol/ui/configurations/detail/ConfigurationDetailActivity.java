@@ -2,9 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.media.MediaPlayer;
@@ -12,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -49,7 +46,6 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
-import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.cvep.ConfigurationFragmentCVEP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.ConfigurationFragmentERP;
@@ -89,25 +85,10 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     private MediaManager mediaManager;
     private MediaPlayer mediaPlayer;
     private int selectedMedia = -1;
-    private BluetoothService mService;
-    private boolean mBound = false;
     // Gesture detector
     private GestureDetectorCompat gestureDetector;
     private boolean deleteConfirmed = true;
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            BluetoothService.LocalBinder binder = (BluetoothService.LocalBinder) iBinder;
-            mService = binder.getService();
-            mService.setHandler(mBluetoothServiceHandler);
-            mBound = true;
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBound = false;
-        }
-    };
     @SuppressWarnings("unused")
     // Listener pro změnu počtu výstupů
     public final EditableSeekBar.OnEditableSeekBarProgressChanged outputCountChange = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
@@ -254,9 +235,6 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         new ConfigurationLoader(configuration, this).execute(getFilesDir());
-
-        Intent intent = new Intent(this, BluetoothService.class);
-        bindService(intent, mConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -319,11 +297,6 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
     }
 
     /**
@@ -579,13 +552,4 @@ public class ConfigurationDetailActivity extends AppCompatActivity
 
     // endregion
     // endregion
-
-    private final Handler.Callback mBluetoothServiceCallback = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message message) {
-            return false;
-        }
-    };
-
-    private final Handler mBluetoothServiceHandler = new Handler(mBluetoothServiceCallback);
 }

@@ -253,18 +253,6 @@ public class BluetoothService extends Service {
     @Override
     public boolean stopService(Intent name) {
         stop();
-//        setState(STATE_NONE);
-//        if (mConnectThread != null) {
-//            mConnectThread.cancel();
-//            mConnectThread = null;
-//        }
-//
-//        if (mConnectedThread != null) {
-//            mConnectedThread.cancel();
-//            mConnectedThread = null;
-//        }
-//
-//        mBluetoothAdapter.cancelDiscovery();
         running = false;
         return super.stopService(name);
     }
@@ -370,6 +358,7 @@ public class BluetoothService extends Service {
                 try {
                     Arrays.fill(buffer, (byte)0);
                     count = mmInStream.read(buffer);
+                    Log.d(TAG, "Received: " + new String(buffer, 0, count));
 
                     Intent intent = new Intent(ACTION_DATA_RECEIVED);
                     intent.putExtra(DATA_RECEIVED_BYTES, count);

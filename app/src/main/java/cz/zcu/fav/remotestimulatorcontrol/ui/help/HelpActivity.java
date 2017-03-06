@@ -12,8 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Arrays;
-
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityHelpBinding;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
@@ -34,7 +32,7 @@ public class HelpActivity extends AppCompatActivity {
                     return;
                 }
 
-                mBinding.textView2.setText(Arrays.toString(Arrays.copyOf(bytes, length)));
+                mBinding.textView2.setText(new String(bytes, 0, length));
             }
         }
     };

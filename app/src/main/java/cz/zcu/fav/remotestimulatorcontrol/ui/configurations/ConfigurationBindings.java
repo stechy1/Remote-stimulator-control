@@ -130,10 +130,19 @@ public final class ConfigurationBindings {
     @BindingAdapter({"preview", "type"})
     public static void setPreviewBitmap(ImageView imageView, Bitmap bitmap, MediaType mediaType) {
         if (bitmap == null) {
-            if (mediaType == MediaType.IMAGE) {
+            if (mediaType == null) {
                 imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_image_thumbnail));
-            } else {
-                imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_autio_thumbnail));
+                return;
+            }
+            switch (mediaType) {
+                case IMAGE:
+                    imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_image_thumbnail));
+                    break;
+                case AUDIO:
+                    imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_autio_thumbnail));
+                    break;
+                default:
+                    imageView.setImageDrawable(ContextCompat.getDrawable(imageView.getContext(), R.drawable.default_media_image_thumbnail));
             }
         } else {
             imageView.setImageBitmap(bitmap);

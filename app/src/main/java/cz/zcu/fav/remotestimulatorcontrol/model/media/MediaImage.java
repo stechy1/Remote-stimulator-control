@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
+import android.os.Parcel;
 
 import java.io.File;
 
@@ -36,6 +37,7 @@ public class MediaImage extends AMedia {
     public MediaImage(File mediaFile, String name) {
         super(mediaFile, name);
     }
+
     // endregion
 
     @Override
@@ -76,4 +78,26 @@ public class MediaImage extends AMedia {
         }
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
+    public MediaImage(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<MediaImage> CREATOR = new Creator<MediaImage>() {
+        @Override
+        public MediaImage createFromParcel(Parcel source) {
+            return new MediaImage(source);
+        }
+
+        @Override
+        public MediaImage[] newArray(int size) {
+            return new MediaImage[size];
+        }
+    };
 }

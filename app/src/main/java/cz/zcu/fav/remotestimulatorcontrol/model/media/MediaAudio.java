@@ -1,5 +1,7 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.media;
 
+import android.os.Parcel;
+
 import java.io.File;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
@@ -47,4 +49,26 @@ public class MediaAudio extends AMedia {
         setShowPlayingIcon(playing);
     }
     // endregion
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public MediaAudio(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<MediaAudio> CREATOR = new Creator<MediaAudio>() {
+        @Override
+        public MediaAudio createFromParcel(Parcel source) {
+            return new MediaAudio(source);
+        }
+
+        @Override
+        public MediaAudio[] newArray(int size) {
+            return new MediaAudio[size];
+        }
+    };
 }

@@ -189,7 +189,7 @@ public class AConfigurationTest {
     @Test
     public void testIsMediaTypePositive2() throws Exception {
         MediaType myMedia = MediaType.LED;
-        configuration.setMediaType(myMedia);
+        configuration.setMediaType(myMedia.getOrdinal());
         configuration.setMediaType(myMedia, false);
 
         assertFalse("Chyba: Nepodařilo se odebrat typ media.", configuration.isMediaType(myMedia));

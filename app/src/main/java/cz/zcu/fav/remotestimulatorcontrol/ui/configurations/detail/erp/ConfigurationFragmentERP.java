@@ -12,6 +12,7 @@ import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentConfigurationDetailErpBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.ADetailFragment;
 import cz.zcu.fav.remotestimulatorcontrol.widget.labeledspinner.LabelledSpinner;
 
@@ -63,6 +64,22 @@ public class ConfigurationFragmentERP extends ADetailFragment {
     @Override
     public void setConfiguration(AConfiguration configuration) {
         mConfiguration = (ConfigurationERP) configuration;
+
+        for (ConfigurationERP.Output output : mConfiguration.outputList) {
+            if (output.getMedia() != null) {
+                continue;
+            }
+            String requestedName = output.getMediaName();
+            if (requestedName == null || requestedName.isEmpty()) {
+                continue;
+            }
+            for (AMedia aMedia : mConfiguration.mediaList) {
+                if (aMedia.getName().equals(requestedName)) {
+                    output.setMedia(aMedia);
+                    break;
+                }
+            }
+        }
     }
 
     /**

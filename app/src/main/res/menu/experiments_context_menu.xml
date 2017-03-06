@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/context_delete"
+        android:icon="@drawable/delete_configuration"
+        app:showAsAction="always"
+        android:title="@string/action_delete"
+        android:titleCondensed="@string/action_delete"/>
+    <item
         android:id="@+id/context_rename"
         android:icon="@drawable/rename_configuration"
         app:showAsAction="ifRoom|withText"
         android:title="@string/action_rename"
         android:titleCondensed="@string/action_rename"/>
-    <item
-        android:id="@+id/context_delete"
-        android:icon="@drawable/delete_configuration"
-        app:showAsAction="ifRoom|withText"
-        android:title="@string/action_delete"
-        android:titleCondensed="@string/action_delete"/>
     <item
         android:id="@+id/context_duplicate"
         android:icon="@drawable/duplicate_configuration"
@@ -38,5 +38,5 @@
         android:icon="@drawable/share"
         android:title="@string/action_share"
         android:titleCondensed="@string/action_share"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>

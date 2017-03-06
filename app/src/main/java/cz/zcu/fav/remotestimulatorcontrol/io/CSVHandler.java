@@ -79,6 +79,17 @@ public abstract class CSVHandler implements IOHandler {
     }
 
     /**
+     * Zapíše hodnotu s oddělovačem
+     *
+     * @param builder {@link StringBuilder} StringBuilder ve kterém se sestavuje výsledný řetězec
+     * @param value Hodnota, která se má zapsat
+     */
+    protected void writeValue(StringBuilder builder, String value) {
+        builder.append(value)
+                .append(mSeparator);
+    }
+
+    /**
      * Zapíše základní parametry konfigurace
      *
      * @param builder {@link StringBuilder} StringBuilder ve kterém se sestavuje výsledný řetězec
@@ -127,6 +138,15 @@ public abstract class CSVHandler implements IOHandler {
          */
         public String getNext() throws IndexOutOfBoundsException {
             return mmValues[mmIndex++];
+        }
+
+        /**
+         * Zjistí, jestli lze vybrat další prvek
+         *
+         * @return True, pokud lze vybrat další prvek, jinak false
+         */
+        public boolean hasNext() {
+            return mmIndex == mmValues.length;
         }
     }
 }

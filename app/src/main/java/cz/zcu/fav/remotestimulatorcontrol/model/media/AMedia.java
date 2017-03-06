@@ -3,6 +3,8 @@ package cz.zcu.fav.remotestimulatorcontrol.model.media;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.File;
 
@@ -12,7 +14,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 /**
  * Abstraktní třída média konfigurace
  */
-public abstract class AMedia extends BaseObservable {
+public abstract class AMedia extends BaseObservable implements Parcelable {
 
     // region Constants
     public static final int THUMBNAIL_SIZE = 75;
@@ -20,10 +22,10 @@ public abstract class AMedia extends BaseObservable {
 
     // region Variables
     // Soubor s médiem
-    protected final File mMediaFile;
+    protected File mMediaFile;
     // Název média
     @Bindable
-    protected final String mName;
+    protected String mName;
     // Thumbnail
     @Bindable
     protected Bitmap thumbnail;
@@ -109,4 +111,36 @@ public abstract class AMedia extends BaseObservable {
         notifyPropertyChanged(BR.showPlayingIcon);
     }
     // endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AMedia aMedia = (AMedia) o;
+
+        return mName.equals(aMedia.mName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mName.hashCode();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mMediaFile.getAbsolutePath());
+        dest.writeString(this.mName);
+    }
+
+    protected AMedia(Parcel in) {
+        this.mMediaFile = new File(in.readString());
+        this.mName = in.readString();
+    }
 }

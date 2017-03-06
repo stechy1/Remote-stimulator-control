@@ -80,6 +80,7 @@ public class ConfigurationsActivity extends AppCompatActivity
     private static final String SAVE_STATE_IN_ACTION_MODE = "action_mode";
     private static final String SAVE_STATE_SELECTED_ITEMS_COUNT = "selected_items_count";
     private static final String SAVE_STATE_SORTING = "sorting";
+    private static final String BLUETOOTH_DEVICE_NAME = "bluetooth_dev_name";
     private static final String BLUETOOTH_STATUS = "bluetooth_status";
     // Seznam requestů
     private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -118,28 +119,11 @@ public class ConfigurationsActivity extends AppCompatActivity
 
             if (action.equals(BluetoothService.ACTION_STATE_CHANGE)) {
                 final int state = intent.getIntExtra(BluetoothService.STATE_CHANGE, BluetoothService.STATE_NONE);
-                switch (state) {
-                    case BluetoothService.STATE_CONNECTED:
-                        Log.d(TAG, "Zařízení je připojeno");
-                        mMenu.getItem(0).setIcon(R.drawable.bluetooth_connected);
-                        mBluetoothServiceStatus = BluetoothService.STATE_CONNECTED;
-                        break;
-                    case BluetoothService.STATE_CONNECTING:
-                        Log.d(TAG, "Zařízení se připojuje");
-                        mBluetoothServiceStatus = BluetoothService.STATE_CONNECTING;
-                        setStatus(R.string.title_connecting);
-                        break;
-                    case BluetoothService.STATE_LISTEN:
-                    case BluetoothService.STATE_NONE:
-                        Log.d(TAG, "Zařízení je odpojeno");
-                        mBluetoothServiceStatus = BluetoothService.STATE_NONE;
-                        setStatus(R.string.title_not_connected);
-                        mMenu.getItem(0).setIcon(R.drawable.bluetooth_connect);
-                        break;
-                }
+                setBluetoothStatusIcon(state);
             }
         }
     };
+
     // Reference na hlavní layout
     private DrawerLayout mDrawerLayout;
     // Reference na menu
@@ -343,6 +327,38 @@ public class ConfigurationsActivity extends AppCompatActivity
     }
 
     /**
+     * Nastaví ikonu představující stav připojení k zařízení
+     *
+     * @param state Stav připojení
+     */
+    private void setBluetoothStatusIcon(int state) {
+        switch (state) {
+            case BluetoothService.STATE_CONNECTED:
+                Log.d(TAG, "Zařízení je připojeno");
+                if (mMenu != null) {
+                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connected);
+                }
+                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTED;
+                setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                break;
+            case BluetoothService.STATE_CONNECTING:
+                Log.d(TAG, "Zařízení se připojuje");
+                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTING;
+                setStatus(R.string.title_connecting);
+                break;
+            case BluetoothService.STATE_LISTEN:
+            case BluetoothService.STATE_NONE:
+                Log.d(TAG, "Zařízení je odpojeno");
+                if (mMenu != null) {
+                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connect);
+                }
+                mBluetoothServiceStatus = BluetoothService.STATE_NONE;
+                setStatus(R.string.title_not_connected);
+                break;
+        }
+    }
+
+    /**
      * Naparsuje comparator
      *
      * @return Komparátor
@@ -465,6 +481,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mSortingFlag = savedInstanceState.getInt(SAVE_STATE_SORTING);
             boolean isInActionMode = savedInstanceState.getBoolean(SAVE_STATE_IN_ACTION_MODE);
+            mConnectedDeviceName = savedInstanceState.getString(BLUETOOTH_DEVICE_NAME);
             if (isInActionMode && mActionMode == null) {
                 startSupportActionMode(new ActionBarCallback());
                 List<Integer> selectedItems = savedInstanceState.getIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT);
@@ -472,12 +489,12 @@ public class ConfigurationsActivity extends AppCompatActivity
                 mConfigurationAdapter.selectItems(selectedItems);
                 mActionMode.setTitle(getString(R.string.selected_count, selectedItems.size()));
             } else {
-                setStatus(savedInstanceState.getString(BLUETOOTH_STATUS));
+                mBluetoothServiceStatus = savedInstanceState.getInt(BLUETOOTH_STATUS);
             }
 
         } else {
             mSortingFlag = ConfigurationSharedPreferences.getSortingFlag(this, FLAG_SORT_NAME);
-            setStatus(R.string.title_not_connected);
+            setBluetoothStatusIcon(BluetoothService.STATE_NONE);
         }
 
         mManager.setConfigurationComparator(parseComparator());
@@ -514,16 +531,13 @@ public class ConfigurationsActivity extends AppCompatActivity
         outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, mActionMode != null);
         outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, mConfigurationAdapter.getSelectedItemsIndex());
         outState.putInt(SAVE_STATE_SORTING, mSortingFlag);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            CharSequence subtitle = actionBar.getSubtitle();
-            outState.putString(BLUETOOTH_STATUS, subtitle != null ? subtitle.toString() : "");
-        }
+        outState.putString(BLUETOOTH_DEVICE_NAME, mConnectedDeviceName);
+        outState.putInt(BLUETOOTH_STATUS, mBluetoothServiceStatus);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         unregisterReceiver(mBluetoothDeviceNameReceiver);
         unregisterReceiver(mBluetoothStateReceiver);
         super.onStop();
@@ -645,6 +659,7 @@ public class ConfigurationsActivity extends AppCompatActivity
 
         MenuItem bluetoothMenuItem = menu.findItem(R.id.menu_main_connect);
         bluetoothMenuItem.setEnabled(mBluetoothSupport);
+        setBluetoothStatusIcon(mBluetoothServiceStatus);
 
         return true;
     }
@@ -839,6 +854,8 @@ public class ConfigurationsActivity extends AppCompatActivity
             mActionMode = null;
             mConfigurationAdapter.clearSelections();
             mFab.setVisibility(View.VISIBLE);
+            setBluetoothStatusIcon(mBluetoothServiceStatus);
+
 
             isRecyclerViewEmpty.set(mConfigurationAdapter.getItemCount() == 0);
         }

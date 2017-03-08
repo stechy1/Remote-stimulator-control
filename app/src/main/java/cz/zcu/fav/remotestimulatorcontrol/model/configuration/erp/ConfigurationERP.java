@@ -4,8 +4,15 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Code;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Codes;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.DataConvertor;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
@@ -169,6 +176,41 @@ public class ConfigurationERP extends AConfiguration {
             default:
                 return new JSONHandlerERP(this);
         }
+    }
+
+    @Override
+    public List<BtPacket> getPackets() {
+        List<BtPacket> packets = new ArrayList<>();
+
+        packets.add(new BtPacket(Codes.EDGE, DataConvertor.intTo1B(edge.ordinal())));
+        packets.add(new BtPacket(Codes.RANDOMNESS_ON, DataConvertor.intTo1B(random.ordinal()))); //TODO jak je to s tím kódem náhodnosti?
+
+        Code actualDURATION = Codes.OUTPUT0_DURATION;
+        Code actualPAUSE = Codes.OUTPUT0_PAUSE;
+        Code actualDISTRIBUTION = Codes.OUTPUT0_DISTRIBUTION;
+        Code actualBRIGHTNESS = Codes.OUTPUT0_BRIGHTNESS;
+
+        int vystup = 0; //index výstupu, slouží pro odfiltrování jasu kvůli sdružení u LED 5 a 7
+
+        for(Output output : outputList){
+            packets.add(new BtPacket(actualDURATION, DataConvertor.milisecondsTo2B(output.pulsUp)));
+            packets.add(new BtPacket(actualPAUSE, DataConvertor.milisecondsTo2B(output.pulsDown)));
+            packets.add(new BtPacket(actualDISTRIBUTION, DataConvertor.intTo1B(output.distributionValue))); //TODO u distribution parametru ještě neposíláme delay
+
+            if(vystup != 5 && vystup != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
+                packets.add(new BtPacket(actualBRIGHTNESS, DataConvertor.intTo1B(output.brightness)));
+                actualBRIGHTNESS = actualBRIGHTNESS.getNext();
+            }
+
+            actualDURATION = actualDURATION.getNext();
+            actualPAUSE = actualPAUSE.getNext();
+            actualDISTRIBUTION = actualDISTRIBUTION.getNext();
+
+
+            vystup++;
+        }
+
+        return packets;
     }
 
     /**

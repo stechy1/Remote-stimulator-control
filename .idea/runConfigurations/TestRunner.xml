@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TestRunner" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+  <configuration default="false" name="TestRunner" type="AndroidJUnit" factoryName="Android JUnit" nameIsGenerated="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="cz.zcu.fav.remotestimulatorcontrol.*" />
@@ -26,3 +27,4 @@
     <method />
   </configuration>
 </component>
+

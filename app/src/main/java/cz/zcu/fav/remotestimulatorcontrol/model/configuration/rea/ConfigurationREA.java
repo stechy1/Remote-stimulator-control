@@ -2,8 +2,12 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration.rea;
 
 import android.databinding.Bindable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 
@@ -160,6 +164,11 @@ public class ConfigurationREA extends AConfiguration {
             default:
                 return new JSONHandlerREA(this);
         }
+    }
+
+    @Override
+    public List<BtPacket> getPackets() {
+        return new ArrayList<>();
     }
 
     /**

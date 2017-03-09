@@ -4,10 +4,12 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 
 public abstract class AConfiguration extends BaseObservable implements IValidate, IDuplicable {
@@ -228,6 +230,11 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      * @return IO handler pro prási se souborem
      */
     public abstract IOHandler getHandler();
+
+    /**
+     * @return Vrátí kolekcí packetů reprezentující konfiguraci
+     */
+    public abstract List<BtPacket> getPackets();
 
     /**
      * Vrází příznak validity parametrů

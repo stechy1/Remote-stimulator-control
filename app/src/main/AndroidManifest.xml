@@ -55,12 +55,12 @@
         <activity
             android:name=".ui.configurations.detail.MediaImagePreviewActivity"
             android:label="Image preview"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!--  -->
         <activity
             android:name=".ui.configurations.detail.MediaChoserActivity"
             android:label="@string/activity_title_media_chose"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->
         <activity
             android:name=".ui.configurations.factory.ConfigurationFactoryActivity"
@@ -107,6 +107,8 @@
 
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
+
+        <activity android:name=".ui.outputs.OutputsActivity"></activity>
     </application>
 
 </manifest>

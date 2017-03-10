@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.io.File;
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
@@ -118,7 +117,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mManager = new ProfileManager(new File(getFilesDir(), "profiles"));
+        mManager = new ProfileManager(getFilesDir());
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_output_profiles);
         mBinding.setController(this);
@@ -267,7 +266,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
 
                     return true;
                 case R.id.context_delete: // Smažeme konfigurace
-                    //mManager.prepareToDelete(selectedItems);
+                    mManager.prepareToDelete(selectedItems);
 
                     return true;
                 case R.id.context_rename: // Spustime novou aktivitu ve formě dialogu

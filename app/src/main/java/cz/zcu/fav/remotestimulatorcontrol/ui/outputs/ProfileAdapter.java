@@ -1,7 +1,6 @@
-package cz.zcu.fav.remotestimulatorcontrol.ui.configurations;
+package cz.zcu.fav.remotestimulatorcontrol.ui.outputs;
 
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -11,53 +10,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.databinding.ConfigurationItemBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.ProfileItemBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
 import cz.zcu.fav.remotestimulatorcontrol.ui.ISelectable;
 
 /**
- * Adapter spravující položky v recyclerView
+ * Adapter spravující profily výstupů
  */
-class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ConfigurationHolder> implements ISelectable {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileHolder> implements ISelectable {
 
     // region Variables
-    // Kolekce všech konfigurací
-    private final List<AConfiguration> mConfigurations;
-    // Pole vybraných konfigurací
+
+    // Kolekce profilů
+    private final List<OutputProfile> mProfiles;
+    // Pole vybraných profilů
     private final SparseBooleanArray mSelectedItems;
-    // Udržuje informaci, zda-li se má zobrazit koncovka jednotlivých souborů, či nikoliv
-    private final ObservableBoolean mShowExtension;
-    // Kopie pole vybraných konfigurací
+    // Kopie pole vybraných profilů
     private SparseBooleanArray mCopyOfSelectedItems;
+
     // endregion
 
     // region Constructors
-    /**
-     * Vytvoří nový adapter
-     *
-     * @param configurations Kolekce obsahující konfigurace
-     * @param showExtension Pozorovatelná proměnná obsahující true, pokud se budou vykreslovat názvy
-     *                      souborů, jinak false
-     */
-    ConfigurationAdapter(List<AConfiguration> configurations, ObservableBoolean showExtension) {
-        mConfigurations = configurations;
-        mShowExtension = showExtension;
-        mSelectedItems = new SparseBooleanArray(configurations.size());
-        mCopyOfSelectedItems = new SparseBooleanArray(configurations.size());
+
+    public ProfileAdapter(List<OutputProfile> mProfiles) {
+        this.mProfiles = mProfiles;
+        mSelectedItems = new SparseBooleanArray(mProfiles.size());
+        mCopyOfSelectedItems = new SparseBooleanArray(mProfiles.size());
     }
+
     // endregion
 
     @Override
-    public ConfigurationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ConfigurationItemBinding bindings = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), R.layout.configuration_item, parent, false);
-        return new ConfigurationHolder(bindings);
+    public ProfileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        ProfileItemBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()), R.layout.profile_item, parent, false
+        );
+        return new ProfileHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(ConfigurationHolder holder, int position) {
-        AConfiguration configuration = mConfigurations.get(position);
-        holder.bindTo(configuration);
+    public void onBindViewHolder(ProfileHolder holder, int position) {
+        OutputProfile profile = mProfiles.get(position);
+        holder.bindTo(profile);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
         holder.setIsRecyclable(selected);
@@ -65,7 +59,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
 
     @Override
     public int getItemCount() {
-        return mConfigurations.size();
+        return mProfiles.size();
     }
 
     // region Selectable
@@ -91,7 +85,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     @Override
     public void selectAll() {
         mSelectedItems.clear();
-        for (int i = 0; i < mConfigurations.size(); i++)
+        for (int i = 0; i < mProfiles.size(); i++)
             mSelectedItems.put(i, true);
 
         notifyDataSetChanged();
@@ -104,7 +98,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     public void invertSelection() {
         SparseBooleanArray tempSelected = new SparseBooleanArray(mSelectedItems.size());
         // 1. Naplnit dočasné pole všemi prvky
-        for (int i = 0; i < mConfigurations.size(); i++)
+        for (int i = 0; i < mProfiles.size(); i++)
             tempSelected.put(i, true);
 
         // 2. Z dočasného pole odstranit takové indexy, které jsou v hlavním poli
@@ -200,19 +194,18 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
     }
     // endregion
 
-    class ConfigurationHolder extends RecyclerView.ViewHolder {
-        private final ConfigurationItemBinding mmBinding;
+    class ProfileHolder extends RecyclerView.ViewHolder {
+        private final ProfileItemBinding mmBinding;
 
-        private ConfigurationHolder(final ConfigurationItemBinding binding) {
+        public ProfileHolder(final ProfileItemBinding binding) {
             super(binding.getRoot());
 
             mmBinding = binding;
         }
 
-        void bindTo(AConfiguration configuration) {
-            mmBinding.setConfiguration(configuration);
+        void bindTo(OutputProfile profile) {
+            mmBinding.setProfile(profile);
             mmBinding.executePendingBindings();
-            mmBinding.setShowExtension(mShowExtension);
         }
     }
 }

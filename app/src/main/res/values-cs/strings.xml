@@ -6,6 +6,8 @@
     <string name="nav_drawer_open">Otevřít navigaci</string>
     <string name="nav_drawer_close">Zavřít navigaci</string>
     <string name="nav_configurations">Konfigurace</string>
+    <string name="nav_profiles">Profily výstupů</string>
+    <string name="nav_text_profiles">Profily</string>
     <string name="nav_text_settings">Nastavení</string>
     <string name="nav_text_help">Nápověda</string>
     <string name="nav_text_about">O aplikaci</string>
@@ -138,4 +140,5 @@
         <item name="2">CSV</item>
     </string-array>
     <string name="close_preview">Zavřít náhled</string>
+    <string name="no_profiles_found">Žádné profily nenalezeny</string>
 </resources>

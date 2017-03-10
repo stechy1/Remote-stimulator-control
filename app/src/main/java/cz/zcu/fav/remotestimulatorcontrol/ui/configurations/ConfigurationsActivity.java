@@ -62,6 +62,7 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.rename.Configuration
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.devices.DeviceListActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.help.HelpActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.OutputProfilesActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.settings.SettingsActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
@@ -540,7 +541,7 @@ public class ConfigurationsActivity extends AppCompatActivity
     protected void onDestroy() {
         unregisterReceiver(mBluetoothDeviceNameReceiver);
         unregisterReceiver(mBluetoothStateReceiver);
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -708,6 +709,9 @@ public class ConfigurationsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.nav_profiles:
+                startActivity(new Intent(this, OutputProfilesActivity.class));
+                break;
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
                 break;
@@ -883,7 +887,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         @Override
         public void onLongPress(MotionEvent e) {
             View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
-            if (mActionMode != null) {
+            if (mActionMode != null || view == null) {
                 return;
             }
 

@@ -27,6 +27,18 @@
         </activity>
 
         <!-- Other activity -->
+
+
+        <!-- OutputProfiles activity -->
+        <activity
+            android:name=".ui.outputs.OutputProfilesActivity"
+            android:label="@string/nav_text_profiles"
+            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationsActivity" />
+        </activity>
         <!-- Device list activity -->
         <activity
             android:name=".ui.devices.DeviceListActivity"
@@ -108,7 +120,6 @@
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
 
-        <activity android:name=".ui.outputs.OutputsActivity"></activity>
     </application>
 
 </manifest>

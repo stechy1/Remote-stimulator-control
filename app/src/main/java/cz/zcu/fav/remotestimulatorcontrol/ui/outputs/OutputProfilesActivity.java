@@ -28,21 +28,35 @@ import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityOutputProfilesBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 public class OutputProfilesActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener {
 
+    // region Constants
     private static final String TAG = "OutputProfiles";
-    private final ObservableBoolean isRecyclerViewEmpty = new ObservableBoolean(true);
 
+    private static final int REQUEST_NEW_PROFILE = 1;
+    private static final int REQUEST_RENAME_PROFILE = 2;
+    private static final int REQUEST_DUPLICATE_PROFILE = 3;
+    private static final int REQUEST_IMPORT_PROFILE = 4;
+
+    // endregion
+
+    // region Variables
+
+    private final ObservableBoolean isRecyclerViewEmpty = new ObservableBoolean(true);
     private ActivityOutputProfilesBinding mBinding;
+
     private RecyclerView mRecyclerView;
     private ProfileAdapter mProfileAdapter;
     private ProfileManager mManager;
     private GestureDetectorCompat mGestureDetector;
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
+
+    // endregion
 
     @SuppressWarnings("unused")
     public final SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -130,8 +144,25 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         refreshRecyclerView();
     }
 
-    public void fabClick(View view) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_NEW_PROFILE:
+                if (resultCode != RESULT_OK) {
+                    return;
+                }
 
+                String name = data.getStringExtra(ProfileFactoryActivity.PROFILE_NAME);
+                Log.d(TAG, name);
+
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void fabClick(View view) {
+        startActivityForResult(new Intent(OutputProfilesActivity.this, ProfileFactoryActivity.class), REQUEST_NEW_PROFILE);
     }
 
     // Kliknutí na položku v recyclerView
@@ -231,7 +262,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
 
 //                    intent = new Intent(ConfigurationsActivity.this, ConfigurationDuplicateActivity.class);
 //                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, selectedItems.get(0));
-//                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_NAME, name);
+//                    intent.putExtra(ConfigurationDuplicateActivity.PROFILE_NAME, name);
 //                    startActivityForResult(intent, REQUEST_DUPLICATE_CONFIGURATION);
 
                     return true;
@@ -246,7 +277,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
 
 //                    intent = new Intent(ConfigurationsActivity.this, ConfigurationRenameActivity.class);
 //                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_ID, selectedItems.get(0));
-//                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_NAME, name);
+//                    intent.putExtra(ConfigurationRenameActivity.PROFILE_NAME, name);
 //                    startActivityForResult(intent, REQUEST_RENAME_CONFIGURATION);
 
                     return true;

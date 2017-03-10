@@ -92,7 +92,7 @@ public class ConfigurationsActivity extends AppCompatActivity
     private static final int REQUEST_DUPLICATE_CONFIGURATION = 6;
     private static final int REQUEST_SORTING = 7;
     private static final int REQUEST_SETTINGS = 8;
-    private static final int REQUEST_IMPORT = 9;
+    private static final int REQUEST_IMPORT_CONFIGURATION = 9;
     // endregion
 
     // region Variables
@@ -637,7 +637,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     mManager.refresh();
                 }
                 break;
-            case REQUEST_IMPORT:
+            case REQUEST_IMPORT_CONFIGURATION:
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_FILE_PATH);
                     String name = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_NAME);
@@ -697,7 +697,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                 startActivityForResult(intent, REQUEST_SORTING);
                 break;
             case R.id.menu_main_import:
-                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT);
+                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT_CONFIGURATION);
                 break;
         }
 

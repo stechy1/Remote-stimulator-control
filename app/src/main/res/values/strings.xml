@@ -66,7 +66,7 @@
     <string name="activity_title_new_configuration">New configuration</string>
     <string name="configuration_name">Name</string>
     <string name="configuration_type">Configuration type</string>
-    <string name="configuration_configm_create">Create</string>
+    <string name="configuration_config_create">Create</string>
 
     <!-- Activity - rename configuration -->
     <string name="activity_title_rename_configuration">Rename configuration</string>
@@ -207,6 +207,9 @@
     <string name="error_invalid_name">Bad name format</string>
     <string name="error_name_exists">Name already exists</string>
     <string name="error_invalid_input">Value is out of range</string>
+
+    <!-- Activity - profile factory -->
+    <string name="activity_title_new_profile">Nový profil</string>
 
     <!-- Nastavení -->
     <string name="pref_header_general">General</string>

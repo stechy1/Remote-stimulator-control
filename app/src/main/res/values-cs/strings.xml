@@ -64,7 +64,7 @@
     <string name="activity_title_new_configuration">Nová konfigurace</string>
     <string name="configuration_name">Název</string>
     <string name="configuration_type">Typ konfigurace</string>
-    <string name="configuration_configm_create">Vytvořit</string>
+    <string name="configuration_config_create">Vytvořit</string>
 
     <!-- Activity - rename configuration -->
     <string name="activity_title_rename_configuration">Přejmenovat konfiguraci</string>
@@ -141,4 +141,5 @@
     </string-array>
     <string name="close_preview">Zavřít náhled</string>
     <string name="no_profiles_found">Žádné profily nenalezeny</string>
+    <string name="activity_title_new_profile">Nový profil</string>
 </resources>

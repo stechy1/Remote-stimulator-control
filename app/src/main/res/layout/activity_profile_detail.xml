@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity" />
+
+        <variable
+            name="controller"
+            type="ProfileDetailActivity" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+        <LinearLayout
+            android:id="@+id/profileContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity">
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

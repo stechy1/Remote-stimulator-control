@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,8 +29,10 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityOutputProfilesBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
@@ -290,6 +293,12 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         if (position == -1) {
             return;
         }
+
+        OutputProfile profile = mManager.profiles.get(position);
+        Intent intent = new Intent(this, ProfileDetailActivity.class);
+        intent.putExtra(ProfileDetailActivity.PROFILE_NAME, profile.getName());
+
+        ActivityCompat.startActivity(this, intent, null);
 
         Log.d(TAG, String.valueOf(position));
     }

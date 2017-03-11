@@ -15,6 +15,7 @@ import android.support.v7.widget.AppCompatRadioButton;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -115,6 +116,12 @@ public final class ConfigurationBindings {
         if (!checked) {
             checkBox.setEnabled(!invalid);
         }
+    }
+
+    @BindingAdapter({"media_type", "media_flag"})
+    public static void mediaTypeProccess(RadioButton radioButton, MediaType mediaType, MediaType mediaFlag) {
+        boolean checked = (mediaType.getOrdinal() & mediaFlag.getOrdinal()) == mediaFlag.getOrdinal();
+        radioButton.setChecked(checked);
     }
 
     @BindingAdapter({"value", "flag"})

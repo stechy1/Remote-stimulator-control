@@ -1,71 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="96dp"
-    android:orientation="horizontal">
+<layout>
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+    <data>
 
-        <RadioButton
-            android:id="@+id/radioMediaLed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="RadioButton"
-            tools:text="@string/media_led" />
+        <import type="android.view.View" />
 
-        <RadioButton
-            android:id="@+id/radioMediaImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="RadioButton"
-            tools:text="@string/media_image" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType" />
 
-        <RadioButton
-            android:id="@+id/radioMediaAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="RadioButton"
-            tools:text="@string/media_audio" />
-    </RadioGroup>
+        <import type="cz.zcu.fav.remotestimulatorcontrol.widget.profileconfiguration.ProfileConfigurationWidget" />
 
-    <ImageView
-        android:id="@+id/imageMedia"
-        android:layout_width="wrap_content"
-        android:layout_height="64dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/radioGroup"
-        android:layout_toRightOf="@+id/radioGroup"
-        app:srcCompat="@drawable/default_media_image_thumbnail" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputConfiguration" />
 
-    <TextView
-        android:id="@+id/testMediaName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/imageMedia"
-        android:layout_toRightOf="@+id/radioGroup"
-        android:gravity="center"
-        android:text="TextView" />
-</RelativeLayout>
-</android.support.v7.widget.CardView>
+        <variable
+            name="controller"
+            type="ProfileConfigurationWidget" />
+
+        <variable
+            name="configuration"
+            type="OutputConfiguration" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:elevation="3dp"
+            card_view:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true">
+
+                    <RadioButton
+                        android:id="@+id/radioMediaLed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/led_type_configuration"
+                        android:drawableStart="@drawable/led_type_configuration"
+                        android:onClick="@{controller::onMediaRadioClick}"
+                        android:text="@string/media_led"
+                        app:media_flag="@{MediaType.LED}"
+                        app:media_type="@{configuration.mediaType}"
+                        tools:text="@string/media_led" />
+
+                    <RadioButton
+                        android:id="@+id/radioMediaImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/image_type_configuration"
+                        android:drawableStart="@drawable/image_type_configuration"
+                        android:onClick="@{controller::onMediaRadioClick}"
+                        android:text="@string/media_image"
+                        app:media_flag="@{MediaType.IMAGE}"
+                        app:media_type="@{configuration.mediaType}"
+                        tools:text="@string/media_image" />
+
+                    <RadioButton
+                        android:id="@+id/radioMediaAudio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/audio_type_configuration"
+                        android:drawableStart="@drawable/audio_type_configuration"
+                        android:onClick="@{controller::onMediaRadioClick}"
+                        android:text="@string/media_audio"
+                        app:media_flag="@{MediaType.AUDIO}"
+                        app:media_type="@{configuration.mediaType}"
+                        tools:text="@string/media_audio" />
+                </RadioGroup>
+
+                <ImageView
+                    android:id="@+id/imageMedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="64dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/radioGroup"
+                    android:layout_toRightOf="@+id/radioGroup"
+                    app:preview="@{configuration.thumbnail}"
+                    app:type="@{configuration.mediaType}"
+                    android:visibility="@{(configuration.mediaType != MediaType.LED) ? View.VISIBLE : View.GONE}"/>
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:visibility="@{configuration.showPlayingIcon ? View.VISIBLE : View.GONE}"
+                    app:srcCompat="@drawable/start_configuration" />
+
+                <TextView
+                    android:id="@+id/testMediaName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/imageMedia"
+                    android:layout_toEndOf="@+id/radioGroup"
+                    android:layout_toRightOf="@+id/radioGroup"
+                    android:gravity="center"
+                    android:text="@{configuration.fileName}" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</layout>

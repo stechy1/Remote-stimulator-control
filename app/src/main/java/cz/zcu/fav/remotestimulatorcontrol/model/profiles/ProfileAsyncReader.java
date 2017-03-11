@@ -78,7 +78,8 @@ public class ProfileAsyncReader extends AsyncTask<Void, Integer, Integer[]> {
     protected Integer[] doInBackground(Void... params) {
         final Integer[] success = {0, 0};
 
-        File[] files = mWorkingDirectory.listFiles();
+        File profilesFile = new File(mWorkingDirectory, ProfileManager.PROFILE_FOLDER);
+        File[] files = profilesFile.listFiles();
         if (files == null) {
             return success;
         }

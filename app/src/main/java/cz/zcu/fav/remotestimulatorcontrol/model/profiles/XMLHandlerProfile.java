@@ -80,14 +80,13 @@ public class XMLHandlerProfile extends GenericXMLHandler {
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(inputStream, DEFAULT_ENCODING);
 
-            int eventype = parser.getEventType();
+            int eventType = parser.getEventType();
             String text = "";
             OutputConfiguration outputConfiguration = new OutputConfiguration();
 
-
-            while(eventype != END_DOCUMENT) {
+            while(eventType != END_DOCUMENT) {
                 String tagName = parser.getName();
-                switch (eventype) {
+                switch (eventType) {
                     case START_DOCUMENT:
                         break;
                     case START_TAG:
@@ -112,6 +111,7 @@ public class XMLHandlerProfile extends GenericXMLHandler {
                         }
                         break;
                 }
+                eventType = parser.next();
             }
 
         } catch (XmlPullParserException e) {

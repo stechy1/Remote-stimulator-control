@@ -37,7 +37,7 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
 
     // endregion
 
-    private static final String PROFILE_FOLDER = "profiles";
+    public static final String PROFILE_FOLDER = "profiles";
 
     private static final String EXTENSION = ".xml";
 
@@ -64,7 +64,7 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @param workingDirectory Adresář obsahující jednotlivé profily
      */
     public ProfileManager(File workingDirectory) {
-        mWorkingDirectory = new File(workingDirectory, PROFILE_FOLDER);
+        mWorkingDirectory = workingDirectory;
         if (!mWorkingDirectory.exists()) {
             if (!mWorkingDirectory.mkdirs()) {
                 Log.e(TAG, "Nepodařilo se vytvořit složku pro profily výstupů");
@@ -76,7 +76,19 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
 
     // endregion
 
+    // region Public static methods
+    public static File buildProfileFilePath(File workingDirectory, OutputProfile profile) {
+        File profilesFile = new File(workingDirectory, PROFILE_FOLDER);
+
+        return new File(profilesFile, profile.getName() + EXTENSION);
+    }
+    // endregion
+
     // region Private methods
+
+    private File buildProfileFilePath(OutputProfile profile) {
+        return buildProfileFilePath(mWorkingDirectory, profile);
+    }
 
     /**
      * Uloží konfiguraci
@@ -85,7 +97,7 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @return True, pokud se podařilo profil uložit, jinak false
      */
     private boolean save(OutputProfile profile) {
-        File file = new File(mWorkingDirectory, profile.getName() + EXTENSION);
+        File file = buildProfileFilePath(profile);
         boolean success = true;
         try {
             profile.getHandler().write(new FileOutputStream(file));

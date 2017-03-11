@@ -40,6 +40,7 @@ public class ProfileLoader extends AsyncTask<File, Void, Void> {
     @Override
     protected Void doInBackground(File... params) {
         try {
+            mProfile.mOutputConfigurationList.clear();
             IOHandler handler = mProfile.getHandler();
             File file = ProfileManager.buildProfileFilePath(params[0], mProfile);
 

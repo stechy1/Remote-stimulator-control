@@ -3,7 +3,10 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import java.io.File;
@@ -21,6 +24,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements ProfileL
 
     // region Constants
     public static final String PROFILE_NAME = "profile_name";
+    private static final String TAG = "ProfileDetailAct";
     // endregion
 
     // region Variables
@@ -46,6 +50,15 @@ public class ProfileDetailActivity extends AppCompatActivity implements ProfileL
         }
 
         profile = new OutputProfile(name);
+        binding.setProfile(profile);
+
+        Toolbar toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -77,7 +90,15 @@ public class ProfileDetailActivity extends AppCompatActivity implements ProfileL
         for (OutputConfiguration outputConfiguration : profile.mOutputConfigurationList) {
             ProfileConfigurationWidget widget = new ProfileConfigurationWidget(this);
             widget.setOutputConfiguration(outputConfiguration);
+            widget.setOnMediaRequestListener(mediaSelectRequestListener);
             container.addView(widget);
         }
     }
+
+    private final ProfileConfigurationWidget.OnMediaSelectRequestListener mediaSelectRequestListener = new ProfileConfigurationWidget.OnMediaSelectRequestListener() {
+        @Override
+        public void onMediaSelectRequest(OutputConfiguration configuration) {
+            Log.d(TAG, "Zobrazuji výběr média: ");
+        }
+    };
 }

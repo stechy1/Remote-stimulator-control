@@ -8,21 +8,54 @@
         <variable
             name="controller"
             type="ProfileDetailActivity" />
+        <variable
+            name="profile"
+            type="cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile" />
     </data>
 
-    <ScrollView
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
-        <LinearLayout
-            android:id="@+id/profileContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity">
+        android:fitsSystemWindows="true"
+        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity"
+        tools:openDrawer="start">
 
-        </LinearLayout>
-    </ScrollView>
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/colorPrimary"
+                    android:title="@{profile.name}"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+            </android.support.design.widget.AppBarLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize">
+
+                <LinearLayout
+                    android:id="@+id/profileContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity">
+
+                </LinearLayout>
+            </ScrollView>
+        </android.support.design.widget.CoordinatorLayout>
+    </android.support.v4.widget.DrawerLayout>
 </layout>

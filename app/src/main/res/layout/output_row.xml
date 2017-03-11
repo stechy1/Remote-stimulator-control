@@ -102,7 +102,8 @@
                     android:layout_toRightOf="@+id/radioGroup"
                     app:preview="@{configuration.thumbnail}"
                     app:type="@{configuration.mediaType}"
-                    android:visibility="@{(configuration.mediaType != MediaType.LED) ? View.VISIBLE : View.GONE}"/>
+                    android:visibility="@{(configuration.mediaType != MediaType.LED) ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{() -> controller.onMediaRequest(configuration)}"/>
 
                 <ImageView
                     android:id="@+id/imageView2"

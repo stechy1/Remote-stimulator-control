@@ -102,6 +102,15 @@
             android:name=".ui.outputs.factory.ProfileFactoryActivity"
             android:label="@string/activity_title_new_profile"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile detail activity -->
+        <activity
+            android:name=".ui.outputs.detail.ProfileDetailActivity"
+            android:label="@string/activity_title_profile_detail"
+            android:parentActivityName=".ui.outputs.OutputProfilesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.outputs.OutputProfilesActivity" />
+        </activity>
 
         <!-- Help activity -->
         <activity
@@ -124,8 +133,6 @@
 
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
-
-        <activity android:name=".ui.outputs.detail.ProfileDetailActivity"></activity>
     </application>
 
 </manifest>

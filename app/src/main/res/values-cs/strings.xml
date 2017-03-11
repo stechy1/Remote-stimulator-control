@@ -142,4 +142,5 @@
     <string name="close_preview">Zavřít náhled</string>
     <string name="no_profiles_found">Žádné profily nenalezeny</string>
     <string name="activity_title_new_profile">Nový profil</string>
+    <string name="activity_title_profile_detail">Detail profilu</string>
 </resources>

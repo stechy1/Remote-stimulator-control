@@ -21,6 +21,7 @@ public class ProfileConfigurationWidget extends LinearLayout {
     // region Variables
     private OutputConfiguration outputConfiguration;
     private OutputRowBinding mBinding;
+    private OnMediaSelectRequestListener mListener;
     // endregion
 
     // region Constructors
@@ -58,6 +59,10 @@ public class ProfileConfigurationWidget extends LinearLayout {
         mBinding.executePendingBindings();
     }
 
+    public void setOnMediaRequestListener(OnMediaSelectRequestListener listener) {
+        this.mListener = listener;
+    }
+
     /**
      * Metoda která se zavolá při stisku nějakého radiobutonu
      *
@@ -78,5 +83,17 @@ public class ProfileConfigurationWidget extends LinearLayout {
                 break;
         }
     }
+
+    public void onMediaRequest(OutputConfiguration confi) {
+        if (mListener != null) {
+            mListener.onMediaSelectRequest(confi);
+        }
+    }
     // endregion
+
+    public interface OnMediaSelectRequestListener {
+
+        void onMediaSelectRequest(OutputConfiguration configuration);
+
+    }
 }

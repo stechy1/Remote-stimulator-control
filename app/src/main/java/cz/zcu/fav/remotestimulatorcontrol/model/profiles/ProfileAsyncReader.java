@@ -60,8 +60,10 @@ public class ProfileAsyncReader extends AsyncTask<Void, Integer, Integer[]> {
             return false;
         }
 
+        Log.d(TAG, "Otevírám soubor: " + file);
         // Získání koncovky souboru jako podřetězec začínající o 1 větším indexem tečky.
         String extension = name.substring(name.indexOf(".") + 1);
+
         name = name.replace("." + extension, "");
 
         OutputProfile profile = new OutputProfile(name);
@@ -91,6 +93,14 @@ public class ProfileAsyncReader extends AsyncTask<Void, Integer, Integer[]> {
         }
 
         return success;
+    }
+
+    @Override
+    protected void onPostExecute(Integer[] result) {
+        Log.i(TAG, "Načítání profilů doběhlo. Úspěšně: " + result[0] + "; Neúspěšně: " + result[1]);
+        if (mListener != null) {
+            mListener.onLoaded(result[0], result[1]);
+        }
     }
 
     interface OnProfileLoadedListener {

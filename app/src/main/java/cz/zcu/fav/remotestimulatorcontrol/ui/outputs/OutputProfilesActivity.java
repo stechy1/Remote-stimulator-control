@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -54,6 +57,120 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
     private GestureDetectorCompat mGestureDetector;
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
+
+    private boolean mDeleteConfirmed;
+    private Handler.Callback managerCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            boolean success;
+            int snackbarMessage = -1;
+            switch (msg.what) {
+                case ProfileManager.MESSAGE_PROFILES_LOADED:
+                    mBinding.swipeRefreshLayout.setRefreshing(false);
+                    isRecyclerViewEmpty.set(mProfileAdapter.getItemCount() == 0);
+                    mBinding.recyclerViewProfiles.getAdapter().notifyDataSetChanged();
+                    break;
+                case ProfileManager.MESSAGE_NAME_EXISTS:
+                    snackbarMessage = R.string.error_name_exists;
+                    break;
+                case ProfileManager.MESSAGE_INVALID_NAME:
+                    snackbarMessage = R.string.error_invalid_name;
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_CREATE:
+                    success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
+
+                    if (success) {
+                        isRecyclerViewEmpty.set(false);
+                        mProfileAdapter.notifyItemInserted(msg.arg2);
+                    }
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_IMPORT:
+                    success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+
+                    if (success) {
+                        isRecyclerViewEmpty.set(false);
+                        mProfileAdapter.notifyItemInserted(msg.arg2);
+                    }
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_RENAME:
+                    success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
+
+                    if (success) {
+                        mProfileAdapter.notifyItemChanged(msg.arg2);
+                    }
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_PREPARED_TO_DELETE:
+                    List<Integer> itemsToDelete = mProfileAdapter.getSelectedItemsIndex();
+                    mProfileAdapter.saveSelectedItems();
+
+                    for (Integer item : itemsToDelete)
+                        mProfileAdapter.notifyItemRemoved(item);
+
+                    mProfileAdapter.clearSelections();
+                    mActionMode.setTitle(getString(R.string.selected_count, mProfileAdapter.getSelectedItemCount()));
+
+                    Snackbar.make(mFab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                            .setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mManager.undoDelete();
+
+                                    mDeleteConfirmed = false;
+                                }
+                            })
+                            .setCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar snackbar, int event) {
+                                    if (mDeleteConfirmed) {
+                                        mManager.confirmDelete();
+                                        boolean empty = mProfileAdapter.getItemCount() == 0;
+                                        isRecyclerViewEmpty.set(empty);
+                                        if (empty && mActionMode != null) {
+                                            mActionMode.finish();
+                                        }
+                                    } else {
+                                        mDeleteConfirmed = true;
+                                    }
+
+                                    super.onDismissed(snackbar, event);
+                                }
+                            })
+                            .show();
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_UNDO_DELETE:
+                    mProfileAdapter.restoreSelectedItems();
+                    List<Integer> itemsToUndo = mProfileAdapter.getSelectedItemsIndex();
+
+                    for (Integer item : itemsToUndo)
+                        mProfileAdapter.notifyItemInserted(item);
+
+                    if (mActionMode != null) {
+                        mActionMode.setTitle(getString(R.string.selected_count, mProfileAdapter.getSelectedItemCount()));
+                    }
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_UPDATE:
+                    mProfileAdapter.notifyItemChanged(msg.arg1);
+                    break;
+                case ProfileManager.MESSAGE_PROFILE_DUPLICATE:
+                    success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
+                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
+
+                    if (success) {
+                        mProfileAdapter.notifyItemChanged(msg.arg2);
+                    }
+                    break;
+            }
+
+            if (snackbarMessage != -1) {
+                Snackbar.make(mFab, snackbarMessage, Snackbar.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+    };
+    private final Handler managerHandler = new Handler(managerCallback);
 
     // endregion
 
@@ -118,6 +235,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         super.onCreate(savedInstanceState);
 
         mManager = new ProfileManager(getFilesDir());
+        mManager.setHandler(managerHandler);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_output_profiles);
         mBinding.setController(this);
@@ -153,6 +271,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
 
                 String name = data.getStringExtra(ProfileFactoryActivity.PROFILE_NAME);
                 Log.d(TAG, name);
+                mManager.create(name);
 
                 break;
             default:

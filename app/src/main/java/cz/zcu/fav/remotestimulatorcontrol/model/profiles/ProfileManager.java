@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +64,12 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @param workingDirectory Adresář obsahující jednotlivé profily
      */
     public ProfileManager(File workingDirectory) {
-        mWorkingDirectory = workingDirectory;
+        mWorkingDirectory = new File(workingDirectory, PROFILE_FOLDER);
+        if (!mWorkingDirectory.exists()) {
+            if (!mWorkingDirectory.mkdirs()) {
+                Log.e(TAG, "Nepodařilo se vytvořit složku pro profily výstupů");
+            }
+        }
         profiles = new ObservableArrayList<>();
         mProfilesToDelete = new HashSet<>();
     }
@@ -79,8 +86,15 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      */
     private boolean save(OutputProfile profile) {
         File file = new File(mWorkingDirectory, profile.getName() + EXTENSION);
-        // TODO implementovat IO handlery
-        return false;
+        boolean success = true;
+        try {
+            profile.getHandler().write(new FileOutputStream(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+            success = false;
+        }
+
+        return success;
     }
     // endregion
 
@@ -112,11 +126,12 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
                 if (mHandler != null) {
                     mHandler.obtainMessage(MESSAGE_NAME_EXISTS).sendToTarget();
                 }
+                return null;
             }
-            return null;
         }
 
         OutputProfile profile = new OutputProfile(name);
+        profile.fillOutputConfigurations();
         if (!save(profile)) {
             if (mHandler != null) {
                 mHandler.obtainMessage(MESSAGE_PROFILE_CREATE, MESSAGE_SUCCESSFUL).sendToTarget();
@@ -300,7 +315,9 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
 
     @Override
     public void onLoaded(int successfuly, int unsuccessfuly) {
-
+        if (mHandler != null) {
+            mHandler.obtainMessage(MESSAGE_PROFILES_LOADED, successfuly, unsuccessfuly).sendToTarget();
+        }
     }
 
     /**

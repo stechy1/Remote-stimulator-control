@@ -316,13 +316,12 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * Potvrzení smazání vybraných konfigurací
      */
     public void confirmDelete() {
-        // TODO implementovat smazání profilů
-//        for (OutputProfile configuration : mProfilesToDelete) {
-//            File configFile = buildConfigurationFilePath(configuration);
-//            if (!configFile.delete()) {
-//                Log.d(TAG, "Nepodarilo se smazat konfiguraci: " + configFile.getName());
-//            }
-//        }
+        for (OutputProfile configuration : mProfilesToDelete) {
+            File configFile = buildProfileFilePath(configuration);
+            if (!configFile.delete()) {
+                Log.d(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
+            }
+        }
     }
 
     @Override

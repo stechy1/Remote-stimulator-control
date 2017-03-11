@@ -61,7 +61,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
 
-    private boolean mDeleteConfirmed;
+    private boolean mDeleteConfirmed = true;
     private Handler.Callback managerCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {

@@ -189,16 +189,8 @@
     <string name="toggle">Toggle</string>
 
     <!-- Zprávy posílající se z manažeru konfigurací -->
-    <string name="manager_message_create_unsuccessful">Can not create configuration</string>
-    <string name="manager_message_create_successful">Configuration was created</string>
-    <string name="manager_message_import_successful">Configuration was imported</string>
-    <string name="manager_message_import_unsuccessful">Can not import configuration</string>
-    <string name="manager_message_rename_unsuccessful">Can not rename configuration</string>
-    <string name="manager_message_rename_successful">Rename was successful</string>
-    <string name="manager_message_delete_unsuccessful">Can not delete configuration</string>
-    <string name="manager_message_delete_successful">Deleting was successful</string>
-    <string name="manager_message_duplicate_successful">Configuration was duplicated</string>
-    <string name="manager_message_duplicate_unsuccessful">Can not duplicate configuration</string>
+    <string name="manager_message_successful">Akce was successful</string>
+    <string name="manager_message_unsuccessful">Akce was unsuccessful</string>
 
     <!-- Activity - media chose -->
     <string name="activity_title_media_chose">Vyberte položku…</string>

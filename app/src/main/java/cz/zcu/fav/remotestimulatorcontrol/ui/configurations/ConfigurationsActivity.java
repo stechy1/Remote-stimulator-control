@@ -177,7 +177,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_CREATE:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -186,7 +186,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_IMPORT:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -195,7 +195,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_RENAME:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mConfigurationAdapter.notifyItemChanged(msg.arg2);
@@ -211,7 +211,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     mConfigurationAdapter.clearSelections();
                     mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
 
-                    Snackbar.make(mFab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                    Snackbar.make(mFab, R.string.manager_message_successful, Snackbar.LENGTH_LONG)
                             .setAction("UNDO", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -255,7 +255,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_DUPLICATE:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mConfigurationAdapter.notifyItemChanged(msg.arg2);

@@ -81,7 +81,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     break;
                 case ProfileManager.MESSAGE_PROFILE_CREATE:
                     success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -90,7 +90,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     break;
                 case ProfileManager.MESSAGE_PROFILE_IMPORT:
                     success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -99,7 +99,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     break;
                 case ProfileManager.MESSAGE_PROFILE_RENAME:
                     success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mProfileAdapter.notifyItemChanged(msg.arg2);
@@ -115,7 +115,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     mProfileAdapter.clearSelections();
                     mActionMode.setTitle(getString(R.string.selected_count, mProfileAdapter.getSelectedItemCount()));
 
-                    Snackbar.make(mFab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                    Snackbar.make(mFab, R.string.manager_message_successful, Snackbar.LENGTH_LONG)
                             .setAction("UNDO", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -159,7 +159,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     break;
                 case ProfileManager.MESSAGE_PROFILE_DUPLICATE:
                     success = msg.arg1 == ProfileManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mProfileAdapter.notifyItemChanged(msg.arg2);

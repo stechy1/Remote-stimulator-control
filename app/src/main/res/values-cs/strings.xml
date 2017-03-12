@@ -106,16 +106,8 @@
     <string name="toggle">Toggle</string>
 
     <!-- Zprávy posílající se z manažeru konfigurací -->
-    <string name="manager_message_create_unsuccessful">Konfiguraci se nepodařilo vytvořit</string>
-    <string name="manager_message_create_successful">Konfigurace byla vytvořena</string>
-    <string name="manager_message_import_unsuccessful">Konfiguraci se nepodařilo importovat</string>
-    <string name="manager_message_import_successful">Konfigurace byla importována</string>
-    <string name="manager_message_rename_unsuccessful">Konfiguraci se nepodařilo přejmenovat</string>
-    <string name="manager_message_rename_successful">Konfigurace byla přejmenována</string>
-    <string name="manager_message_delete_unsuccessful">Konfiguraci se nepodařilo smazat</string>
-    <string name="manager_message_delete_successful">Konfigurace byla smazána</string>
-    <string name="manager_message_duplicate_unsuccessful">Konfiguraci se nepodařilo zduplikovat</string>
-    <string name="manager_message_duplicate_successful">Konfigurace byla zduplikována</string>
+    <string name="manager_message_successful">Akce se podařila</string>
+    <string name="manager_message_unsuccessful">Akce se nezdařila</string>
 
     <!-- Validační chyby -->
     <string name="error_invalid_name">Název má špatný formát</string>

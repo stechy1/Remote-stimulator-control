@@ -189,8 +189,8 @@
     <string name="toggle">Toggle</string>
 
     <!-- Zprávy posílající se z manažeru konfigurací -->
-    <string name="manager_message_successful">Akce was successful</string>
-    <string name="manager_message_unsuccessful">Akce was unsuccessful</string>
+    <string name="manager_message_successful">Action was successful</string>
+    <string name="manager_message_unsuccessful">Action was unsuccessful</string>
 
     <!-- Activity - media chose -->
     <string name="activity_title_media_chose">Vyberte položku…</string>
@@ -211,6 +211,7 @@
     <string name="image_preview_description">Image preview</string>
     <string name="close_preview">Close</string>
     <string name="activity_title_profile_detail">Profile detail</string>
+    <string name="activity_title_rename_profile">Rename profile</string>
 
 
     <string-array name="pref_extensions" translatable="false">

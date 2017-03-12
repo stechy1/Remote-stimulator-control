@@ -102,6 +102,11 @@
             android:name=".ui.outputs.factory.ProfileFactoryActivity"
             android:label="@string/activity_title_new_profile"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile rename activity -->
+        <activity
+            android:name=".ui.outputs.rename.ProfileRenameActivity"
+            android:label="@string/activity_title_rename_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Profile detail activity -->
         <activity
             android:name=".ui.outputs.detail.ProfileDetailActivity"

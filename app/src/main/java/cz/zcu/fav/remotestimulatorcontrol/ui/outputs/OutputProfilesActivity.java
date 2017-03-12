@@ -34,6 +34,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ProfileRenameActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
@@ -268,14 +269,27 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_NEW_PROFILE:
-                if (resultCode != RESULT_OK) {
-                    return;
+                if (resultCode == RESULT_OK) {
+                    String name = data.getStringExtra(ProfileFactoryActivity.PROFILE_NAME);
+                    Log.d(TAG, name);
+                    mManager.create(name);
                 }
+                break;
+            case REQUEST_RENAME_PROFILE:
+                if (resultCode == RESULT_OK) {
+                    int id = data.getIntExtra(ProfileRenameActivity.PROFILE_ID, ProfileRenameActivity.PROFILE_UNKNOWN_ID);
+                    String name = data.getStringExtra(ProfileRenameActivity.PROFILE_NAME);
 
-                String name = data.getStringExtra(ProfileFactoryActivity.PROFILE_NAME);
-                Log.d(TAG, name);
-                mManager.create(name);
+                    if (id == ProfileRenameActivity.PROFILE_UNKNOWN_ID) {
+                        return;
+                    }
 
+                    mManager.rename(id, name);
+
+                    if (mActionMode != null) {
+                        mActionMode.finish();
+                    }
+                }
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -402,10 +416,10 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                         return false;
                     }
 
-//                    intent = new Intent(ConfigurationsActivity.this, ConfigurationRenameActivity.class);
-//                    intent.putExtra(ConfigurationRenameActivity.CONFIGURATION_ID, selectedItems.get(0));
-//                    intent.putExtra(ConfigurationRenameActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_RENAME_CONFIGURATION);
+                    intent = new Intent(OutputProfilesActivity.this, ProfileRenameActivity.class);
+                    intent.putExtra(ProfileRenameActivity.PROFILE_ID, selectedItems.get(0));
+                    intent.putExtra(ProfileRenameActivity.PROFILE_NAME, name);
+                    startActivityForResult(intent, REQUEST_RENAME_PROFILE);
 
                     return true;
                 case R.id.context_select_all:

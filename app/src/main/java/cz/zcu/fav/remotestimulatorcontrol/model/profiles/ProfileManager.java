@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
+
 /**
  * Třída představující správce profilů
  */
@@ -245,7 +247,31 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @see #MESSAGE_UNSUCCESSFUL profil se nepodařilo přejmenovat
      */
     public void rename(OutputProfile profile, String newName) {
-        // TODO implementovat přejmenování profilu
+        String oldName = profile.getName();
+        File oldConfigPath = buildProfileFilePath(profile);
+
+        if (!AConfiguration.isNameValid(newName)) {
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_INVALID_NAME).sendToTarget();
+            }
+            return;
+        }
+
+        profile.setName(newName);
+
+        File newConfigPath = buildProfileFilePath(profile);
+
+        if (!oldConfigPath.renameTo(newConfigPath)) {
+            profile.setName(oldName);
+
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_RENAME, MESSAGE_UNSUCCESSFUL).sendToTarget();
+            }
+        } else {
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_RENAME, MESSAGE_SUCCESSFUL, profiles.indexOf(profile)).sendToTarget();
+            }
+        }
     }
 
     /**

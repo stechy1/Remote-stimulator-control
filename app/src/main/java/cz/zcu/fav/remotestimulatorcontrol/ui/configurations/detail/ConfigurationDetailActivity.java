@@ -372,7 +372,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
             switch (msg.what) {
                 case MediaManager.MESSAGE_MEDIA_IMPORT:
                     success = msg.arg1 == MediaManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         adapter.notifyItemInserted(msg.arg2);
@@ -383,7 +383,7 @@ public class ConfigurationDetailActivity extends AppCompatActivity
 
                     adapter.notifyItemRemoved(deletedIndex);
 
-                    Snackbar.make(recyclerView, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                    Snackbar.make(recyclerView, R.string.manager_message_successful, Snackbar.LENGTH_LONG)
                             .setAction("UNDO", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {

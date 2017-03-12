@@ -1,10 +1,12 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityProfileFactoryBinding;
@@ -32,6 +34,9 @@ public class ProfileFactoryActivity extends AppCompatActivity {
         ActivityProfileFactoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_profile_factory);
         binding.setController(this);
         binding.setProfile(profile);
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     @Override

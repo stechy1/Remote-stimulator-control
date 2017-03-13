@@ -16,8 +16,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -36,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -367,9 +364,6 @@ public class ConfigurationsActivity extends AppCompatActivity
     private Comparator<AConfiguration> parseComparator() {
         List<ConfigurationComparator> comparators = new ArrayList<>();
 
-        if (isFlagValid(FLAG_SORT_MEDIA, mSortingFlag)) {
-            comparators.add(ConfigurationComparator.MEDIA_COMPARATOR);
-        }
         if (isFlagValid(FLAG_SORT_TYPE, mSortingFlag)) {
             comparators.add(ConfigurationComparator.TYPE_COMPARATOR);
         }
@@ -773,12 +767,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_TYPE, configuration.getConfigurationType());
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_EXTENSION_TYPE, configuration.metaData.extensionType);
 
-        TextView textConfType = (TextView) view.findViewById(R.id.text_configuration_type);
-
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-                textConfType, "transition_configuration_type");
-
-        ActivityCompat.startActivityForResult(this, intent, REQUEST_DETAIL_CONFIGURATION, options.toBundle());
+        startActivityForResult(intent, REQUEST_DETAIL_CONFIGURATION);
     }
     // endregion
 

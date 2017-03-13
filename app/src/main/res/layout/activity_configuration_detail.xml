@@ -99,61 +99,7 @@
                             app:esbValue="@{configuration.outputCount}"
                             app:onProgressChanged="@{controller.outputCountChange}"/>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <CheckBox
-                                android:id="@+id/checkboxMediaLed"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/media_led"
-                                android:drawableLeft="@drawable/led_type_configuration"
-                                android:drawableStart="@drawable/led_type_configuration"
-                                app:media_flag="@{MediaType.LED}"
-                                app:media_type="@{configuration.mediaType}"
-                                android:onClick="onMediaCheckBoxClick"/>
-
-                            <CheckBox
-                                android:id="@+id/checkboxMediaAudio"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/media_audio"
-                                android:drawableLeft="@drawable/audio_type_configuration"
-                                android:drawableStart="@drawable/audio_type_configuration"
-                                app:media_flag="@{MediaType.AUDIO}"
-                                app:media_type="@{configuration.mediaType}"
-                                android:onClick="onMediaCheckBoxClick"/>
-
-                            <CheckBox
-                                android:id="@+id/checkboxMediaImage"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/media_image"
-                                android:drawableLeft="@drawable/image_type_configuration"
-                                android:drawableStart="@drawable/image_type_configuration"
-                                app:media_flag="@{MediaType.IMAGE}"
-                                app:media_type="@{configuration.mediaType}"
-                                android:onClick="onMediaCheckBoxClick"/>
-                        </LinearLayout>
                     </LinearLayout>
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recyclerViewMedia"
-                        android:layout_width="match_parent"
-                        android:layout_height="75dp"
-                        android:visibility="@{configuration.media ? View.VISIBLE : View.GONE}"/>
                 </android.support.v7.widget.CardView>
 
                 <FrameLayout

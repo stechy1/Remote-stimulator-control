@@ -42,7 +42,6 @@ public abstract class XMLHandler extends GenericXMLHandler {
      */
     protected void writeSelf(XmlSerializer serializer) throws IOException {
         writeTag(serializer, TAG_OUTPUT_COUNT, mConfiguration.getOutputCount());
-        writeTag(serializer, TAG_MEDIA, mConfiguration.getMediaType());
     }
     // endregion
 

@@ -21,7 +21,7 @@
 
     </data>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/configuration_item"
@@ -29,90 +29,42 @@
         android:layout_height="64dp"
         android:background="@drawable/selection_indicator_state_list"
         android:clickable="true"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_configuration_type"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
             android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="@{configuration.configurationType}"
             android:gravity="center"
             android:text="@{configuration.configurationType}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:transitionName="transition_configuration_type"
             app:valid="@{configuration.valid}"
             tools:text="ERP"/>
 
         <TextView
             android:id="@+id/text_configuration_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/text_configuration_type"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/text_configuration_type"
-            android:layout_toRightOf="@+id/text_configuration_type"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
             android:text="@{configuration.name}"
-            tools:text="Configuration name"
-            android:layout_alignBaseline="@+id/text_configuration_type"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            tools:text="Configuration name" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/text_extension"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/linearLayout"
-            android:layout_alignTop="@+id/text_configuration_type"
-            android:layout_toEndOf="@+id/text_configuration_name"
-            android:layout_toRightOf="@+id/text_configuration_name"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
             android:text="@{configuration.metaData.extensionType.toString()}"
-            android:visibility="@{showExtension.get() ? View.VISIBLE : View.GONE}"
-            tools:text="Extension"
-            android:layout_alignBaseline="@+id/text_configuration_name"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:visibility="@{showExtension ? View.VISIBLE : View.GONE}"
+            tools:text="Extension" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true">
-
-            <ImageView
-                android:id="@+id/imageMediaLed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/configuration_type_led"
-                app:media_mask="@{MediaType.LED}"
-                app:media_type="@{configuration.mediaType}"
-                app:srcCompat="@drawable/led_type_configuration" />
-
-            <ImageView
-                android:id="@+id/imageMediaAudio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/configuration_type_audio"
-                app:media_mask="@{MediaType.AUDIO}"
-                app:media_type="@{configuration.mediaType}"
-                app:srcCompat="@drawable/audio_type_configuration" />
-
-            <ImageView
-                android:id="@+id/imageMediaImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/configuration_type_image"
-                app:media_mask="@{MediaType.IMAGE}"
-                app:media_type="@{configuration.mediaType}"
-                app:srcCompat="@drawable/image_type_configuration" />
-        </LinearLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 </layout>

@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="?attr/actionBarSize"
-                android:visibility="@{isRecyclerViewEmpty.get() ? View.GONE : View.VISIBLE}"
+                android:visibility="@{isRecyclerViewEmpty ? View.GONE : View.VISIBLE}"
                 app:color_accent_1="@{@color/refresh_progress_1}"
                 app:color_accent_2="@{@color/refresh_progress_2}"
                 app:color_primary="@{@color/refresh_progress_3}"

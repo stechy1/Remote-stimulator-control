@@ -11,23 +11,18 @@ import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatRadioButton;
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 
 /**
  * Knihovní třída obsahující metody týkající se "data bindingu"
  */
-@SuppressWarnings("unused")
 public final class ConfigurationBindings {
 
     // region Constants
@@ -90,43 +85,22 @@ public final class ConfigurationBindings {
         }
     }
 
-    @BindingAdapter({"configuration_type", "valid"})
-    public static void setToolbarBackground(Toolbar toolbar, String type, boolean valid) {
-        if (valid) {
-            int[] validBackgrounds = toolbar.getContext().getResources().getIntArray(R.array.config_type_color_array);
-            toolbar.setBackgroundColor(validBackgrounds[ConfigurationType.valueOf(type).ordinal()]);
-        } else {
-            int[] invalidBackground = toolbar.getContext().getResources().getIntArray(R.array.config_invalid_color);
-            toolbar.setBackgroundColor(invalidBackground[0]);
-        }
-    }
+//    @BindingAdapter({"configuration_type", "valid"})
+//    public static void setToolbarBackground(Toolbar toolbar, String type, boolean valid) {
+//        if (valid) {
+//            int[] validBackgrounds = toolbar.getContext().getResources().getIntArray(R.array.config_type_color_array);
+//            toolbar.setBackgroundColor(validBackgrounds[ConfigurationType.valueOf(type).ordinal()]);
+//        } else {
+//            int[] invalidBackground = toolbar.getContext().getResources().getIntArray(R.array.config_invalid_color);
+//            toolbar.setBackgroundColor(invalidBackground[0]);
+//        }
+//    }
 
-    @BindingAdapter({"media_type", "media_mask"})
-    public static void setLedImageOverlay(ImageView imageView, int mediaType, MediaType mediaMask) {
-        boolean visible = (mediaType & mediaMask.getOrdinal()) == mediaMask.getOrdinal();
-        imageView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    @BindingAdapter({"media_type", "media_flag"})
-    public static void mediaTypeProccess(CheckBox checkBox, int mediaType, MediaType mediaFlag) {
-        boolean checked = (mediaType & mediaFlag.getOrdinal()) == mediaFlag.getOrdinal();
-        checkBox.setChecked(checked);
-
-        boolean invalid = AConfiguration.isInvalidMediaCombination(mediaType);
-        if (!checked) {
-            checkBox.setEnabled(!invalid);
-        }
-    }
 
     @BindingAdapter({"media_type", "media_flag"})
     public static void mediaTypeProccess(RadioButton radioButton, MediaType mediaType, MediaType mediaFlag) {
         boolean checked = (mediaType.getOrdinal() & mediaFlag.getOrdinal()) == mediaFlag.getOrdinal();
         radioButton.setChecked(checked);
-    }
-
-    @BindingAdapter({"value", "flag"})
-    public static void setCompatRadioButtonChecked(AppCompatRadioButton view, int value, int flag) {
-        view.setChecked((value & flag) == flag);
     }
 
     @BindingAdapter({"value", "flag"})

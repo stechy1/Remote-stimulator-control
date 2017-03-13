@@ -17,7 +17,6 @@ import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TA
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_DISTRIBUTION_DELAY;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_DISTRIBUTION_VALUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_EDGE;
-import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_MEDIA_OUTPUT_NAME;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_OUT;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_OUTPUT;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_OUTPUTS;
@@ -90,9 +89,6 @@ public class XMLHandlerERP extends XMLHandler {
         writeTag(serializer, TAG_DISTRIBUTION_VALUE, output.getDistributionValue());
         writeTag(serializer, TAG_DISTRIBUTION_DELAY, output.getDistributionDelay());
         writeTag(serializer, TAG_BRIGHTNESS, output.getBrightness());
-        if (output.getMedia() != null) {
-            writeTag(serializer, TAG_MEDIA_OUTPUT_NAME, output.getMedia().getName());
-        }
 
         serializer.endTag(NAMESPACE, TAG_OUTPUT);
     }
@@ -136,9 +132,6 @@ public class XMLHandlerERP extends XMLHandler {
                                 mConfiguration.setOutputCount(Integer.valueOf(text), false);
                                 mConfiguration.outputList.clear();
                                 break;
-                            case TAG_MEDIA:
-                                mConfiguration.setMediaType(Integer.valueOf(text));
-                                break;
                             case TAG_OUT:
                                 mConfiguration.setOut(Integer.valueOf(text));
                                 break;
@@ -165,9 +158,6 @@ public class XMLHandlerERP extends XMLHandler {
                                 break;
                             case TAG_BRIGHTNESS:
                                 output.setBrightness(Integer.valueOf(text));
-                                break;
-                            case TAG_MEDIA_OUTPUT_NAME:
-                                output.setMediaName(text);
                                 break;
                             case TAG_OUTPUT:
                                 mConfiguration.outputList.add(output);

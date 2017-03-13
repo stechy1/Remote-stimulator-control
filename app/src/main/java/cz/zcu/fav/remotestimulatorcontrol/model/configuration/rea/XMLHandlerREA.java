@@ -85,9 +85,6 @@ public class XMLHandlerREA extends XMLHandler {
                             case TAG_OUTPUT_COUNT:
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
-                            case TAG_MEDIA:
-                                mConfiguration.setMediaType(Integer.valueOf(text));
-                                break;
                             case TAG_CYCLE_COUNT:
                                 mConfiguration.setCycleCount(Integer.valueOf(text));
                                 break;

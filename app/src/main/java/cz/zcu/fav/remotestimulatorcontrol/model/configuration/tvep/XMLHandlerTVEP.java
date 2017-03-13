@@ -106,9 +106,6 @@ public class XMLHandlerTVEP extends XMLHandler {
                             case TAG_OUTPUT_COUNT:
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
-                            case TAG_MEDIA:
-                                mConfiguration.setMediaType(Integer.valueOf(text));
-                                break;
                             case TAG_PATTERN_LENGHT:
                                 mConfiguration.setPatternLength(Integer.valueOf(text));
                                 break;

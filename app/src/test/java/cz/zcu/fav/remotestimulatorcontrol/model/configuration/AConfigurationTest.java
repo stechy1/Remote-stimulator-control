@@ -171,29 +171,6 @@ public class AConfigurationTest {
     // endregion
 
     // region MediaTypeValidation
-    @Test
-    public void testGetDefaultMediaTypePositive() throws Exception {
-        assertEquals("Chyba: Vrácený typ používaného média se neshoduje s výchozím typem.", AConfiguration.DEF_MEDIA_TYPE, MediaType.valueOf(configuration.getMediaType()));
-        assertFalse("Chyba: Podle validačního příznaku pro parametr 'mediaType' je konfigurace nevalidní.", AConfiguration.isInvalidMediaCombination(configuration.getMediaType()));
-        assertTrue("Chyba: Celá konfigurace není validní.", configuration.isValid());
-    }
-
-    @Test
-    public void testIsMediaTypePositive1() throws Exception {
-        MediaType myMedia = MediaType.LED;
-        configuration.setMediaType(myMedia, true);
-
-        assertTrue("Chyba: Nepodařilo se nastavit požadovaný typ media.", configuration.isMediaType(myMedia));
-    }
-
-    @Test
-    public void testIsMediaTypePositive2() throws Exception {
-        MediaType myMedia = MediaType.LED;
-        configuration.setMediaType(myMedia.getOrdinal());
-        configuration.setMediaType(myMedia, false);
-
-        assertFalse("Chyba: Nepodařilo se odebrat typ media.", configuration.isMediaType(myMedia));
-    }
 
     // Zbytek testů je v samostatné třídě
 

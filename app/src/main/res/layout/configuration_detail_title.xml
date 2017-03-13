@@ -24,7 +24,6 @@
             android:gravity="center"
             android:text="@{configuration.configurationType}"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:transitionName="transition_configuration_type"
             app:valid="@{configuration.valid}" />
 
         <TextView

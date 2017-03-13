@@ -59,28 +59,8 @@ final class ConfigurationAsyncReader extends AsyncTask<ConfigurationType, Intege
      */
     private int[] loadConfigurations(File[] files, ConfigurationType type) {
         final int[] success = {0, 0};
-        for (File configurationDirectory : files) {
-            Log.d(TAG, "Otevírám soubor: " + configurationDirectory);
-
-            // Získám seznam souborů ve složce, která odpovídá názvu konfigurace
-            File[] configurationDirectoryFiles = configurationDirectory.listFiles();
-            // Pokud nejsou nalezeny žádné soubory
-            if (configurationDirectoryFiles == null)
-                continue;
-            final boolean hasMedia = configurationDirectoryFiles.length > 1;
-            // Pokud konfigurace obsahuje přídavná média
-            if (hasMedia) {
-                // Pokud soubor na prvním indexu v poli je složka
-                if (configurationDirectoryFiles[0].isDirectory()) {
-                    // Pak se prohodí soubor se složkou, aby soubor byl na prvním místě
-                    File temp = configurationDirectoryFiles[0];
-                    configurationDirectoryFiles[0] = configurationDirectoryFiles[1];
-                    configurationDirectoryFiles[1] = temp;
-                }
-            }
-
-            // Víme, že na prvním indexu v poli je soubor, který obsahuje informace o konfiguraci
-            File configurationFile = configurationDirectoryFiles[0];
+        for (File configurationFile : files) {
+            Log.d(TAG, "Otevírám soubor: " + configurationFile);
 
             // Získání názvu konfigurace ze souboru
             String name = configurationFile.getName();

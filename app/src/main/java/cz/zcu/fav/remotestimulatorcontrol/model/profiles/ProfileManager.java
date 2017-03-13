@@ -81,6 +81,11 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
     // region Public static methods
     public static File buildProfileFilePath(File workingDirectory, OutputProfile profile) {
         File profilesFile = new File(workingDirectory, PROFILE_FOLDER);
+        if (!profilesFile.exists()) {
+            if (!profilesFile.mkdirs()) {
+                Log.e(TAG, "Nemám přístup k souborovému systému");
+            }
+        }
 
         return new File(profilesFile, profile.getName() + EXTENSION);
     }

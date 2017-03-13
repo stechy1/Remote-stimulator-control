@@ -1,5 +1,6 @@
 package cz.zcu.fav.remotestimulatorcontrol.model;
 
+import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Handler;
 import android.util.Log;
@@ -9,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
@@ -34,8 +34,6 @@ public final class MediaManager {
     // region Variables
     // Složka s pracovním adresářem obsahující veškerá externí média konfigurace
     private final File mWorkingDirectory;
-    // Konfigurace, ke které se vztahují externí média
-    private final AConfiguration mConfiguration;
     // Kolekce externích médii
     public final ObservableList<AMedia> mediaList;
     // Handler posílající zprávy o stavu operace v manažeru
@@ -47,14 +45,11 @@ public final class MediaManager {
     /**
      * Konstruktory pro správce externích médii
      *
-     * @param workingDirectory Pracovní adresář obsahující externí média
-     * @param configuration Konfigurace, ke které patří externí média
+     *  @param workingDirectory Pracovní adresář obsahující externí média
      */
-    public MediaManager(File workingDirectory, AConfiguration configuration) {
+    public MediaManager(File workingDirectory) {
         mWorkingDirectory = workingDirectory;
-        mConfiguration = configuration;
-
-        mediaList = configuration.mediaList;
+        mediaList = new ObservableArrayList<>();
     }
     // endregion
 
@@ -90,27 +85,6 @@ public final class MediaManager {
 
         AMedia media = MediaHelper.from(mediaFile, name, extensionType);
         mediaList.add(media);
-    }
-
-    /**
-     * Načte externí média do konfigurace
-     *
-     * @param mediaDirectory Složka, kde jsou uložena externí média
-     */
-    public static void loadMediaFiles(File mediaDirectory, AConfiguration configuration) {
-        File[] mediaFiles = mediaDirectory.listFiles();
-
-        // Pokud složka neobsahuje žádná média, tak není co načítat
-        if (mediaFiles.length == 0)
-            return;
-
-        List<AMedia> mediaList = configuration.mediaList;
-        mediaList.clear();
-
-        // Proiteruj mi každý media soubor
-        for (File mediaFile : mediaFiles) {
-            loadMediaFile(mediaFile, mediaList);
-        }
     }
 
     /**

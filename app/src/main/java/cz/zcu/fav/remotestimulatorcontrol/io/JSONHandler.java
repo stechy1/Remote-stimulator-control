@@ -46,7 +46,6 @@ public abstract class JSONHandler implements IOHandler {
      */
     protected void writeSelf(JsonWriter writer) throws IOException {
         writer.name(TAG_OUTPUT_COUNT).value(mConfiguration.getOutputCount());
-        writer.name(TAG_MEDIA).value(mConfiguration.getMediaType());
     }
 
     /**
@@ -57,7 +56,6 @@ public abstract class JSONHandler implements IOHandler {
      */
     protected void readSelf(JSONObject jsonConfiguration) throws JSONException {
         mConfiguration.setOutputCount(jsonConfiguration.getInt(TAG_OUTPUT_COUNT));
-        mConfiguration.setMediaType(jsonConfiguration.getInt(TAG_MEDIA));
     }
     // endregion
 }

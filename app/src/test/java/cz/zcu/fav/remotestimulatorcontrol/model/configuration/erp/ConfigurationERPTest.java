@@ -146,7 +146,6 @@ public class ConfigurationERPTest {
         // Kontrola, jestli se duplikovaly informace z abstraktní třídy AConfiguration
         assertNotSame("Chyba: Duplikovaná konfigurace má stejný název jeko originální.", configuration.getName(), duplicated.getName());
         assertEquals("Chyba: Duplikovaná konfigurace není stejného typu jako originální.", configuration.getConfigurationType(), duplicated.getConfigurationType());
-        assertEquals("Chyba: Duplikovaná konfigurace nemá styjný typ media jako originální.", configuration.getMediaType(), duplicated.getMediaType());
         assertEquals("Chyba: Duplikovaná konfigurace nemá stejný počet výstupů jako originální.", configuration.getOutputCount(), duplicated.getOutputCount());
         assertEquals("Chyba: Duplikovaná konfigurace nemá stejný parametr 'valid' jako originální", configuration.isValid(), duplicated.isValid());
         assertEquals("Chyba: Duplikovaná konfigurace nemá stejný parametr 'validityFlag' jako originální", configuration.getValidityFlag(), duplicated.getValidityFlag());

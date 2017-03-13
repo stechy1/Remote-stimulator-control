@@ -2,7 +2,6 @@ package cz.zcu.fav.remotestimulatorcontrol.model.configuration;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.databinding.ObservableArrayList;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -10,7 +9,6 @@ import java.util.regex.Pattern;
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 
 public abstract class AConfiguration extends BaseObservable implements IValidate, IDuplicable {
 
@@ -75,22 +73,14 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     // Počet výstupů
     @Bindable
     protected int outputCount;
-    // Typ media, které bude použito pro experiment
-    @Bindable
-    protected int mediaType;
     // Validita konfigurace
     @Bindable
     protected boolean valid = true;
     // Příznak validity jednotlivých parametrů
     @Bindable
     protected int validityFlag;
-    // Přiznak určující, zda-li konfigurace obsahuje nějaká externí média
-    @Bindable
-    protected boolean media;
     // Příznak, zda-li se změníl stav konfigurace od posledního načteníprotected boolean changed;
     protected boolean changed;
-    // Kolekce medií
-    public final ObservableArrayList<AMedia> mediaList;
     // Dodatečné informace o konfiguraci
     public final MetaData metaData = new MetaData();
     // endregion
@@ -126,32 +116,14 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      * @param outputCount       Počet výstupů
      */
     public AConfiguration(String name, ConfigurationType configurationType, int outputCount) {
-        mediaList = new ObservableArrayList<>();
-
         setName(name);
         this.configurationType = configurationType;
         setOutputCount(outputCount);
-        setMediaType(DEF_MEDIA_TYPE.getOrdinal());
     }
 
     // endregion
 
     // region Public static methods
-
-    /**
-     * Zjistí, zda-li je validní kombinace použitých medií
-     *
-     * @param media Příznak media type z konfigurace
-     * @return True, pokud není kombinace validní, jinak false
-     */
-    public static boolean isInvalidMediaCombination(int media) {
-        for (int combination : INVALID_MEDIA_COMBINATION)
-            if (combination == media) {
-                return true;
-            }
-
-        return false;
-    }
 
     /**
      * Zjistí, zda-li je název validní
@@ -200,7 +172,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     protected void duplicateDefault(AConfiguration configuration) {
         configuration.configurationType = configurationType;
         configuration.outputCount = outputCount;
-        configuration.mediaType = mediaType;
         configuration.valid = valid;
         configuration.validityFlag = validityFlag;
         configuration.changed = changed;
@@ -213,13 +184,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         changed = true;
     }
 
-    /**
-     * Nastaví příznak média
-     */
-    private void setMedia() {
-        media = ((this.mediaType & MediaType.AUDIO.getOrdinal()) != 0) || ((this.mediaType & MediaType.IMAGE.getOrdinal()) != 0);
-        notifyPropertyChanged(BR.media);
-    }
     // endregion
 
     // region Public methods
@@ -278,14 +242,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         notifyPropertyChanged(BR.valid);
     }
 
-    /**
-     * Zjistí, zda-li konfigurace obshuje nějaká externí média
-     *
-     * @return True, pokud konfigurace obsahujě externí média, jinak false
-     */
-    public boolean isMedia() {
-        return media;
-    }
     // endregion
 
     // region Getters & Setters
@@ -349,52 +305,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         } else {
             setValidityFlag(FLAG_OUTPUT_COUNT, false);
         }
-    }
-
-    /**
-     * Vrátí typ média
-     *
-     * @return Typ média
-     */
-    public int getMediaType() {
-        return mediaType;
-    }
-
-    /**
-     * Nastaví, jaky typ media bude podporovaný
-     *
-     * @param mediaType Typ media
-     */
-    public synchronized void setMediaType(int mediaType) {
-        this.mediaType = mediaType;
-        notifyPropertyChanged(BR.mediaType);
-        setMedia();
-    }
-
-    /**
-     * Zjistí, zda-li je nastaveno zkoumané medium
-     *
-     * @param mediaType Typ media
-     * @return True, pokud konfigurace ma nastavené dané medium
-     */
-    public boolean isMediaType(MediaType mediaType) {
-        return (this.mediaType & (mediaType.getOrdinal())) != 0;
-    }
-
-    /**
-     * Nastaví, jaké médium bude použito a jaké nikoliv
-     *
-     * @param mediaFlag Typ media
-     * @param value     True, pokud se bude používat, jinak false
-     */
-    public synchronized void setMediaType(MediaType mediaFlag, boolean value) {
-        if (value) {
-            this.mediaType |= (mediaFlag.getOrdinal());
-        } else {
-            this.mediaType &= ~(mediaFlag.getOrdinal());
-        }
-        notifyPropertyChanged(BR.mediaType);
-        setMedia();
     }
 
     /**

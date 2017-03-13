@@ -3,7 +3,6 @@ package cz.zcu.fav.remotestimulatorcontrol.model;
 import android.databinding.BaseObservable;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,8 +50,6 @@ public final class ConfigurationManager extends BaseObservable implements Config
     // Logovací tag
     private static final String TAG = "ConfigurationManager";
     // endregion
-
-    private static final String MEDIA_FOLDER = "media";
 
     // endregion
 
@@ -106,7 +103,7 @@ public final class ConfigurationManager extends BaseObservable implements Config
      * @param configuration Konfigurace, pro kterou je soubor určen
      * @return Pár souborů, kde první soubor ukazuje na samotnou konfiguraci a druhý představuje složku s externími médii
      */
-    public static Pair<File, File> buildConfigurationFilePath(File workingDirectory, AConfiguration configuration) {
+    public static File buildConfigurationFilePath(File workingDirectory, AConfiguration configuration) {
         // Získání složky podle typu konfigurace.  Path: /workingDirectory/configurationType
         final File confTypeFolder = new File(workingDirectory, configuration.getConfigurationType().name().toLowerCase());
         if (!confTypeFolder.exists()) {
@@ -115,26 +112,8 @@ public final class ConfigurationManager extends BaseObservable implements Config
             }
         }
 
-        // Získání složky s konkrétní konfigurací. Path: /workingDirectory/configurationType/configurationName
-        final File confFolder = new File(confTypeFolder, configuration.getName());
-        if (!confFolder.exists()) {
-            if (!confFolder.mkdirs()) {
-                Log.e(TAG, "Nemám přístup k souborovému systému");
-            }
-        }
-
-        // Získání složky s externími médii v konfiguraci. Path: /workingDirectory/configurationType/configurationName/media
-        final File mediaFolder = new File(confFolder, MEDIA_FOLDER);
-        if (!mediaFolder.exists()) {
-            if (!mediaFolder.mkdirs()) {
-                Log.e(TAG, "Nemám přístup k souborovému systému");
-            }
-        }
-
-        // Získání souboru s konfigurací. Path: /workingDirectory/configurationType/configurationName/configurationName.extension
-        final File configurationFile = new File(confFolder, configuration.getName() + configuration.metaData.extensionType);
-
-        return new Pair<>(configurationFile, mediaFolder);
+        // Získání souboru s konfigurací. Path: /workingDirectory/configurationType/configurationName.extension
+        return new File(confTypeFolder, configuration.getName() + configuration.metaData.extensionType);
     }
 
     // endregion
@@ -148,7 +127,7 @@ public final class ConfigurationManager extends BaseObservable implements Config
      * @return Soubor s konfigurací na disku
      */
     private File buildConfigurationFilePath(final AConfiguration configuration) {
-        return buildConfigurationFilePath(mWorkingDirectory, configuration).first;
+        return buildConfigurationFilePath(mWorkingDirectory, configuration);
     }
 
     /**
@@ -512,7 +491,6 @@ public final class ConfigurationManager extends BaseObservable implements Config
      * @param comparator Komparátor @see ConfigurationComparator
      *                   {@link ConfigurationComparator#NAME_COMPARATOR }
      *                   {@link ConfigurationComparator#TYPE_COMPARATOR }
-     *                   {@link ConfigurationComparator#MEDIA_COMPARATOR}
      */
     public void setConfigurationComparator(Comparator<AConfiguration> comparator) {
         this.mConfigurationComparator = comparator;

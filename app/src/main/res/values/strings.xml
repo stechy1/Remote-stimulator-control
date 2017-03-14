@@ -193,7 +193,7 @@
     <string name="manager_message_unsuccessful">Action was unsuccessful</string>
 
     <!-- Activity - media chose -->
-    <string name="activity_title_media_chose">Vyberte položku…</string>
+    <string name="activity_title_media_chose">Select media…</string>
 
     <!-- Validační chyby -->
     <string name="error_invalid_name">Bad name format</string>

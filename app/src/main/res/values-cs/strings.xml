@@ -121,16 +121,6 @@
     <string name="pref_show_extension">Zobrazit koncovky</string>
     <string name="image_preview_description" >Náhled obrázku</string>
 
-    <string-array name="pref_extensions">
-        <item name="0">XML</item>
-        <item name="1">JSON</item>
-        <item name="2">CSV</item>
-    </string-array>
-    <string-array name="pref_extensions_values">
-        <item name="0">XML</item>
-        <item name="1">JSON</item>
-        <item name="2">CSV</item>
-    </string-array>
     <string name="close_preview">Zavřít náhled</string>
     <string name="no_profiles_found">Žádné profily nenalezeny</string>
     <string name="activity_title_new_profile">Nový profil</string>
@@ -139,4 +129,5 @@
     <string name="activity_title_duplicate_profile">Duplikovat profil</string>
     <string name="profile_name">Název profilu</string>
     <string name="activity_title_import_profile">Importovat profil</string>
+    <string name="activity_title_media_chose">activity_title_media_chose</string>
 </resources>

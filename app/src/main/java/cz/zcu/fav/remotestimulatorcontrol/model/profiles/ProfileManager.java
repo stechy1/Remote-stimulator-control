@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -193,7 +194,29 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @param path              Cesta k importované konfiguraci
      */
     public void importt(String name, String path) {
-        // TODO dodělat implementaci importu profilu
+        OutputProfile profile = new OutputProfile(name);
+
+        try {
+            profile.getHandler().read(new FileInputStream(path));
+
+            if (!save(profile)) {
+                if (mHandler != null) {
+                    mHandler.obtainMessage(MESSAGE_PROFILE_IMPORT, MESSAGE_UNSUCCESSFUL).sendToTarget();
+                }
+                return;
+            }
+
+            profiles.add(profile);
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_IMPORT, MESSAGE_SUCCESSFUL, profiles.indexOf(profile)).sendToTarget();
+            }
+
+        } catch (IOException e) {
+            Log.e(TAG, "Profil se nepodařilo importovat", e);
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_IMPORT, MESSAGE_UNSUCCESSFUL).sendToTarget();
+            }
+        }
     }
 
     /**

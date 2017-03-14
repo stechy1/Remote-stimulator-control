@@ -35,6 +35,7 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoratio
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.duplicate.ProfileDuplicateActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.importation.ProfileImportActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ProfileRenameActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
@@ -306,6 +307,14 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     if (mActionMode != null) {
                         mActionMode.finish();
                     }
+                }
+                break;
+            case REQUEST_IMPORT_PROFILE:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getStringExtra(ProfileImportActivity.PROFILE_FILE_PATH);
+                    String name = data.getStringExtra(ProfileImportActivity.PROFILE_NAME);
+
+                    mManager.importt(name, path);
                 }
                 break;
             default:

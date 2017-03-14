@@ -1,34 +1,45 @@
-package cz.zcu.fav.remotestimulatorcontrol.model;
+package cz.zcu.fav.remotestimulatorcontrol.model.media;
 
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
+import cz.zcu.fav.remotestimulatorcontrol.ui.media.MediaAsyncReader;
 import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 /**
  * Třída představující správce externích médii pro jednu konfiguraci
  * Pomocí manageru se spravují jednotlivá externí média
+ *
+ *  - import
+ *  - mazání
  */
-public final class MediaManager {
+public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListener {
 
     // region Constants
     private static final String TAG = "MediaManager";
 
-    public static final int MESSAGE_MEDIA_IMPORT = 1;
-    public static final int MESSAGE_MEDIA_PREPARED_TO_DELETE = 2;
-    public static final int MESSAGE_CONFIGURATION_UNDO_DELETE = 3;
+    // region Id jednotlivých zpráv, které se předávají handlerem ven
+    public static final int MESSAGE_MEDIA_LOADED = 1;
+    public static final int MESSAGE_MEDIA_IMPORT = 2;
+    public static final int MESSAGE_MEDIA_PREPARED_TO_DELETE = 3;
+    public static final int MESSAGE_MEDIA_UNDO_DELETE = 4;
 
     public static final int MESSAGE_SUCCESSFUL = 1;
     public static final int MESSAGE_UNSUCCESSFUL = 2;
+
+    // endregion
+    public static final String MEDIA_FOLDER = "media";
+
     // endregion
 
     // region Variables
@@ -36,9 +47,9 @@ public final class MediaManager {
     private final File mWorkingDirectory;
     // Kolekce externích médii
     public final ObservableList<AMedia> mediaList;
+    private final Set<AMedia> mMediaToDelete;
     // Handler posílající zprávy o stavu operace v manažeru
     private Handler mHandler;
-    private Pair<Integer, AMedia> mDeletedMedia = null;
     // endregion
 
     // region Constructors
@@ -50,56 +61,43 @@ public final class MediaManager {
     public MediaManager(File workingDirectory) {
         mWorkingDirectory = workingDirectory;
         mediaList = new ObservableArrayList<>();
+        mMediaToDelete = new HashSet<>();
     }
     // endregion
 
     // region Static methods
     /**
-     * Načte jedeno externí médium
-     *
-     * @param mediaFile Soubor s externím médiem
-     * @param mediaList Kolekce, do které se média přidávají
-     */
-    public static void loadMediaFile(File mediaFile, List<AMedia> mediaList) {
-        if (mediaFile.isDirectory())
-            return;
-
-        // Získání názvu media souboru
-        String name = mediaFile.getName();
-
-        // Ošetření na existenci nějaké koncovky. Pokud soubor nemá koncovku, přeskočí se.
-        if (name.indexOf(".") <= 0) {
-            Log.i(TAG, "Přeskakuji soubor: " + mediaFile);
-            return;
-        }
-
-        // Získání koncovky souboru jako podřetězec začínající o 1 větším indexem tečky.
-        String extension = name.substring(name.indexOf(".") + 1);
-
-        // Převedení koncovky na výčtový typ pro jednodušší práci
-        MediaExtensionType extensionType = EnumUtil.lookup(MediaExtensionType.class, extension);
-        if (extensionType == null) {
-            Log.e(TAG, "Nebyla rozpoznána koncovka souboru. Původní typ na koncovku byl: " + extension);
-            return;
-        }
-
-        AMedia media = MediaHelper.from(mediaFile, name, extensionType);
-        mediaList.add(media);
-    }
-
-    /**
      * Sestaví cestu k médiu na základě kořenové složky medií a konkrétního média
      *
-     * @param mediaDirectory Kořenová složka médií
+     * @param workingDirectory Kořenová složka médií
      * @param media Konkrétní médium
      * @return Cesta k médiu
      */
-    public static File buildMediaFilePath(File mediaDirectory, AMedia media) {
-        return new File(mediaDirectory, media.getName());
+    public static File buildMediaFilePath(File workingDirectory, AMedia media) {
+        final File mediaFolder = new File(workingDirectory, MEDIA_FOLDER);
+        if (!mediaFolder.exists()) {
+            if (!mediaFolder.mkdirs()) {
+                Log.e(TAG, "Nemám přístup k souborovému systému");
+            }
+        }
+
+        return new File(mediaFolder, media.getName());
+    }
+    // endregion
+
+    // region Private methods
+    private File buildMediaFilePath(AMedia media) {
+        return buildMediaFilePath(mWorkingDirectory, media);
     }
     // endregion
 
     // region Public methods
+    public void refresh() {
+        Log.d(TAG, "Aktualizuji seznam médií");
+        mediaList.clear();
+        new MediaAsyncReader(mWorkingDirectory, mediaList, this).execute();
+    }
+
     /**
      * Importuje nové externí médium ke konfiguraci
      *
@@ -107,7 +105,14 @@ public final class MediaManager {
      */
     public void importt(File externalFile) {
         String fileName = externalFile.getName();
-        File destinationFile = new File(mWorkingDirectory, fileName);
+        File mediaFolder = new File(mWorkingDirectory, MEDIA_FOLDER);
+        if (!mediaFolder.exists()) {
+            if (!mediaFolder.mkdirs()) {
+                Log.e(TAG, "Nemám přístup k souborovému systému");
+                return;
+            }
+        }
+        File destinationFile = new File(mediaFolder, fileName);
 
         try {
             FileUtils.copy(externalFile, destinationFile);
@@ -157,18 +162,28 @@ public final class MediaManager {
     /**
      * Připravý soubor na daném indexu ke smazání
      *
-     * @param index Index souboru, který se má smazat
+     * @param selectedItems Index souboru, který se má smazat
      */
-    public void prepareToDelete(int index) {
-        if (index < 0) {
+    public void prepareToDelete(List<Integer> selectedItems) {
+        if (selectedItems.size() == 0) {
             return;
         }
 
-        mDeletedMedia = new Pair<>(index, mediaList.get(index));
-        mediaList.remove(index);
+        // Potřebuji odebírat profily od nejvyššího indexu po nejnižší,
+        // abych zabránil NullPointerExceptionu
+        if (selectedItems.size() > 1) {
+            Collections.sort(selectedItems);
+            Collections.reverse(selectedItems);
+        }
+
+        for (Integer selectedItem : selectedItems) {
+            AMedia media = mediaList.get(selectedItem);
+            mMediaToDelete.add(media);
+            mediaList.remove(selectedItem.intValue());
+        }
 
         if (mHandler != null) {
-            mHandler.obtainMessage(MESSAGE_MEDIA_PREPARED_TO_DELETE, MESSAGE_SUCCESSFUL, index).sendToTarget();
+            mHandler.obtainMessage(MESSAGE_MEDIA_PREPARED_TO_DELETE, selectedItems).sendToTarget();
         }
     }
 
@@ -177,16 +192,14 @@ public final class MediaManager {
      * Vrátí smezané medium zpět do kolekce
      */
     public void undoDelete() {
-        if (mDeletedMedia == null) {
-            return;
+        for (AMedia profile : mMediaToDelete) {
+            mediaList.add(profile);
         }
 
-        int index = mDeletedMedia.first;
-        mediaList.add(index, mDeletedMedia.second);
-        mDeletedMedia = null;
+        mMediaToDelete.clear();
 
         if (mHandler != null) {
-            mHandler.obtainMessage(MESSAGE_CONFIGURATION_UNDO_DELETE, MESSAGE_SUCCESSFUL, index).sendToTarget();
+            mHandler.obtainMessage(MESSAGE_MEDIA_UNDO_DELETE).sendToTarget();
         }
     }
 
@@ -194,12 +207,19 @@ public final class MediaManager {
      * Potvrzení smazání média
      */
     public void confirmDelete() {
-        File file = buildMediaFilePath(mWorkingDirectory, mDeletedMedia.second);
-        if (!file.delete()) {
-            Log.e(TAG, "Nepodařilo se smazat mediální soubor: " + mDeletedMedia.second);
+        for (AMedia configuration : mMediaToDelete) {
+            File configFile = buildMediaFilePath(configuration);
+            if (!configFile.delete()) {
+                Log.e(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
+            }
         }
+    }
 
-        mDeletedMedia = null;
+    @Override
+    public void onLoaded(int successfuly, int unsuccessfuly) {
+        if (mHandler != null) {
+            mHandler.obtainMessage(MESSAGE_MEDIA_LOADED, successfuly, unsuccessfuly).sendToTarget();
+        }
     }
     // endregion
 }

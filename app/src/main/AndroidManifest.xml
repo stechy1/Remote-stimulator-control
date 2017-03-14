@@ -116,7 +116,7 @@
         <activity
             android:name=".ui.outputs.importation.ProfileImportActivity"
             android:label="@string/activity_title_import_profile"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Profile detail activity -->
         <activity
             android:name=".ui.outputs.detail.ProfileDetailActivity"
@@ -125,6 +125,17 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.outputs.OutputProfilesActivity" />
+        </activity>
+
+        <!-- Media activity -->
+        <activity
+            android:name=".ui.media.MediaActivity"
+            android:label="@string/activity_title_media"
+            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationsActivity" />
         </activity>
 
         <!-- Help activity -->
@@ -148,6 +159,8 @@
 
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
+
+
     </application>
 
 </manifest>

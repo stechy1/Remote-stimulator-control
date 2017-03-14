@@ -69,11 +69,6 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      */
     public ProfileManager(File workingDirectory) {
         mWorkingDirectory = workingDirectory;
-        if (!mWorkingDirectory.exists()) {
-            if (!mWorkingDirectory.mkdirs()) {
-                Log.e(TAG, "Nepodařilo se vytvořit složku pro profily výstupů");
-            }
-        }
         profiles = new ObservableArrayList<>();
         mProfilesToDelete = new HashSet<>();
     }
@@ -381,7 +376,6 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * Vrátí smazané profily zpět do hlavní kolekce
      */
     public void undoDelete() {
-
         for (OutputProfile profile : mProfilesToDelete) {
             profiles.add(profile);
         }
@@ -400,7 +394,7 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
         for (OutputProfile configuration : mProfilesToDelete) {
             File configFile = buildProfileFilePath(configuration);
             if (!configFile.delete()) {
-                Log.d(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
+                Log.e(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
             }
         }
     }

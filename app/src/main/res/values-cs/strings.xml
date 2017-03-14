@@ -130,4 +130,7 @@
     <string name="profile_name">Název profilu</string>
     <string name="activity_title_import_profile">Importovat profil</string>
     <string name="activity_title_media_chose">activity_title_media_chose</string>
+    <string name="no_media_found">Žádná média nenalezena</string>
+    <string name="nav_text_media">Media</string>
+    <string name="activity_title_media">Media manager</string>
 </resources>

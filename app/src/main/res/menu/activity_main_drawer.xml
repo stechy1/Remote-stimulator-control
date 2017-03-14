@@ -11,6 +11,10 @@
             android:icon="@android:drawable/ic_menu_edit"
             android:title="@string/nav_profiles" />
         <item
+            android:id="@+id/nav_media"
+            android:icon="@drawable/default_media_image_thumbnail"
+            android:title="@string/nav_text_media" />
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/settings"
             android:title="@string/nav_text_settings" />

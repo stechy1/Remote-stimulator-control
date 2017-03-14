@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <data>
+
         <import type="android.view.View" />
+
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia" />
 
         <variable
@@ -11,46 +12,57 @@
             type="AMedia" />
     </data>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/media_item"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:padding="8dp">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:card_view="http://schemas.android.com/tools"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:orientation="vertical">
 
-        <RelativeLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/media_item"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:elevation="3dp"
+            card_view:cardCornerRadius="4dp">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
-                app:preview="@{media.thumbnail}"
-                app:type="@{media.getMediaType()}"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/imageMedia" />
+                android:layout_height="match_parent">
 
-            <TextView
-                android:text="@{media.name}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/textView4"
-                android:layout_below="@+id/imageMedia" />
+                <ImageView
+                    android:id="@+id/imageMedia"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    app:preview="@{media.thumbnail}"
+                    app:type="@{media.getMediaType()}" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                app:srcCompat="@drawable/start_configuration"
-                android:visibility="@{media.showPlayingIcon ? View.VISIBLE : View.GONE}"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:id="@+id/imageView2" />
-        </RelativeLayout>
+                <TextView
+                    android:text="@{media.name}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/textView4"
+                    android:layout_below="@+id/imageMedia" />
 
-    </android.support.v7.widget.CardView>
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:visibility="@{media.showPlayingIcon ? View.VISIBLE : View.GONE}"
+                    app:srcCompat="@drawable/start_configuration" />
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 </layout>

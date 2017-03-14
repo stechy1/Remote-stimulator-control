@@ -1,10 +1,6 @@
-package cz.zcu.fav.remotestimulatorcontrol.model;
+package cz.zcu.fav.remotestimulatorcontrol.model.media;
 
 import java.io.File;
-
-import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
-import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
-import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaImage;
 
 /**
  * Pomocná knihovní třída pro tvorbu konkrétních medií

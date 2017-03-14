@@ -215,6 +215,9 @@
     <string name="activity_title_duplicate_profile">Duplicate profile</string>
     <string name="profile_name">Profile name</string>
     <string name="activity_title_import_profile">Import profile</string>
+    <string name="no_media_found">No media found</string>
+    <string name="nav_text_media">Media</string>
+    <string name="activity_title_media">Media manager</string>
 
 
     <string-array name="pref_extensions" translatable="false">

@@ -60,6 +60,7 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.rename.Configuration
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.devices.DeviceListActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.help.HelpActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.media.MediaActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.OutputProfilesActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.settings.SettingsActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
@@ -451,7 +452,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         if (!mBluetoothSupport) {
             if (!ConfigurationSharedPreferences.isBTNotSupportedAlertShowed(getApplicationContext(), false)) {
                 Snackbar.make(mFab, R.string.bt_not_supported, Snackbar.LENGTH_LONG)
-                        .setCallback(new Snackbar.Callback() {
+                        .addCallback(new Snackbar.Callback() {
                             @Override
                             public void onDismissed(Snackbar snackbar, int event) {
                                 ConfigurationSharedPreferences.setBTNotSupportedAlertShowed(getApplicationContext(), true);
@@ -707,6 +708,9 @@ public class ConfigurationsActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_profiles:
                 startActivity(new Intent(this, OutputProfilesActivity.class));
+                break;
+            case R.id.nav_media:
+                startActivity(new Intent(this, MediaActivity.class));
                 break;
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);

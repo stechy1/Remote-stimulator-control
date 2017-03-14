@@ -1,7 +1,5 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +12,6 @@ import android.widget.SeekBar;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ErpOutputConfigBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP;
-import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.MediaChoserActivity;
 import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar;
 
 public class OutputFragment extends Fragment {
@@ -22,8 +19,6 @@ public class OutputFragment extends Fragment {
     // region Constants
     // Logovací tag
     private static final String TAG = "ERPOutputFragment";
-
-    private static final int REQUEST_SELECT_OUTPUT = 1;
     // endregion
 
     // region Variables
@@ -57,24 +52,6 @@ public class OutputFragment extends Fragment {
 
         return mBinding.getRoot();
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_SELECT_OUTPUT:
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
-                int index = data.getIntExtra(MediaChoserActivity.MEDIA_INDEX, -1);
-                if (index == -1) {
-                    return;
-                }
-
-                break;
-        }
-    }
-
     /**
      * Inicializuje output
      *

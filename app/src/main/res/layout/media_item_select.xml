@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia" />
+
+        <variable
+            name="media"
+            type="AMedia" />
+    </data>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="8dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                app:preview="@{media.thumbnail}"
+                app:type="@{media.getMediaType()}"
+                android:id="@+id/imageMedia" />
+
+            <TextView
+                android:text="@{media.name}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+</layout>

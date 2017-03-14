@@ -1,5 +1,7 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.profiles;
 
+import android.util.Log;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -26,6 +28,7 @@ import static org.xmlpull.v1.XmlPullParser.TEXT;
 public class XMLHandlerProfile extends GenericXMLHandler {
 
     // region Constants
+    private static final String TAG = "XMLHandlerProfile";
     public static final String TAG_ROOT = "profiles";
 
     // endregion
@@ -52,7 +55,7 @@ public class XMLHandlerProfile extends GenericXMLHandler {
     /**
      * Zapíše hodnty všech konfigurací výstupů
      *
-     * @param serializer
+     * @param serializer {@link XmlSerializer}
      */
     private void writeOutputConfigurations(XmlSerializer serializer) throws IOException  {
         for (OutputConfiguration outputConfiguration : profile.mOutputConfigurationList) {
@@ -63,8 +66,8 @@ public class XMLHandlerProfile extends GenericXMLHandler {
     private void writeOutputConfiguration(XmlSerializer serializer, OutputConfiguration outputConfiguration) throws IOException {
         serializer.startTag(NAMESPACE, TAG_PROFILE);
 
-        writeTag(serializer, TAG_MEDIA_NAME, outputConfiguration.getFileName());
         writeTag(serializer, TAG_TYPE, outputConfiguration.getMediaType().toString());
+        writeTag(serializer, TAG_MEDIA_NAME, outputConfiguration.getFileName());
 
         serializer.endTag(NAMESPACE, TAG_PROFILE);
     }
@@ -101,9 +104,12 @@ public class XMLHandlerProfile extends GenericXMLHandler {
                         switch (tagName) {
                             case TAG_MEDIA_NAME:
                                 outputConfiguration.setFileName(text);
+                                if (!text.isEmpty())
+                                    Log.d(TAG, "Nastavují název média na: " + text);
                                 break;
                             case TAG_TYPE:
                                 outputConfiguration.setMediaType(MediaType.valueOf(text));
+                                Log.d(TAG, "Nastavuji typ média");
                                 break;
                             case TAG_PROFILE:
                                 profile.mOutputConfigurationList.add(outputConfiguration);

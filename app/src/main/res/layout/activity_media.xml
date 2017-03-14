@@ -2,12 +2,12 @@
 <layout>
     <data>
         <import type="android.view.View" />
-        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.OutputProfilesActivity" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.media.MediaActivity" />
         <import type="android.databinding.ObservableBoolean" />
 
         <variable
             name="controller"
-            type="OutputProfilesActivity" />
+            type="MediaActivity" />
 
         <variable
             name="isRecyclerViewEmpty"
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity"
+        tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.media.MediaActivity"
         tools:openDrawer="start">
 
         <include layout="@layout/background_image" />
@@ -56,7 +56,7 @@
                 app:refresh="@{controller.refreshListener}">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerViewProfiles"
+                    android:id="@+id/recyclerViewMedia"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </android.support.v4.widget.SwipeRefreshLayout>
@@ -66,11 +66,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/no_profiles_found"
+                android:text="@string/no_media_found"
                 android:visibility="@{isRecyclerViewEmpty ? View.VISIBLE : View.GONE}" />
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_new_profile"
+                android:id="@+id/fab_import_media"
                 app:layout_behavior="cz.zcu.fav.remotestimulatorcontrol.ui.ScrollAwareFABBehavior"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

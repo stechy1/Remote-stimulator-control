@@ -1,4 +1,4 @@
-package cz.zcu.fav.remotestimulatorcontrol.ui.outputs;
+package cz.zcu.fav.remotestimulatorcontrol.ui.media;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
@@ -10,48 +10,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.databinding.ProfileItemBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.MediaItemBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.ui.ISelectable;
 
 /**
- * Adapter spravující profily výstupů
+ * Adapter spravující média
  */
-public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileHolder> implements ISelectable {
+public final class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MediaHolder> implements ISelectable {
 
     // region Variables
 
-    // Kolekce profilů
-    private final List<OutputProfile> mProfiles;
-    // Pole vybraných profilů
+    // Kolekce médií
+    private final List<AMedia> mMediaList;
+    // Pole vybraných médií
     private final SparseBooleanArray mSelectedItems;
-    // Kopie pole vybraných profilů
+    // Kopie pole vybraných médií
     private SparseBooleanArray mCopyOfSelectedItems;
 
-    // endregion
-
-    // region Constructors
-
-    public ProfileAdapter(List<OutputProfile> profiles) {
-        this.mProfiles = profiles;
-        mSelectedItems = new SparseBooleanArray(profiles.size());
-        mCopyOfSelectedItems = new SparseBooleanArray(profiles.size());
+    public MediaAdapter(List<AMedia> mediaList) {
+        this.mMediaList = mediaList;
+        this.mSelectedItems = new SparseBooleanArray(mediaList.size());
+        this.mCopyOfSelectedItems = new SparseBooleanArray(mediaList.size());
     }
-
     // endregion
 
     @Override
-    public ProfileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ProfileItemBinding binding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), R.layout.profile_item, parent, false
+    public MediaHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        MediaItemBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()), R.layout.media_item, parent, false
         );
-        return new ProfileHolder(binding);
+        return new MediaHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(ProfileHolder holder, int position) {
-        OutputProfile profile = mProfiles.get(position);
-        holder.bindTo(profile);
+    public void onBindViewHolder(MediaHolder holder, int position) {
+        AMedia media = mMediaList.get(position);
+        holder.bindTo(media);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
         holder.setIsRecyclable(selected);
@@ -59,7 +54,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileH
 
     @Override
     public int getItemCount() {
-        return mProfiles.size();
+        return mMediaList.size();
     }
 
     // region Selectable
@@ -85,7 +80,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileH
     @Override
     public void selectAll() {
         mSelectedItems.clear();
-        for (int i = 0; i < mProfiles.size(); i++)
+        for (int i = 0; i < mMediaList.size(); i++)
             mSelectedItems.put(i, true);
 
         notifyDataSetChanged();
@@ -98,7 +93,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileH
     public void invertSelection() {
         SparseBooleanArray tempSelected = new SparseBooleanArray(mSelectedItems.size());
         // 1. Naplnit dočasné pole všemi prvky
-        for (int i = 0; i < mProfiles.size(); i++)
+        for (int i = 0; i < mMediaList.size(); i++)
             tempSelected.put(i, true);
 
         // 2. Z dočasného pole odstranit takové indexy, které jsou v hlavním poli
@@ -194,17 +189,16 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileH
     }
     // endregion
 
-    class ProfileHolder extends RecyclerView.ViewHolder {
-        private final ProfileItemBinding mmBinding;
+    class MediaHolder extends RecyclerView.ViewHolder {
+        private final MediaItemBinding mmBinding;
 
-        public ProfileHolder(final ProfileItemBinding binding) {
+        public MediaHolder(MediaItemBinding binding) {
             super(binding.getRoot());
-
-            mmBinding = binding;
+            this.mmBinding = binding;
         }
 
-        void bindTo(OutputProfile profile) {
-            mmBinding.setProfile(profile);
+        void bindTo(AMedia media) {
+            mmBinding.setMedia(media);
             mmBinding.executePendingBindings();
         }
     }

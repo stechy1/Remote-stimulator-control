@@ -67,11 +67,11 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/no_configuration_found"
-                android:visibility="@{isRecyclerViewEmpty.get() ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{isRecyclerViewEmpty ? View.VISIBLE : View.GONE}" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_new_configuration"
-                app:layout_behavior="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ScrollAwareFABBehavior"
+                app:layout_behavior="cz.zcu.fav.remotestimulatorcontrol.ui.ScrollAwareFABBehavior"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"

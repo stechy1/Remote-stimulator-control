@@ -76,9 +76,6 @@ public class XMLHandlerCVEP extends XMLHandler {
                             case TAG_OUTPUT_COUNT:
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
-                            case TAG_MEDIA:
-                                mConfiguration.setMediaType(Integer.valueOf(text));
-                                break;
                             case TAG_PULSE_LENGHT:
                                 mConfiguration.setPulsLength(Integer.valueOf(text));
                                 break;

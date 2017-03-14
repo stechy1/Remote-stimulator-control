@@ -13,6 +13,7 @@ import java.util.List;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ConfigurationItemBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
+import cz.zcu.fav.remotestimulatorcontrol.ui.ISelectable;
 
 /**
  * Adapter spravující položky v recyclerView

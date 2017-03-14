@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:enabled="@{configuration.valid}"
             android:onClick="onCreate"
-            android:text="@string/configuration_configm_create" />
+            android:text="@string/configuration_config_create" />
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -7,6 +7,8 @@
     <string name="nav_drawer_open">Open sidebar</string>
     <string name="nav_drawer_close">Close sidebar</string>
     <string name="nav_configurations">Configurations</string>
+    <string name="nav_profiles">Output profiles</string>
+    <string name="nav_text_profiles">Profily</string>
     <string name="nav_text_settings">Settings</string>
     <string name="nav_text_help">Help</string>
     <string name="nav_text_about">About</string>
@@ -64,7 +66,7 @@
     <string name="activity_title_new_configuration">New configuration</string>
     <string name="configuration_name">Name</string>
     <string name="configuration_type">Configuration type</string>
-    <string name="configuration_configm_create">Create</string>
+    <string name="configuration_config_create">Create</string>
 
     <!-- Activity - rename configuration -->
     <string name="activity_title_rename_configuration">Rename configuration</string>
@@ -75,6 +77,9 @@
 
     <!-- Activity - configuration detail -->
     <string name="activity_title_configuration_detail">Configuration detail</string>
+
+    <!-- Activity - output profiles -->
+    <string name="no_profiles_found">No profiles found</string>
 
     <!-- Activity - configuration sorting -->
     <string name="activity_title_configuration_sorting">Sort by</string>
@@ -184,24 +189,19 @@
     <string name="toggle">Toggle</string>
 
     <!-- Zprávy posílající se z manažeru konfigurací -->
-    <string name="manager_message_create_unsuccessful">Can not create configuration</string>
-    <string name="manager_message_create_successful">Configuration was created</string>
-    <string name="manager_message_import_successful">Configuration was imported</string>
-    <string name="manager_message_import_unsuccessful">Can not import configuration</string>
-    <string name="manager_message_rename_unsuccessful">Can not rename configuration</string>
-    <string name="manager_message_rename_successful">Rename was successful</string>
-    <string name="manager_message_delete_unsuccessful">Can not delete configuration</string>
-    <string name="manager_message_delete_successful">Deleting was successful</string>
-    <string name="manager_message_duplicate_successful">Configuration was duplicated</string>
-    <string name="manager_message_duplicate_unsuccessful">Can not duplicate configuration</string>
+    <string name="manager_message_successful">Action was successful</string>
+    <string name="manager_message_unsuccessful">Action was unsuccessful</string>
 
     <!-- Activity - media chose -->
-    <string name="activity_title_media_chose">Vyberte položku…</string>
+    <string name="activity_title_media_chose">Select media…</string>
 
     <!-- Validační chyby -->
     <string name="error_invalid_name">Bad name format</string>
     <string name="error_name_exists">Name already exists</string>
     <string name="error_invalid_input">Value is out of range</string>
+
+    <!-- Activity - profile factory -->
+    <string name="activity_title_new_profile">Nový profil</string>
 
     <!-- Nastavení -->
     <string name="pref_header_general">General</string>
@@ -210,6 +210,12 @@
     <string name="pref_show_extension">Show extension</string>
     <string name="image_preview_description">Image preview</string>
     <string name="close_preview">Close</string>
+    <string name="activity_title_profile_detail">Profile detail</string>
+    <string name="activity_title_rename_profile">Rename profile</string>
+    <string name="activity_title_duplicate_profile">Duplicate profile</string>
+    <string name="profile_name">Profile name</string>
+    <string name="activity_title_import_profile">Import profile</string>
+
 
     <string-array name="pref_extensions" translatable="false">
         <item name="0">XML</item>

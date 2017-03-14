@@ -18,7 +18,6 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.tvep.Configuration
         AConfigurationTest.class,
         UndefinedConfigurationTest.class,
         ConfigurationTypeTest.class,
-        ParametrizedMediaTypeTest.class,
         ConfigurationComparatorTest.class,
         ConfigurationERPTestRunner.class,
         ConfigurationFVEPTestRunner.class,

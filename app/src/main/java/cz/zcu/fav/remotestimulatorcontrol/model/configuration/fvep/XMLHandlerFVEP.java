@@ -111,9 +111,6 @@ public class XMLHandlerFVEP extends XMLHandler {
                                 mConfiguration.setOutputCount(Integer.valueOf(text), false);
                                 mConfiguration.outputList.clear();
                                 break;
-                            case TAG_MEDIA:
-                                mConfiguration.setMediaType(Integer.valueOf(text));
-                                break;
                             case TAG_PULS_UP:
                                 output.setPulsUp(Integer.valueOf(text));
                                 break;

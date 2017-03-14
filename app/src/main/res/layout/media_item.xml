@@ -29,7 +29,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:id="@+id/imageView" />
+                android:id="@+id/imageMedia" />
 
             <TextView
                 android:text="@{media.name}"
@@ -39,7 +39,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:id="@+id/textView4"
-                android:layout_below="@+id/imageView" />
+                android:layout_below="@+id/imageMedia" />
 
             <ImageView
                 android:layout_width="16dp"

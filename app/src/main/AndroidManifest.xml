@@ -55,12 +55,12 @@
         <activity
             android:name=".ui.configurations.detail.MediaImagePreviewActivity"
             android:label="Image preview"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!--  -->
         <activity
             android:name=".ui.configurations.detail.MediaChoserActivity"
             android:label="@string/activity_title_media_chose"
-            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->
         <activity
             android:name=".ui.configurations.factory.ConfigurationFactoryActivity"
@@ -86,6 +86,47 @@
             android:name=".ui.configurations.importation.ConfigurationImportActivity"
             android:label="@string/activity_title_import_configuration"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
+
+        <!-- OutputProfiles activity -->
+        <activity
+            android:name=".ui.outputs.OutputProfilesActivity"
+            android:label="@string/nav_text_profiles"
+            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.configurations.ConfigurationsActivity" />
+        </activity>
+        <!-- Profile factory activity -->
+        <activity
+            android:name=".ui.outputs.factory.ProfileFactoryActivity"
+            android:label="@string/activity_title_new_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile rename activity -->
+        <activity
+            android:name=".ui.outputs.rename.ProfileRenameActivity"
+            android:label="@string/activity_title_rename_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile duplicate activity -->
+        <activity
+            android:name=".ui.outputs.duplicate.ProfileDuplicateActivity"
+            android:label="@string/activity_title_duplicate_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile import activity -->
+        <activity
+            android:name=".ui.outputs.importation.ProfileImportActivity"
+            android:label="@string/activity_title_import_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle"/>
+        <!-- Profile detail activity -->
+        <activity
+            android:name=".ui.outputs.detail.ProfileDetailActivity"
+            android:label="@string/activity_title_profile_detail"
+            android:parentActivityName=".ui.outputs.OutputProfilesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.outputs.OutputProfilesActivity" />
+        </activity>
+
         <!-- Help activity -->
         <activity
             android:name=".ui.help.HelpActivity"

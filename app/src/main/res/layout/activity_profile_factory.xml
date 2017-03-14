@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ObservableProfile" />
+
+        <variable
+            name="controller"
+            type="ProfileFactoryActivity" />
+
+        <variable
+            name="profile"
+            type="ObservableProfile" />
+
+    </data>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
+        app:errorEnabled="true"
+        app:errorText="@{@string/error_invalid_name}"
+        app:validity="@{profile.validityFlag}"
+        app:validityFlag="@{ProfileFactoryActivity.FLAG_NAME}">
+
+        <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
+            android:id="@+id/editConfigurationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/configuration_name"
+            android:inputType="textPersonName"
+            android:text="@={profile.name}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:actionBarStyle">
+        <Button
+            style="?android:actionButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="@{profile.valid}"
+            android:onClick="onCreate"
+            android:text="@string/configuration_config_create" />
+    </LinearLayout>
+
+</LinearLayout>
+</layout>

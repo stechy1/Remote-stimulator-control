@@ -71,7 +71,6 @@ public class OutputFragment extends Fragment {
                     return;
                 }
 
-                mOutput.setMediaByIndex(index);
                 break;
         }
     }
@@ -83,12 +82,5 @@ public class OutputFragment extends Fragment {
      */
     void setOutput(ConfigurationERP.Output output) {
         mOutput = output;
-    }
-
-    
-    public void onChoseMedia(View view) {
-        Intent intent = new Intent(this.getContext(), MediaChoserActivity.class);
-        intent.putExtra(MediaChoserActivity.MEDIA_LIST, mOutput.getParentConfiguration().mediaList);
-        startActivityForResult(intent, REQUEST_SELECT_OUTPUT);
     }
 }

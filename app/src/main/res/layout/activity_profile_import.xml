@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.importation.ProfileImportActivity" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.importation.ObservableProfile" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <variable
+            name="profile"
+            type="ObservableProfile" />
+
+    </data>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.importation.ProfileImportActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="@string/file_path" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:onClick="onFilePathRequest"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="@{profile.filePath}"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:clickable="@{profile.isFlagValid(ProfileImportActivity.FLAG_PATH)}"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                app:counterEnabled="true"
+                app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
+                app:errorEnabled="true"
+                app:errorText="@{@string/error_invalid_name}"
+                app:validity="@{profile.validityFlag}"
+                app:validityFlag="@{ProfileImportActivity.FLAG_NAME}">
+
+                <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
+                    android:id="@+id/editConfigurationName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/profile_name"
+                    android:inputType="textPersonName"
+                    android:selectAllOnFocus="true"
+                    android:text="@={profile.name}" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        style="?android:actionBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonCancel"
+            style="?android:actionButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onCancel"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/buttonImport"
+            style="?android:actionButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="@{profile.changed &amp;&amp; profile.validityFlag == 0}"
+            android:onClick="onImport"
+            android:text="@android:string/ok" />
+    </LinearLayout>
+
+</LinearLayout>
+</layout>

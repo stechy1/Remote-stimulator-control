@@ -21,13 +21,6 @@ public enum ConfigurationComparator implements Comparator<AConfiguration> {
         public int compare(AConfiguration lhs, AConfiguration rhs) {
             return lhs.getConfigurationType().compareTo(rhs.getConfigurationType());
         }
-    },
-    // Komparátor podle typu použitého media
-    MEDIA_COMPARATOR {
-        @Override
-        public int compare(AConfiguration lhs, AConfiguration rhs) {
-            return integerCompare(lhs.getMediaType(), rhs.getMediaType());
-        }
     };
 
     /**
@@ -64,7 +57,6 @@ public enum ConfigurationComparator implements Comparator<AConfiguration> {
      * @param multipleOptions Komparátory
      *                        @see #NAME_COMPARATOR
      *                        @see #TYPE_COMPARATOR
-     *                        @see #MEDIA_COMPARATOR
      * @return Komparátor
      */
     public static Comparator<AConfiguration> getComparator(final List<ConfigurationComparator> multipleOptions) {

@@ -97,8 +97,6 @@ public abstract class CSVHandler implements IOHandler {
     protected void writeSelf(StringBuilder builder) {
         builder.append(mConfiguration.getOutputCount())
                 .append(mSeparator);
-        builder.append(mConfiguration.getMediaType())
-                .append(mSeparator);
     }
 
     /**
@@ -108,7 +106,6 @@ public abstract class CSVHandler implements IOHandler {
      */
     protected void readSelf(IndexedValues values) {
         mConfiguration.setOutputCount(Integer.parseInt(values.getNext()));
-        mConfiguration.setMediaType(Integer.parseInt(values.getNext()));
     }
     // endregion
 

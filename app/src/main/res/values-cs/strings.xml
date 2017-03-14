@@ -6,6 +6,8 @@
     <string name="nav_drawer_open">Otevřít navigaci</string>
     <string name="nav_drawer_close">Zavřít navigaci</string>
     <string name="nav_configurations">Konfigurace</string>
+    <string name="nav_profiles">Profily výstupů</string>
+    <string name="nav_text_profiles">Profily</string>
     <string name="nav_text_settings">Nastavení</string>
     <string name="nav_text_help">Nápověda</string>
     <string name="nav_text_about">O aplikaci</string>
@@ -62,7 +64,7 @@
     <string name="activity_title_new_configuration">Nová konfigurace</string>
     <string name="configuration_name">Název</string>
     <string name="configuration_type">Typ konfigurace</string>
-    <string name="configuration_configm_create">Vytvořit</string>
+    <string name="configuration_config_create">Vytvořit</string>
 
     <!-- Activity - rename configuration -->
     <string name="activity_title_rename_configuration">Přejmenovat konfiguraci</string>
@@ -104,16 +106,8 @@
     <string name="toggle">Toggle</string>
 
     <!-- Zprávy posílající se z manažeru konfigurací -->
-    <string name="manager_message_create_unsuccessful">Konfiguraci se nepodařilo vytvořit</string>
-    <string name="manager_message_create_successful">Konfigurace byla vytvořena</string>
-    <string name="manager_message_import_unsuccessful">Konfiguraci se nepodařilo importovat</string>
-    <string name="manager_message_import_successful">Konfigurace byla importována</string>
-    <string name="manager_message_rename_unsuccessful">Konfiguraci se nepodařilo přejmenovat</string>
-    <string name="manager_message_rename_successful">Konfigurace byla přejmenována</string>
-    <string name="manager_message_delete_unsuccessful">Konfiguraci se nepodařilo smazat</string>
-    <string name="manager_message_delete_successful">Konfigurace byla smazána</string>
-    <string name="manager_message_duplicate_unsuccessful">Konfiguraci se nepodařilo zduplikovat</string>
-    <string name="manager_message_duplicate_successful">Konfigurace byla zduplikována</string>
+    <string name="manager_message_successful">Akce se podařila</string>
+    <string name="manager_message_unsuccessful">Akce se nezdařila</string>
 
     <!-- Validační chyby -->
     <string name="error_invalid_name">Název má špatný formát</string>
@@ -127,15 +121,13 @@
     <string name="pref_show_extension">Zobrazit koncovky</string>
     <string name="image_preview_description" >Náhled obrázku</string>
 
-    <string-array name="pref_extensions">
-        <item name="0">XML</item>
-        <item name="1">JSON</item>
-        <item name="2">CSV</item>
-    </string-array>
-    <string-array name="pref_extensions_values">
-        <item name="0">XML</item>
-        <item name="1">JSON</item>
-        <item name="2">CSV</item>
-    </string-array>
     <string name="close_preview">Zavřít náhled</string>
+    <string name="no_profiles_found">Žádné profily nenalezeny</string>
+    <string name="activity_title_new_profile">Nový profil</string>
+    <string name="activity_title_profile_detail">Detail profilu</string>
+    <string name="activity_title_rename_profile">Přejmenovat profil</string>
+    <string name="activity_title_duplicate_profile">Duplikovat profil</string>
+    <string name="profile_name">Název profilu</string>
+    <string name="activity_title_import_profile">Importovat profil</string>
+    <string name="activity_title_media_chose">activity_title_media_chose</string>
 </resources>

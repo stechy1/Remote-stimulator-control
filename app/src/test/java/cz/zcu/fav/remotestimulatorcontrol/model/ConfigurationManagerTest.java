@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
-
 public class ConfigurationManagerTest {
 
     private static File workingDirectory;
@@ -33,17 +30,6 @@ public class ConfigurationManagerTest {
 
     @Test
     public void test() throws Exception {
-        manager.add(new AConfiguration("test") {
-            @Override
-            public IOHandler getHandler() {
-                return null;
-            }
-
-            @Override
-            public AConfiguration duplicate(String newName) {
-                return null;
-            }
-        });
-
+        manager.add(ConfigurationHelper.from("test"));
     }
 }

@@ -1,4 +1,4 @@
-package cz.zcu.fav.remotestimulatorcontrol.ui.configurations;
+package cz.zcu.fav.remotestimulatorcontrol.ui;
 
 import java.util.List;
 

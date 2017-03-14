@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="android.view.View" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile" />
+
+        <variable
+            name="profile"
+            type="OutputProfile" />
+    </data>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/textProfileName"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:text="@{profile.name}"
+    android:gravity="center_vertical"
+    android:textSize="20sp"
+    android:background="@drawable/selection_indicator_state_list"
+    android:padding="8dp">
+
+</TextView>
+
+</layout>

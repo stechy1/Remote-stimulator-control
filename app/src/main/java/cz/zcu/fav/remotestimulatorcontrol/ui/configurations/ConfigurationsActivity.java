@@ -16,8 +16,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -26,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +35,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -62,6 +60,7 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.rename.Configuration
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.devices.DeviceListActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.help.HelpActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.OutputProfilesActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.settings.SettingsActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
@@ -91,7 +90,7 @@ public class ConfigurationsActivity extends AppCompatActivity
     private static final int REQUEST_DUPLICATE_CONFIGURATION = 6;
     private static final int REQUEST_SORTING = 7;
     private static final int REQUEST_SETTINGS = 8;
-    private static final int REQUEST_IMPORT = 9;
+    private static final int REQUEST_IMPORT_CONFIGURATION = 9;
     // endregion
 
     // region Variables
@@ -176,7 +175,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_CREATE:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_create_successful : R.string.manager_message_create_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -185,7 +184,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_IMPORT:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_import_successful : R.string.manager_message_import_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         isRecyclerViewEmpty.set(false);
@@ -194,7 +193,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_RENAME:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_rename_successful : R.string.manager_message_rename_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mConfigurationAdapter.notifyItemChanged(msg.arg2);
@@ -210,7 +209,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     mConfigurationAdapter.clearSelections();
                     mActionMode.setTitle(getString(R.string.selected_count, mConfigurationAdapter.getSelectedItemCount()));
 
-                    Snackbar.make(mFab, R.string.manager_message_delete_successful, Snackbar.LENGTH_LONG)
+                    Snackbar.make(mFab, R.string.manager_message_successful, Snackbar.LENGTH_LONG)
                             .setAction("UNDO", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -254,7 +253,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     break;
                 case ConfigurationManager.MESSAGE_CONFIGURATION_DUPLICATE:
                     success = msg.arg1 == ConfigurationManager.MESSAGE_SUCCESSFUL;
-                    snackbarMessage = success ? R.string.manager_message_duplicate_successful : R.string.manager_message_duplicate_unsuccessful;
+                    snackbarMessage = success ? R.string.manager_message_successful : R.string.manager_message_unsuccessful;
 
                     if (success) {
                         mConfigurationAdapter.notifyItemChanged(msg.arg2);
@@ -366,9 +365,6 @@ public class ConfigurationsActivity extends AppCompatActivity
     private Comparator<AConfiguration> parseComparator() {
         List<ConfigurationComparator> comparators = new ArrayList<>();
 
-        if (isFlagValid(FLAG_SORT_MEDIA, mSortingFlag)) {
-            comparators.add(ConfigurationComparator.MEDIA_COMPARATOR);
-        }
         if (isFlagValid(FLAG_SORT_TYPE, mSortingFlag)) {
             comparators.add(ConfigurationComparator.TYPE_COMPARATOR);
         }
@@ -436,6 +432,7 @@ public class ConfigurationsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         super.onCreate(savedInstanceState);
 
         mManager = new ConfigurationManager(getFilesDir());
@@ -540,7 +537,7 @@ public class ConfigurationsActivity extends AppCompatActivity
     protected void onDestroy() {
         unregisterReceiver(mBluetoothDeviceNameReceiver);
         unregisterReceiver(mBluetoothStateReceiver);
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -636,7 +633,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                     mManager.refresh();
                 }
                 break;
-            case REQUEST_IMPORT:
+            case REQUEST_IMPORT_CONFIGURATION:
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_FILE_PATH);
                     String name = data.getStringExtra(ConfigurationImportActivity.CONFIGURATION_NAME);
@@ -696,7 +693,7 @@ public class ConfigurationsActivity extends AppCompatActivity
                 startActivityForResult(intent, REQUEST_SORTING);
                 break;
             case R.id.menu_main_import:
-                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT);
+                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT_CONFIGURATION);
                 break;
         }
 
@@ -708,6 +705,9 @@ public class ConfigurationsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.nav_profiles:
+                startActivity(new Intent(this, OutputProfilesActivity.class));
+                break;
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
                 break;
@@ -769,12 +769,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_TYPE, configuration.getConfigurationType());
         intent.putExtra(ConfigurationDetailActivity.CONFIGURATION_EXTENSION_TYPE, configuration.metaData.extensionType);
 
-        TextView textConfType = (TextView) view.findViewById(R.id.text_configuration_type);
-
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-                textConfType, "transition_configuration_type");
-
-        ActivityCompat.startActivityForResult(this, intent, REQUEST_DETAIL_CONFIGURATION, options.toBundle());
+        startActivityForResult(intent, REQUEST_DETAIL_CONFIGURATION);
     }
     // endregion
 
@@ -883,7 +878,7 @@ public class ConfigurationsActivity extends AppCompatActivity
         @Override
         public void onLongPress(MotionEvent e) {
             View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
-            if (mActionMode != null) {
+            if (mActionMode != null || view == null) {
                 return;
             }
 

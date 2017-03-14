@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ProfileRenameActivity" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration" />
+
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ObservableProfile" />
+
+        <variable
+            name="profile"
+            type="ObservableProfile" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_profile_rename"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.outputs.rename.ProfileRenameActivity">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
+            app:errorEnabled="true"
+            app:errorText="@{@string/error_invalid_name}"
+            app:validity="@{profile.validity}"
+            app:validityFlag="@{ProfileRenameActivity.FLAG_NAME}">
+
+            <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
+                android:id="@+id/editConfigurationName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/configuration_name"
+                android:inputType="textPersonName"
+                android:selectAllOnFocus="true"
+                android:text="@={profile.name}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            style="?android:actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonCancel"
+                style="?android:actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onCancel"
+                android:text="@android:string/cancel" />
+
+            <Button
+                android:id="@+id/buttonRename"
+                style="?android:actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:enabled="@{profile.changed &amp;&amp; profile.validity == 0}"
+                android:onClick="onRename"
+                android:text="@android:string/ok" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

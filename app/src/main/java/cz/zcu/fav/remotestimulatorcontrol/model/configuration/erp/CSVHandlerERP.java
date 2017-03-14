@@ -62,14 +62,8 @@ public class CSVHandlerERP extends CSVHandler {
         int distValue = Integer.parseInt(values.getNext());
         int distDelay = Integer.parseInt(values.getNext());
         int brightness = Integer.parseInt(values.getNext());
-        String mediaName = "";
-        if (values.hasNext()) {
-            mediaName = values.getNext();
-        }
 
-        ConfigurationERP.Output output = new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
-        output.setMediaName(mediaName);
-        return output;
+        return new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
     }
 
     /**
@@ -95,9 +89,6 @@ public class CSVHandlerERP extends CSVHandler {
         writeValue(builder, output.getDistributionValue());
         writeValue(builder, output.getDistributionDelay());
         writeValue(builder, output.getBrightness());
-        if (output.getMedia() != null) {
-            writeValue(builder, output.getMedia().getName());
-        }
     }
     // endregion
 

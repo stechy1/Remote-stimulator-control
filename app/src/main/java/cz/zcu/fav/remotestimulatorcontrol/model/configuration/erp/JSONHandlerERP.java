@@ -20,7 +20,6 @@ import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TA
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_DISTRIBUTION_DELAY;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_DISTRIBUTION_VALUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_EDGE;
-import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_MEDIA_OUTPUT_NAME;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_OUT;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_OUTPUTS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.Tags.TAG_PULS_DOWN;
@@ -84,14 +83,8 @@ class JSONHandlerERP extends JSONHandler {
         int distValue = outputObject.getInt(TAG_DISTRIBUTION_VALUE);
         int distDelay = outputObject.getInt(TAG_DISTRIBUTION_DELAY);
         int brightness = outputObject.getInt(TAG_BRIGHTNESS);
-        String mediaName = "";
-        if (outputObject.has(TAG_MEDIA_OUTPUT_NAME)) {
-            mediaName = outputObject.getString(TAG_MEDIA_OUTPUT_NAME);
-        }
 
-        ConfigurationERP.Output output = new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
-        output.setMediaName(mediaName);
-        return output;
+        return new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
     }
 
     /**
@@ -126,9 +119,6 @@ class JSONHandlerERP extends JSONHandler {
         writer.name(TAG_DISTRIBUTION_VALUE).value(output.getDistributionValue());
         writer.name(TAG_DISTRIBUTION_DELAY).value(output.getDistributionDelay());
         writer.name(TAG_BRIGHTNESS).value(output.getBrightness());
-        if (output.getMedia() != null) {
-            writer.name(TAG_MEDIA_OUTPUT_NAME).value(output.getMedia().getName());
-        }
 
         writer.endObject();
     }

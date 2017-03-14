@@ -58,7 +58,7 @@
             android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!--  -->
         <activity
-            android:name=".ui.configurations.detail.MediaChoserActivity"
+            android:name=".ui.outputs.detail.MediaChoserActivity"
             android:label="@string/activity_title_media_chose"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->

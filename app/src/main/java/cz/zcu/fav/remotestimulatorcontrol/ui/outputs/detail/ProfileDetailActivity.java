@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.LinearLayout;
 
 import java.io.File;
@@ -23,14 +22,17 @@ import cz.zcu.fav.remotestimulatorcontrol.widget.profileconfiguration.ProfileCon
 public class ProfileDetailActivity extends AppCompatActivity implements ProfileLoader.OnProfileLoaded {
 
     // region Constants
-    public static final String PROFILE_NAME = "profile_name";
     private static final String TAG = "ProfileDetailAct";
+    private static final int REQUEST_MEDIA_SELECT = 1;
+
+    public static final String PROFILE_NAME = "profile_name";
     // endregion
 
     // region Variables
 
-    LinearLayout container;
-    OutputProfile profile;
+    private LinearLayout container;
+    private OutputProfile profile;
+    private OutputConfiguration requestedConfiguration;
 
     // endregion
 
@@ -68,6 +70,21 @@ public class ProfileDetailActivity extends AppCompatActivity implements ProfileL
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_MEDIA_SELECT:
+                if (resultCode == RESULT_OK) {
+                    if (requestedConfiguration != null) {
+                        String path = data.getStringExtra(MediaChoserActivity.MEDIA_NAME);
+                        requestedConfiguration.setMediaFile(new File(path));
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(PROFILE_NAME, profile.getName());
         super.onSaveInstanceState(outState);
@@ -98,7 +115,8 @@ public class ProfileDetailActivity extends AppCompatActivity implements ProfileL
     private final ProfileConfigurationWidget.OnMediaSelectRequestListener mediaSelectRequestListener = new ProfileConfigurationWidget.OnMediaSelectRequestListener() {
         @Override
         public void onMediaSelectRequest(OutputConfiguration configuration) {
-            Log.d(TAG, "Zobrazuji výběr média: ");
+            requestedConfiguration = configuration;
+            startActivityForResult(new Intent(ProfileDetailActivity.this, MediaChoserActivity.class), REQUEST_MEDIA_SELECT);
         }
     };
 }

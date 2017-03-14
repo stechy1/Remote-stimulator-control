@@ -141,6 +141,7 @@ public class OutputConfiguration extends BaseObservable {
     public void setMediaFile(File mediaFile) {
         this.mMediaFile = mediaFile;
         setFileName(mediaFile != null ? mediaFile.getName() : "");
+        notifyPropertyChanged(BR.thumbnail);
     }
 
     public OutputConfiguration duplicate() {

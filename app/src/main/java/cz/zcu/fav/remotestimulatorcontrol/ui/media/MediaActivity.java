@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,12 +32,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMediaBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
@@ -62,6 +68,7 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
     private GestureDetectorCompat mGestureDetector;
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
+    private MediaPlayer mediaPlayer;
 
     private boolean permissionGranted = false;
     private boolean mDeleteConfirmed = true;
@@ -152,6 +159,8 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
             mManager.refresh();
         }
     };
+    private int selectedMedia;
+
 
     /**
      * Inicializuje recycler view
@@ -201,16 +210,16 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         mManager = new MediaManager(getFilesDir());
         mManager.setHandler(managerHandler);
-        
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_media);
         mBinding.setController(this);
         mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
-        
+
         initRecyclerView();
-        
+
         mFab = mBinding.fabImportMedia;
 
         Toolbar toolbar = mBinding.toolbar;
@@ -278,10 +287,6 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
         startActivityForResult(Intent.createChooser(intent, "Vyberte externí médium"), REQUEST_FILE_PATH);
     }
 
-    public void onItemClick(View view) {
-        // TODO buď přehraju zvuk, nebo zobrazím náhled
-    }
-    
     // region RecyclerView itemTouch listener
 
     @Override
@@ -299,12 +304,61 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         // Zde opravdu nic není
     }
-    
+
     // endregion
-    
+
 
     private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 
+        // region Variables
+        private final MediaPlayer.OnPreparedListener mmMediaPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                ((MediaAudio)(mManager.mediaList.get(selectedMedia))).setPlaying(true);
+                mediaPlayer.start();
+            }
+        };
+
+        private final MediaPlayer.OnCompletionListener mmMediaCompletionListener = new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                ((MediaAudio) (mManager.mediaList.get(selectedMedia))).setPlaying(false);
+                selectedMedia = -1;
+                mediaPlayer.reset();
+            }
+        };
+        // endregion
+
+        // region Private methods
+        /**
+         * Odstartuje přehrávač
+         *
+         * @param filePath Cesta k souboru, který se má přehrát
+         * @param position Index media, který se bude přehrávat
+         */
+        private void playMediaPlayer(String filePath, int position) {
+            try {
+                mediaPlayer.setDataSource(filePath);
+                selectedMedia = position;
+                mediaPlayer.prepareAsync();
+            } catch (IOException ex) {
+                Toast.makeText(MediaActivity.this, "Zvuk nebylo možné přehrát", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        /**
+         * Zastaví přehrávání přehrávače
+         *
+         * @param position Index média, který se má zastavit
+         */
+        private void stopMediaPlayer(int position) {
+            mediaPlayer.stop();
+            ((MediaAudio) (mManager.mediaList.get(position))).setPlaying(false);
+            selectedMedia = -1;
+            mediaPlayer.reset();
+        }
+        // endregion
+        
         private void internal_toggleSelection(View v) {
             int index = mRecyclerView.getChildAdapterPosition(v);
             toggleSelection(index);
@@ -313,13 +367,39 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+            int position = mRecyclerView.getChildAdapterPosition(view);
 
             if (mActionMode != null) {
                 internal_toggleSelection(view);
                 return false;
             }
 
-            onItemClick(view);
+            if (position == -1) {
+                return false;
+            }
+
+            AMedia media = mManager.mediaList.get(position);
+            String filePath = media.getMediaFile().getAbsolutePath();
+            if (media.getMediaType() == MediaType.AUDIO) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setOnPreparedListener(mmMediaPreparedListener);
+                    mediaPlayer.setOnCompletionListener(mmMediaCompletionListener);
+                }
+
+                if (mediaPlayer.isPlaying()) {
+                    final boolean nextPlay = position != selectedMedia;
+                    stopMediaPlayer(selectedMedia);
+                    if (nextPlay) {
+                        playMediaPlayer(filePath, position);
+                    }
+                    return true;
+                }
+
+                playMediaPlayer(filePath, position);
+
+            }
+            
             return super.onSingleTapConfirmed(e);
         }
 
@@ -334,7 +414,6 @@ public class MediaActivity extends AppCompatActivity implements RecyclerView.OnI
             internal_toggleSelection(view);
             super.onLongPress(e);
         }
-
     }
 
     private class ActionBarCallback implements ActionMode.Callback {

@@ -136,4 +136,6 @@
     <string name="activity_title_new_profile">Nový profil</string>
     <string name="activity_title_profile_detail">Detail profilu</string>
     <string name="activity_title_rename_profile">Přejmenovat profil</string>
+    <string name="activity_title_duplicate_profile">Duplikovat profil</string>
+    <string name="profile_name">Název profilu</string>
 </resources>

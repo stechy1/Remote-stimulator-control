@@ -107,6 +107,11 @@
             android:name=".ui.outputs.rename.ProfileRenameActivity"
             android:label="@string/activity_title_rename_profile"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
+        <!-- Profile duplicate activity -->
+        <activity
+            android:name=".ui.outputs.duplicate.ProfileDuplicateActivity"
+            android:label="@string/activity_title_duplicate_profile"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Profile detail activity -->
         <activity
             android:name=".ui.outputs.detail.ProfileDetailActivity"
@@ -138,6 +143,8 @@
 
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
+
+
     </application>
 
 </manifest>

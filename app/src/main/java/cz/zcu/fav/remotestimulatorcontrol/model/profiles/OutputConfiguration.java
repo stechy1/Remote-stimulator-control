@@ -143,6 +143,14 @@ public class OutputConfiguration extends BaseObservable {
         setFileName(mediaFile != null ? mediaFile.getName() : "");
     }
 
+    public OutputConfiguration duplicate() {
+        OutputConfiguration configuration = new OutputConfiguration();
+        configuration.setMediaType(mediaType);
+        configuration.setMediaFile(mMediaFile);
+
+        return configuration;
+    }
+
     // endregion
 
     private static class Loader extends AsyncTask<String, Void, Bitmap> {

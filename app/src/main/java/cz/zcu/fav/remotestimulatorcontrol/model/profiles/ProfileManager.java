@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
+import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 /**
  * Třída představující správce profilů
@@ -222,7 +223,33 @@ public final class ProfileManager implements ProfileAsyncReader.OnProfileLoadedL
      * @see #MESSAGE_UNSUCCESSFUL profil se nepodařilo zduplikovat
      */
     public void duplicate(OutputProfile profile, String name) {
-        // TODO implementovat duplikování profilu
+        for (OutputProfile aProfile : profiles) {
+            if (aProfile.getName().equals(name)) {
+                if (mHandler != null) {
+                    mHandler.obtainMessage(MESSAGE_NAME_EXISTS).sendToTarget();
+                }
+                return;
+            }
+        }
+
+        OutputProfile duplicated = profile.duplicate(name);
+
+        File originalFile = buildProfileFilePath(profile);
+        File duplicateFile = buildProfileFilePath(duplicated);
+
+        try {
+            FileUtils.copy(originalFile, duplicateFile);
+
+            add(duplicated);
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_DUPLICATE, MESSAGE_SUCCESSFUL, profiles.indexOf(duplicated)).sendToTarget();
+            }
+
+        } catch (IOException e) {
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_PROFILE_DUPLICATE, MESSAGE_UNSUCCESSFUL).sendToTarget();
+            }
+        }
     }
 
     /**

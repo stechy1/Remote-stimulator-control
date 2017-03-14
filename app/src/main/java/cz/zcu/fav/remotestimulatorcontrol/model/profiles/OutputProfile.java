@@ -43,7 +43,7 @@ public final class OutputProfile extends BaseObservable {
     /**
      * Inicializuje list výchozími hodnotami
      */
-    void fillOutputConfigurations() {
+    public void fillOutputConfigurations() {
         for (int i = mOutputConfigurationList.size(); i < OUTPUT_COUNT; i++) {
             mOutputConfigurationList.add(new OutputConfiguration());
         }
@@ -81,6 +81,21 @@ public final class OutputProfile extends BaseObservable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Vytvoří klon profilu
+     *
+     * @param name Název nového profilu
+     * @return Nový duplikovaný profil
+     */
+    public OutputProfile duplicate(String name) {
+        OutputProfile profile = new OutputProfile(name);
+        for (OutputConfiguration outputConfiguration : mOutputConfigurationList) {
+            profile.mOutputConfigurationList.add(outputConfiguration.duplicate());
+        }
+
+        return profile;
     }
 
     // endregion

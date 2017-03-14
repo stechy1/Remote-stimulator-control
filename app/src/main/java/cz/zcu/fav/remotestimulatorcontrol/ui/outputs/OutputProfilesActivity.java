@@ -33,6 +33,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.detail.ProfileDetailActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.duplicate.ProfileDuplicateActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.factory.ProfileFactoryActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ProfileRenameActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
@@ -291,6 +292,22 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                     }
                 }
                 break;
+            case REQUEST_DUPLICATE_PROFILE:
+                if (resultCode == RESULT_OK) {
+                    int id = data.getIntExtra(ProfileDuplicateActivity.PROFILE_ID, ProfileDuplicateActivity.PROFILE_UNKNOWN_ID);
+                    String name = data.getStringExtra(ProfileDuplicateActivity.PROFILE_NAME);
+
+                    if (id == ProfileRenameActivity.PROFILE_UNKNOWN_ID) {
+                        return;
+                    }
+
+                    mManager.duplicate(id, name);
+
+                    if (mActionMode != null) {
+                        mActionMode.finish();
+                    }
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
@@ -401,10 +418,10 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                         return false;
                     }
 
-//                    intent = new Intent(ConfigurationsActivity.this, ConfigurationDuplicateActivity.class);
-//                    intent.putExtra(ConfigurationDuplicateActivity.CONFIGURATION_ID, selectedItems.get(0));
-//                    intent.putExtra(ConfigurationDuplicateActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_DUPLICATE_CONFIGURATION);
+                    intent = new Intent(OutputProfilesActivity.this, ProfileDuplicateActivity.class);
+                    intent.putExtra(ProfileDuplicateActivity.PROFILE_ID, selectedItems.get(0));
+                    intent.putExtra(ProfileDuplicateActivity.PROFILE_NAME, name);
+                    startActivityForResult(intent, REQUEST_DUPLICATE_PROFILE);
 
                     return true;
                 case R.id.context_delete: // Smažeme konfigurace

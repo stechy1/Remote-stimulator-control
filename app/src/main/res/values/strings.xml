@@ -212,6 +212,8 @@
     <string name="close_preview">Close</string>
     <string name="activity_title_profile_detail">Profile detail</string>
     <string name="activity_title_rename_profile">Rename profile</string>
+    <string name="activity_title_duplicate_profile">Duplicate profile</string>
+    <string name="profile_name">Profile name</string>
 
 
     <string-array name="pref_extensions" translatable="false">

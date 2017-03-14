@@ -74,6 +74,17 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
      * @return Cesta k médiu
      */
     public static File buildMediaFilePath(File workingDirectory, AMedia media) {
+        return buildMediaFilePath(workingDirectory, media.getName());
+    }
+
+    /**
+     * Sestaví cestu k médiu na základě kořenové složky medií a konkrétního média
+     *
+     * @param workingDirectory Kořenová složka médií
+     * @param mediaName Název média i s koncovkou
+     * @return Cesta k médiu
+     */
+    public static File buildMediaFilePath(File workingDirectory, String mediaName) {
         final File mediaFolder = new File(workingDirectory, MEDIA_FOLDER);
         if (!mediaFolder.exists()) {
             if (!mediaFolder.mkdirs()) {
@@ -81,8 +92,9 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
             }
         }
 
-        return new File(mediaFolder, media.getName());
+        return new File(mediaFolder, mediaName);
     }
+
     // endregion
 
     // region Private methods

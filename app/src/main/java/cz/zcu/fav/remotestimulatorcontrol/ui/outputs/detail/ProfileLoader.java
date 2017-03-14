@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
+import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 
@@ -45,6 +47,13 @@ public class ProfileLoader extends AsyncTask<File, Void, Void> {
             File file = ProfileManager.buildProfileFilePath(params[0], mProfile);
 
             handler.read(new FileInputStream(file));
+
+            for (OutputConfiguration outputConfiguration : mProfile.mOutputConfigurationList) {
+                String name = outputConfiguration.getFileName();
+                if (!name.isEmpty()) {
+                    outputConfiguration.setMediaFile(MediaManager.buildMediaFilePath(params[0], name));
+                }
+            }
 
         } catch (IOException e) {
             Log.e(TAG, "Nepodařilo se načíst profil: " + mProfile.getName(), e);

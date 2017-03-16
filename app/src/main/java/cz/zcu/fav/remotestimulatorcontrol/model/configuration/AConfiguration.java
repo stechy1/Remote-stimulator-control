@@ -1,6 +1,5 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.configuration;
 
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import java.util.List;
@@ -8,9 +7,10 @@ import java.util.regex.Pattern;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 
-public abstract class AConfiguration extends BaseObservable implements IValidate, IDuplicable {
+public abstract class AConfiguration extends BaseModel implements IDuplicable {
 
     // region Constants
     // Logovací tag
@@ -53,14 +53,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     public static final int FLAG_NAME = 1 << 0;
     // Příznak validity počtu výstupů
     public static final int FLAG_OUTPUT_COUNT = 1 << 1;
-
-    // Pole nevalidních kombinací typů medií
-    public static final int[] INVALID_MEDIA_COMBINATION = {
-            0b011, // MEDIA_LED&AUDIO
-            0b101, // MEDIA_LED&IMAGE
-            0b110, // MEDIA_AUDIO&IMAGE
-            0b111, // MEDIA_LED&AUDIO&IMAGE
-    };
     // endregion
 
     // region Variables
@@ -74,13 +66,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     @Bindable
     protected int outputCount;
     // Validita konfigurace
-    @Bindable
-    protected boolean valid = true;
-    // Příznak validity jednotlivých parametrů
-    @Bindable
-    protected int validityFlag;
-    // Příznak, zda-li se změníl stav konfigurace od posledního načteníprotected boolean changed;
-    protected boolean changed;
     // Dodatečné informace o konfiguraci
     public final MetaData metaData = new MetaData();
     // endregion
@@ -137,32 +122,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
     // endregion
 
     // region Private methods
-    /**
-     * Nastaví validitu zadanému příznaku
-     *
-     * @param flag  Příznak
-     * @param value True, pokud je příznak validní, jinak false
-     */
-    protected void setValidityFlag(int flag, boolean value) {
-        int oldFlagValue = this.validityFlag;
-        if (value) {
-            validityFlag |= flag;
-        }
-        else {
-            validityFlag &= ~flag;
-        }
-
-        if (validityFlag == oldFlagValue) {
-            return;
-        }
-
-        notifyPropertyChanged(BR.validityFlag);
-        setChanged();
-
-        if (validityFlag == 0) {
-            setValid(true);
-        }
-    }
 
     /**
      * Duplikuje základní vlastnosti konfigurace
@@ -175,13 +134,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         configuration.valid = valid;
         configuration.validityFlag = validityFlag;
         configuration.changed = changed;
-    }
-
-    /**
-     * Nastaví, příznak changed na true
-     */
-    private void setChanged() {
-        changed = true;
     }
 
     // endregion
@@ -199,48 +151,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
      * @return Vrátí kolekcí packetů reprezentující konfiguraci
      */
     public abstract List<BtPacket> getPackets();
-
-    /**
-     * Vrází příznak validity parametrů
-     *
-     * @return Příznak validity parametrů
-     */
-    @Override
-    public int getValidityFlag() {
-        return validityFlag;
-    }
-
-    /**
-     * Zjistí, zda-li je příznak validní, nebo ne
-     *
-     * @param flag Příznak
-     * @return True, pokud je validní, jinak false
-     */
-    @Override
-    public boolean isFlagValid(int flag) {
-        return !((validityFlag & flag) == flag);
-    }
-
-    /**
-     * Zjistí validitu celkové konfigurace
-     *
-     * @return True, pokud je celá konfigurace validní, jinak false
-     */
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    /**
-     * Nastavi validitu konfigurace
-     *
-     * @param valid True, pokud je konfigurace validní, jinak false
-     */
-    @Override
-    public void setValid(boolean valid) {
-        this.valid = valid;
-        notifyPropertyChanged(BR.valid);
-    }
 
     // endregion
 
@@ -305,15 +215,6 @@ public abstract class AConfiguration extends BaseObservable implements IValidate
         } else {
             setValidityFlag(FLAG_OUTPUT_COUNT, false);
         }
-    }
-
-    /**
-     * Zjistí, zda-li se konfigurace změnila od posledního načtení
-     *
-     * @return True, pokud se konfigurace změnila, jinak false
-     */
-    public boolean isChanged() {
-        return changed;
     }
     // endregion
 

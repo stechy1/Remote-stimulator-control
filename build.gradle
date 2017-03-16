@@ -16,7 +16,7 @@ ext {
     // allows for -Dpre-dex=false to be set
     preDexEnabled = "true" == System.getProperty("pre-dex", "true")
 
-    supportLibVersion = "25.2.0"
+    supportLibVersion = "25.3.0"
 }
 
 allprojects {

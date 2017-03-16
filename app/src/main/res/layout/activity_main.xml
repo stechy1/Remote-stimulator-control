@@ -3,7 +3,7 @@
 
     <data>
 
-        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.nextgen.MainActivity" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.MainActivity" />
 
         <variable
             name="controller"

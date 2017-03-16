@@ -16,14 +16,13 @@
         <!-- Activity -->
         <!-- Main activity -->
         <activity
-            android:name=".ui.configurations.ConfigurationsActivity"
-            android:label="@string/nav_configurations"
+            android:name=".ui.MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
-            <!--<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
 
         <!-- Other activity -->
@@ -36,30 +35,21 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/nav_text_settings"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
             android:theme="@style/AppTheme.ActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
         </activity>
         <!-- Configuration detail activity -->
         <activity
             android:name=".ui.configurations.detail.ConfigurationDetailActivity"
             android:label="@string/activity_title_configuration_detail"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <!-- Configuration detail - Image preview activity -->
         <activity
             android:name=".ui.configurations.detail.MediaImagePreviewActivity"
             android:label="Image preview"
-            android:theme="@style/AppTheme.Dialog.NoTitle" />
-        <!--  -->
-        <activity
-            android:name=".ui.outputs.detail.MediaChoserActivity"
-            android:label="@string/activity_title_media_chose"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
         <!-- Configuration factory activity -->
         <activity
@@ -87,16 +77,6 @@
             android:label="@string/activity_title_import_configuration"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
 
-        <!-- OutputProfiles activity -->
-        <activity
-            android:name=".ui.outputs.OutputProfilesActivity"
-            android:label="@string/nav_text_profiles"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
-        </activity>
         <!-- Profile factory activity -->
         <activity
             android:name=".ui.outputs.factory.ProfileFactoryActivity"
@@ -121,52 +101,20 @@
         <activity
             android:name=".ui.outputs.detail.ProfileDetailActivity"
             android:label="@string/activity_title_profile_detail"
-            android:parentActivityName=".ui.outputs.OutputProfilesActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.outputs.OutputProfilesActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
 
-        <!-- Media activity -->
+        <!-- Media choser activity -->
         <activity
-            android:name=".ui.media.MediaActivity"
-            android:label="@string/activity_title_media"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
-        </activity>
-
-        <!-- Help activity -->
-        <activity
-            android:name=".ui.help.HelpActivity"
-            android:label="@string/nav_text_help"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
-        </activity>
-        <!-- About activity -->
-        <activity
-            android:name=".ui.about.AboutActivity"
-            android:label="@string/nav_text_about"
-            android:parentActivityName=".ui.configurations.ConfigurationsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.configurations.ConfigurationsActivity" />
-        </activity>
+            android:name=".ui.outputs.detail.MediaChoserActivity"
+            android:label="@string/activity_title_media_chose"
+            android:theme="@style/AppTheme.Dialog.NoTitle" />
 
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
-
-        <activity android:name=".ui.nextgen.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

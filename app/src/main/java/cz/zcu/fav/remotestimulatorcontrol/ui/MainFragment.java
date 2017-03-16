@@ -1,4 +1,4 @@
-package cz.zcu.fav.remotestimulatorcontrol.ui.nextgen;
+package cz.zcu.fav.remotestimulatorcontrol.ui;
 
 
 import android.databinding.DataBindingUtil;

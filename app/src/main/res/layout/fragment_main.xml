@@ -2,7 +2,7 @@
 
     <data>
 
-        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.nextgen.MainFragment" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.MainFragment" />
 
         <variable
             name="controller"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/navigation"
-            tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.nextgen.MainFragment" />
+            tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.MainFragment" />
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"

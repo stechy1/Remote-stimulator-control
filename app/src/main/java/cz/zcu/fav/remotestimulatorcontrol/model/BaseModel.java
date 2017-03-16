@@ -46,7 +46,7 @@ public abstract class BaseModel extends BaseObservable implements IValidate {
 
     @Override
     public int getValidityFlag() {
-        return validityFlag;
+        return changed ? validityFlag : 0;
     }
 
     @Override

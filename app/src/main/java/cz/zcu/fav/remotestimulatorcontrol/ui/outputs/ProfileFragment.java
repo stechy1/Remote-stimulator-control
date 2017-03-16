@@ -1,5 +1,6 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui.outputs;
 
+
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
@@ -9,26 +10,28 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityOutputProfilesBinding;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentProfileBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile;
 import cz.zcu.fav.remotestimulatorcontrol.model.profiles.ProfileManager;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.DividerItemDecoration;
@@ -40,23 +43,30 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.outputs.rename.ProfileRenameActivit
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
-public class OutputProfilesActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener {
+import static android.app.Activity.RESULT_OK;
+
+
+public class ProfileFragment extends Fragment {
 
     // region Constants
     private static final String TAG = "OutputProfiles";
 
+    // Stringy pro ukládání stavu instance
+    private static final String SAVE_STATE_IN_ACTION_MODE = "action_mode";
+    private static final String SAVE_STATE_SELECTED_ITEMS_COUNT = "selected_items_count";
+
+    // Seznam requestů
     private static final int REQUEST_NEW_PROFILE = 1;
     private static final int REQUEST_RENAME_PROFILE = 2;
     private static final int REQUEST_DUPLICATE_PROFILE = 3;
     private static final int REQUEST_IMPORT_PROFILE = 4;
-
     // endregion
 
     // region Variables
 
     private final ObservableBoolean isRecyclerViewEmpty = new ObservableBoolean(true);
-    private ActivityOutputProfilesBinding mBinding;
 
+    private FragmentProfileBinding mBinding;
     private RecyclerView mRecyclerView;
     private ProfileAdapter mProfileAdapter;
     private ProfileManager mManager;
@@ -178,16 +188,33 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
     };
     private final Handler managerHandler = new Handler(managerCallback);
 
-    // endregion
-
-    @SuppressWarnings("unused")
     public final SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
             mManager.refresh();
         }
     };
+    private RecyclerView.OnItemTouchListener mItemTouchListener = new RecyclerView.OnItemTouchListener() {
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            mGestureDetector.onTouchEvent(e);
+            return false;
+        }
 
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+            // Zde opravdu nic není
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            // Zde opravdu nic není
+        }
+    };
+    private Menu mMenu;
+    // endregion
+
+    // region Private methods
     /**
      * Inicializuje recycler view
      */
@@ -195,13 +222,13 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         mRecyclerView = mBinding.recyclerViewProfiles;
         mProfileAdapter = new ProfileAdapter(mManager.profiles);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         mRecyclerView.setItemAnimator(new LandingAnimator(new FastOutLinearInInterpolator()));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(new AlphaInAnimationAdapter(mProfileAdapter));
-        mRecyclerView.addOnItemTouchListener(this);
-        mGestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
+        mRecyclerView.addOnItemTouchListener(mItemTouchListener);
+        mGestureDetector = new GestureDetectorCompat(getActivity(), new RecyclerViewGestureListener());
     }
 
     /**
@@ -225,8 +252,8 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
             return;
         }
 
-        View duplicateBtn = findViewById(R.id.context_duplicate);
-        View renameBtn = findViewById(R.id.context_rename);
+        View duplicateBtn = getActivity().findViewById(R.id.context_duplicate);
+        View renameBtn = getActivity().findViewById(R.id.context_rename);
 
         if (duplicateBtn == null || renameBtn == null) {
             return;
@@ -236,39 +263,57 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         renameBtn.setEnabled(enabled);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void startActionMode() {
+        ((AppCompatActivity) getActivity()).startSupportActionMode(new ActionBarCallback());
+    }
+    // endregion
 
-        mManager = new ProfileManager(getFilesDir());
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        mManager = new ProfileManager(getActivity().getFilesDir());
         mManager.setHandler(managerHandler);
 
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_output_profiles);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
         mBinding.setController(this);
-        mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
+        mBinding.executePendingBindings();
 
         initRecyclerView();
 
         mFab = mBinding.fabNewProfile;
 
-        Toolbar toolbar = mBinding.toolbar;
-        setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        if (savedInstanceState != null) {
+            boolean isInActionMode = savedInstanceState.getBoolean(SAVE_STATE_IN_ACTION_MODE);
+            if (isInActionMode && mActionMode == null) {
+                startActionMode();
+                List<Integer> selectedItems = savedInstanceState.getIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT);
+                assert selectedItems != null;
+                mProfileAdapter.selectItems(selectedItems);
+                mActionMode.setTitle(getString(R.string.selected_count, selectedItems.size()));
+            }
         }
 
+        return mBinding.getRoot();
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         refreshRecyclerView();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, mActionMode != null);
+        outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, mProfileAdapter.getSelectedItemsIndex());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_NEW_PROFILE:
                 if (resultCode == RESULT_OK) {
@@ -322,8 +367,29 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mMenu = menu;
+
+        inflater.inflate(R.menu.menu_profile, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_profile_import:
+                startActivityForResult(new Intent(getActivity(), ProfileImportActivity.class), REQUEST_IMPORT_PROFILE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // Kliknutí na FAB tlačítko
     public void fabClick(View view) {
-        startActivityForResult(new Intent(OutputProfilesActivity.this, ProfileFactoryActivity.class), REQUEST_NEW_PROFILE);
+        startActivityForResult(new Intent(getActivity(), ProfileFactoryActivity.class), REQUEST_NEW_PROFILE);
     }
 
     // Kliknutí na položku v recyclerView
@@ -335,33 +401,13 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
         }
 
         OutputProfile profile = mManager.profiles.get(position);
-        Intent intent = new Intent(this, ProfileDetailActivity.class);
+        Intent intent = new Intent(getActivity(), ProfileDetailActivity.class);
         intent.putExtra(ProfileDetailActivity.PROFILE_NAME, profile.getName());
 
-        ActivityCompat.startActivity(this, intent, null);
+        ActivityCompat.startActivity(getActivity(), intent, null);
 
         Log.d(TAG, String.valueOf(position));
     }
-
-    // region RecyclerView itemTouch listener
-
-    @Override
-    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        mGestureDetector.onTouchEvent(e);
-        return false;
-    }
-
-    @Override
-    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-        // Zde opravdu nic není
-    }
-
-    @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-        // Zde opravdu nic není
-    }
-
-    // endregion
 
     private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -390,7 +436,8 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                 return;
             }
 
-            startSupportActionMode(new ActionBarCallback());
+            //startSupportActionMode(new OutputProfilesActivity.ActionBarCallback());
+            startActionMode();
             internal_toggleSelection(view);
             super.onLongPress(e);
         }
@@ -427,7 +474,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                         return false;
                     }
 
-                    intent = new Intent(OutputProfilesActivity.this, ProfileDuplicateActivity.class);
+                    intent = new Intent(getActivity(), ProfileDuplicateActivity.class);
                     intent.putExtra(ProfileDuplicateActivity.PROFILE_ID, selectedItems.get(0));
                     intent.putExtra(ProfileDuplicateActivity.PROFILE_NAME, name);
                     startActivityForResult(intent, REQUEST_DUPLICATE_PROFILE);
@@ -442,7 +489,7 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
                         return false;
                     }
 
-                    intent = new Intent(OutputProfilesActivity.this, ProfileRenameActivity.class);
+                    intent = new Intent(getActivity(), ProfileRenameActivity.class);
                     intent.putExtra(ProfileRenameActivity.PROFILE_ID, selectedItems.get(0));
                     intent.putExtra(ProfileRenameActivity.PROFILE_NAME, name);
                     startActivityForResult(intent, REQUEST_RENAME_PROFILE);
@@ -477,4 +524,5 @@ public class OutputProfilesActivity extends AppCompatActivity implements Recycle
             isRecyclerViewEmpty.set(mProfileAdapter.getItemCount() == 0);
         }
     }
+
 }

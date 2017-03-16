@@ -57,6 +57,7 @@ dependencies {
             [group: 'com.android.support', name: 'support-vector-drawable', version: supportLibVersion],
             [group: 'com.android.support', name: 'recyclerview-v7', version: supportLibVersion],
             [group: 'com.android.support', name: 'cardview-v7', version: supportLibVersion],
+            [group: 'com.android.support', name: 'support-v4', version: supportLibVersion],
             [group: 'com.android.support', name: 'palette-v7', version: supportLibVersion]
     )
     testCompile([group: 'org.mockito', name: 'mockito-all', version: '1.10.19'])

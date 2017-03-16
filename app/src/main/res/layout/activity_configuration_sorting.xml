@@ -3,7 +3,7 @@
 
     <data>
 
-        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsActivity" />
+        <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationsFragment" />
 
         <import type="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity" />
 
@@ -33,7 +33,7 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:text="@string/sort_by_name"
-            app:flag="@{ConfigurationsActivity.FLAG_SORT_NAME}"
+            app:flag="@{ConfigurationsFragment.FLAG_SORT_NAME}"
             app:value="@{sortingFlag}" />
 
         <CheckBox
@@ -44,18 +44,7 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:text="@string/sort_by_type"
-            app:flag="@{ConfigurationsActivity.FLAG_SORT_TYPE}"
-            app:value="@{sortingFlag}" />
-
-        <CheckBox
-            android:id="@+id/checkBoxSortMedia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onChecked"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text="@string/sort_by_media"
-            app:flag="@{ConfigurationsActivity.FLAG_SORT_MEDIA}"
+            app:flag="@{ConfigurationsFragment.FLAG_SORT_TYPE}"
             app:value="@{sortingFlag}" />
 
         <LinearLayout

@@ -33,4 +33,11 @@ public interface IValidate {
      * @param valid True, pokud je konfigurace validní, jinak false
      */
     void setValid(boolean valid);
+
+    /**
+     * Zjistí, zda-li se objekt změnil od posledního použití
+     *
+     * @return True, pokud se objekt změnil, jinak false
+     */
+    boolean isChanged();
 }

@@ -69,25 +69,6 @@ public class ObservableConfiguration extends BaseModel {
     }
 
     /**
-     * Vrátí true, pokud se změnil vnitřní stav objektu, jinak false
-     *
-     * @return True, pokud se změnil vnitřní stav objektu, jinak false
-     */
-    public boolean isChanged() {
-        return changed;
-    }
-
-    /**
-     * Nastaví příznak, že je konfigurace změněna
-     *
-     * @param changed True, pokud je konfigurace změněna, jinak false
-     */
-    public void setChanged(boolean changed) {
-        this.changed = changed;
-        notifyPropertyChanged(BR.changed);
-    }
-
-    /**
      * Vrátí Id konfigurace
      *
      * @return Id konfigurace

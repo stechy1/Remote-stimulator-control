@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             mDrawerLayout.closeDrawers();
-            return true;
+            return false;
         }
 
         showFragment(id);

@@ -12,6 +12,8 @@ import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
  */
 public abstract class BaseModel extends BaseObservable implements IValidate {
 
+    // region Variables
+
     // Příznak validity jednotlivých parametrů
     @Bindable
     protected int validityFlag;
@@ -21,6 +23,10 @@ public abstract class BaseModel extends BaseObservable implements IValidate {
     // Příznak, zda-li se změníl stav konfigurace od posledního načteníprotected boolean changed;
     @Bindable
     protected boolean changed;
+
+    // endregion
+
+    // region Public methods
 
     /**
      * Nastaví validitu zadanému příznaku
@@ -37,7 +43,7 @@ public abstract class BaseModel extends BaseObservable implements IValidate {
         }
 
         notifyPropertyChanged(BR.validityFlag);
-        changed = true;
+        setChanged(true);
 
         if (validityFlag == 0) {
             setValid(true);
@@ -69,4 +75,12 @@ public abstract class BaseModel extends BaseObservable implements IValidate {
     public boolean isChanged() {
         return changed;
     }
+
+    @Override
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+        notifyPropertyChanged(BR.changed);
+    }
+
+    // endregion
 }

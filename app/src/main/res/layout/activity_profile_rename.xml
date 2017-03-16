@@ -33,7 +33,7 @@
             app:counterMaxLength="@{AConfiguration.MAX_NAME_LENGTH}"
             app:errorEnabled="true"
             app:errorText="@{@string/error_invalid_name}"
-            app:validity="@{profile.validity}"
+            app:validity="@{profile.validityFlag}"
             app:validityFlag="@{ProfileRenameActivity.FLAG_NAME}">
 
             <cz.zcu.fav.remotestimulatorcontrol.widget.repairededittext.RepairedEditText
@@ -69,7 +69,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:enabled="@{profile.changed &amp;&amp; profile.validity == 0}"
+                android:enabled="@{profile.valid}"
                 android:onClick="onRename"
                 android:text="@android:string/ok" />
         </LinearLayout>

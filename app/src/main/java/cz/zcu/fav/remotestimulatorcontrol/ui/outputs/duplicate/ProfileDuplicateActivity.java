@@ -48,7 +48,6 @@ public class ProfileDuplicateActivity extends AppCompatActivity {
         profile.setId(id);
         profile.setOldName(oldName);
         profile.setName(name);
-        profile.setChanged(false);
 
         ActivityProfileDuplicateBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_profile_duplicate);
         binding.setProfile(profile);

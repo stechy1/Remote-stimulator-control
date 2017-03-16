@@ -1,7 +1,7 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.configuration;
 
 /**
- * Rozhraní pro popis validačních metod konfigurace
+ * Rozhraní pro popis metod, které slouží k práci s validitou objektu
  */
 public interface IValidate {
 
@@ -21,16 +21,16 @@ public interface IValidate {
     boolean isFlagValid(int flag);
 
     /**
-     * Zjistí validitu celkové konfigurace
+     * Zjistí validitu celého objektu
      *
-     * @return True, pokud je celá konfigurace validní, jinak false
+     * @return True, pokud je celý objekt validní, jinak false
      */
     boolean isValid();
 
     /**
-     * Nastavi validitu konfigurace
+     * Nastavi validitu objektu
      *
-     * @param valid True, pokud je konfigurace validní, jinak false
+     * @param valid True, pokud je objekt validní, jinak false
      */
     void setValid(boolean valid);
 
@@ -40,4 +40,12 @@ public interface IValidate {
      * @return True, pokud se objekt změnil, jinak false
      */
     boolean isChanged();
+
+    /**
+     * Nastaví příznak, zda-li je objekt validní, či nikoliv
+     * Nemělo by se nastavovat svévolně, pouze v nutných případech
+     *
+     * @param changed True, pokud je objekt validní, jinak false
+     */
+    void setChanged(boolean changed);
 }

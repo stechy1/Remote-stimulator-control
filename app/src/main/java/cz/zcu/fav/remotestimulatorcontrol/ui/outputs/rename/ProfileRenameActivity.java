@@ -47,7 +47,6 @@ public class ProfileRenameActivity extends AppCompatActivity {
         mProfile.setId(id);
         mProfile.setOldName(oldName);
         mProfile.setName(name);
-        mProfile.setChanged(false);
 
         ActivityProfileRenameBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_profile_rename);
         binding.setProfile(mProfile);

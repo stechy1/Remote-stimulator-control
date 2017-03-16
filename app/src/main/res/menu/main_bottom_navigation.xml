@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_bottom_experiments"
+        android:icon="@drawable/experiments"
+        android:title="@string/nav_configurations" />
+    <item
+        android:id="@+id/nav_bottom_profiles"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/nav_profiles" />
+    <item
+        android:id="@+id/nav_bottom_media"
+        android:icon="@drawable/default_media_image_thumbnail"
+        android:title="@string/nav_text_media" />
+
+</menu>

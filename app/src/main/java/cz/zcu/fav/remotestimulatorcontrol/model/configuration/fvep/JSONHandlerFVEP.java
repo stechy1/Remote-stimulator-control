@@ -110,11 +110,11 @@ class JSONHandlerFVEP extends JSONHandler {
      */
     private ConfigurationFVEP.Output readOutput(JSONObject outputObject, int id) throws JSONException {
 
-        int pulsUp = outputObject.getInt(TAG_PULS_UP);
-        int pulsDown = outputObject.getInt(TAG_PULS_DOWN);
-        double frequency = outputObject.getDouble(TAG_FREQUENCY);
-        int dutyCycle = outputObject.getInt(TAG_DUTY_CYCLE);
-        int brightness = outputObject.getInt(TAG_BRIGHTNESS);
+        String pulsUp = outputObject.getString(TAG_PULS_UP);
+        String pulsDown = outputObject.getString(TAG_PULS_DOWN);
+        String frequency = outputObject.getString(TAG_FREQUENCY);
+        String dutyCycle = outputObject.getString(TAG_DUTY_CYCLE);
+        String brightness = outputObject.getString(TAG_BRIGHTNESS);
 
         return new ConfigurationFVEP.Output(mConfiguration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
     }

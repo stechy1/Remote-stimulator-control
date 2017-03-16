@@ -63,7 +63,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_puls_up"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.pulsUp}' />
+                            android:text='@={output.pulsUp}' />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -80,7 +80,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_puls_down"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.pulsDown}' />
+                            android:text='@={output.pulsDown}' />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 
@@ -89,16 +89,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:baselineAligned="false">
-
-                    <!--<cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:esbMax="@{Output.MAX_FREQUENCY}"
-                        app:esbMin="@{Output.MIN_FREQUENCY}"
-                        app:esbTitle="@string/parameter_frequency"
-                        app:esbValue="@{output.frequency}"
-                        app:onProgressChanged="@{controller.frequencyChanged}"/>-->
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="0dp"
@@ -114,7 +104,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_frequency"
                             android:inputType="number"
-                            android:text='@={"" + output.frequency}' />
+                            android:text='@={output.frequency}' />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -131,7 +121,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_duty_cycle"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.dutyCycle}' />
+                            android:text='@={output.dutyCycle}' />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 

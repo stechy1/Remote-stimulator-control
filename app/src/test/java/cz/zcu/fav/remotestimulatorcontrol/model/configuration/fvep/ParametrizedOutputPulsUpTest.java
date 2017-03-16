@@ -47,7 +47,7 @@ public class ParametrizedOutputPulsUpTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setPulsUp(value);
+        output.setPulsUp(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_PULS_UP));
         assertEquals(valid, output.isValid());
     }

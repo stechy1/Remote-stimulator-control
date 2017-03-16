@@ -47,7 +47,7 @@ public class ParametrizedOutputDutyCycleTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setDutyCycle(value);
+        output.setDutyCycle(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_DUTY_CYCLE));
         assertEquals(valid, output.isValid());
     }

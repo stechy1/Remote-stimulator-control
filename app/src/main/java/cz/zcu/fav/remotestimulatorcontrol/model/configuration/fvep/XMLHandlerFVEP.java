@@ -103,7 +103,7 @@ public class XMLHandlerFVEP extends XMLHandler {
                         }
                         break;
                     case TEXT:
-                        text = parser.getText();
+                        text = parser.getText().trim();
                         break;
                     case END_TAG:
                         switch (tagName) {
@@ -112,19 +112,19 @@ public class XMLHandlerFVEP extends XMLHandler {
                                 mConfiguration.outputList.clear();
                                 break;
                             case TAG_PULS_UP:
-                                output.setPulsUp(Integer.valueOf(text));
+                                output.setPulsUp(text);
                                 break;
                             case TAG_PULS_DOWN:
-                                output.setPulsDown(Integer.valueOf(text));
+                                output.setPulsDown(text);
                                 break;
                             case TAG_FREQUENCY:
-                                output.setFrequency(Double.valueOf(text));
+                                output.setFrequency(text);
                                 break;
                             case TAG_DUTY_CYCLE:
-                                output.setDutyCycle(Integer.valueOf(text));
+                                output.setDutyCycle(text);
                                 break;
                             case TAG_BRIGHTNESS:
-                                output.setBrightness(Integer.valueOf(text));
+                                output.setBrightness(text);
                                 break;
                             case TAG_OUTPUT:
                                 mConfiguration.outputList.add(output);

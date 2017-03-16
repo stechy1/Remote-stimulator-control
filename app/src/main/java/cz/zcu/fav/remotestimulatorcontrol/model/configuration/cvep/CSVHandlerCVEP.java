@@ -48,9 +48,9 @@ public class CSVHandlerCVEP extends CSVHandler {
         reader.close();
 
         readSelf(values);
-        mConfiguration.setPulsLength(Integer.parseInt(values.getNext()));
-        mConfiguration.setBitShift(Integer.parseInt(values.getNext()));
-        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.setPulsLength(values.getNext());
+        mConfiguration.setBitShift(values.getNext());
+        mConfiguration.setBrightness(values.getNext());
         mConfiguration.mainPattern.setValue(Integer.parseInt(values.getNext()));
     }
 

@@ -26,7 +26,7 @@ public class ConfigurationERPTest {
     // region OUT parameter
     @Test
     public void testGetDefaultOutValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'out' má špatnou hodnotu.", ConfigurationERP.DEF_OUT, configuration.getOut());
+        assertEquals("Chyba: Výchozí hodnota parametru 'out' má špatnou hodnotu.", ConfigurationERP.DEF_OUT, (int) Integer.valueOf(configuration.getOut()));
     }
     // endregion
 
@@ -34,7 +34,7 @@ public class ConfigurationERPTest {
 
     @Test
     public void testGetDefaultWaitValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'wait' má špatnou hodnotu.", ConfigurationERP.DEF_WAIT, configuration.getWait());
+        assertEquals("Chyba: Výchozí hodnota parametru 'wait' má špatnou hodnotu.", ConfigurationERP.DEF_WAIT, (int) Integer.valueOf(configuration.getWait()));
     }
     // endregion
 

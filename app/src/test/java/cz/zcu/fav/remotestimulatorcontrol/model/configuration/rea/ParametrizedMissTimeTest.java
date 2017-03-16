@@ -43,7 +43,7 @@ public class ParametrizedMissTimeTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setMissTime(value);
+        configuration.setMissTime(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_MISS_TIME));
         assertEquals(valid, configuration.isValid());
     }

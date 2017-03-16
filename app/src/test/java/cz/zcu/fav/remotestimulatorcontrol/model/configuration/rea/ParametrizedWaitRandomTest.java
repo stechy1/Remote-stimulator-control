@@ -43,7 +43,7 @@ public class ParametrizedWaitRandomTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setWaitRandom(value);
+        configuration.setWaitRandom(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_WAIT_RANDOM));
         assertEquals(valid, configuration.isValid());
     }

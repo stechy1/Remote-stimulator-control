@@ -26,28 +26,28 @@ public class ConfigurationTVEPTest {
     // region PATTERN_LENGTH parameter
     @Test
     public void testGetDefaultPatternLengthValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'patternLength' má špatnou hodnotu.", ConfigurationTVEP.DEF_PATTERN_LENGTH, configuration.getPatternLength());
+        assertEquals("Chyba: Výchozí hodnota parametru 'patternLength' má špatnou hodnotu.", ConfigurationTVEP.DEF_PATTERN_LENGTH, Integer.parseInt(configuration.getPatternLength()));
     }
     // endregion
 
     // region PULS_LENGTH parameter
     @Test
     public void testGetDefaultPulsLengthValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'pulsLength' má špatnou hodnotu.", ConfigurationTVEP.DEF_PULS_LENGTH, configuration.getPulsLength());
+        assertEquals("Chyba: Výchozí hodnota parametru 'pulsLength' má špatnou hodnotu.", ConfigurationTVEP.DEF_PULS_LENGTH, Integer.parseInt(configuration.getPulsLength()));
     }
     // endregion
 
     // region TIME_BETWEEN parameter
     @Test
     public void testGetDefaultTimeBetweenValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'timeBetween' má špatnou hodnotu.", ConfigurationTVEP.DEF_TIME_BETWEEN, configuration.getTimeBetween());
+        assertEquals("Chyba: Výchozí hodnota parametru 'timeBetween' má špatnou hodnotu.", ConfigurationTVEP.DEF_TIME_BETWEEN, Integer.parseInt(configuration.getTimeBetween()));
     }
     // endregion
 
     // region BRIGHTNESS parameter
     @Test
     public void testGetDefaultBrightnessValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, configuration.getBrightness());
+        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, Integer.parseInt(configuration.getBrightness()));
     }
     // endregion
 

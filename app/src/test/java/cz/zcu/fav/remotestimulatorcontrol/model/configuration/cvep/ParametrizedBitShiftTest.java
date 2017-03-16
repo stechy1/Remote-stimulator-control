@@ -43,7 +43,7 @@ public class ParametrizedBitShiftTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setBitShift(value);
+        configuration.setBitShift(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationCVEP.FLAG_BIT_SHIFT));
         assertEquals(valid, configuration.isValid());
     }

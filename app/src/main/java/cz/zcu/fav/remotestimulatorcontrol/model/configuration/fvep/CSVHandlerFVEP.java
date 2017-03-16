@@ -57,11 +57,11 @@ public class CSVHandlerFVEP extends CSVHandler {
      * @return {@link ConfigurationFVEP.Output}
      */
     private ConfigurationFVEP.Output readOutput(IndexedValues values, int id) {
-        int pulsUp = Integer.parseInt(values.getNext());
-        int pulsDown = Integer.parseInt(values.getNext());
-        double frequency = Integer.parseInt(values.getNext());
-        int dutyCycle = Integer.parseInt(values.getNext());
-        int brightness = Integer.parseInt(values.getNext());
+        String pulsUp = values.getNext();
+        String pulsDown = values.getNext();
+        String frequency = values.getNext();
+        String dutyCycle = values.getNext();
+        String brightness = values.getNext();
 
         return new ConfigurationFVEP.Output(mConfiguration, id, pulsUp, pulsDown, frequency, dutyCycle, brightness);
     }

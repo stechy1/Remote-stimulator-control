@@ -44,7 +44,7 @@ public class ParametrizedPatternLengthTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setPatternLength(value);
+        configuration.setPatternLength(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationTVEP.FLAG_PATTERN_LENGTH));
         assertEquals(valid, configuration.isValid());
     }

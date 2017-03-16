@@ -28,13 +28,7 @@ public class OutputFragment extends Fragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mOutput.setBrightness(progress);
-        }
-    };
-    public final EditableSeekBar.OnEditableSeekBarProgressChanged frequencyChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
-        @Override
-        public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mOutput.setFrequency(progress);
+            mOutput.setBrightness(String.valueOf(progress));
         }
     };
     // endregion

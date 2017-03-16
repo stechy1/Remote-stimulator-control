@@ -47,7 +47,7 @@ public class ParametrizedOutputDistributionValueTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setDistributionValue(value);
+        output.setDistributionValue(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_DISTRIBUTION_VALUE));
         assertEquals(valid, output.isValid());
     }

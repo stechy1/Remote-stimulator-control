@@ -43,7 +43,7 @@ public class ParametrizedAgeTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setAge(value);
+        configuration.setAge(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_AGE));
         assertEquals(valid, configuration.isValid());
     }

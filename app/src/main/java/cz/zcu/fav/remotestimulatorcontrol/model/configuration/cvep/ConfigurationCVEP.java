@@ -49,13 +49,13 @@ public class ConfigurationCVEP extends AConfiguration {
     public final Pattern mainPattern = new Pattern(0);
     // Délka pulzu [ms]
     @Bindable
-    private int pulsLength;
+    private String pulsLength;
     // Bitový posun jednotlivých patternu od hlavního [1 - 31]
     @Bindable
-    private int bitShift;
+    private String bitShift;
     // Jas [%]
     @Bindable
-    private int brightness;
+    private String brightness;
     // endregion
 
     // region Constructors
@@ -65,7 +65,11 @@ public class ConfigurationCVEP extends AConfiguration {
      * @param name Název konfigurace
      */
     public ConfigurationCVEP(String name) {
-        this(name, DEF_OUTPUT_COUNT, DEF_PULS_LENGTH, DEF_BIT_SHIFT, DEF_BRIGHTNESS, new ObservableArrayList<Pattern>());
+        this(name, DEF_OUTPUT_COUNT,
+                String.valueOf(DEF_PULS_LENGTH),
+                String.valueOf(DEF_BIT_SHIFT),
+                String.valueOf(DEF_BRIGHTNESS),
+                new ObservableArrayList<Pattern>());
     }
 
     /**
@@ -79,7 +83,7 @@ public class ConfigurationCVEP extends AConfiguration {
      * @param brightness Jas [%]
      * @param patternList Kolekce patternů
      */
-    public ConfigurationCVEP(String name, int outputCount, int pulsLength, int bitShift, int brightness, ObservableArrayList<Pattern> patternList) {
+    public ConfigurationCVEP(String name, int outputCount, String pulsLength, String bitShift, String brightness, ObservableArrayList<Pattern> patternList) {
         super(name, ConfigurationType.CVEP, outputCount);
 
         setPulsLength(pulsLength);
@@ -175,7 +179,7 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @return Délka pulsu
      */
-    public int getPulsLength() {
+    public String getPulsLength() {
         return pulsLength;
     }
 
@@ -184,11 +188,17 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @param value Délka pulsu [ms]
      */
-    public void setPulsLength(int value) {
+    public void setPulsLength(String value) {
         this.pulsLength = value;
         notifyPropertyChanged(BR.pulsLength);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_PULS_LENGTH, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_PULS_LENGTH || value > MAX_PULS_LENGTH) {
+        if (v < MIN_PULS_LENGTH || v > MAX_PULS_LENGTH) {
             setValid(false);
             setValidityFlag(FLAG_PULS_LENGTH, true);
         } else {
@@ -201,7 +211,7 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @return Bitový posun
      */
-    public int getBitShift() {
+    public String getBitShift() {
         return bitShift;
     }
 
@@ -210,12 +220,18 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @param value Bitový posun [1-31]
      */
-    public void setBitShift(int value) {
+    public void setBitShift(String value) {
         this.bitShift = value;
         notifyPropertyChanged(BR.bitShift);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_BIT_SHIFT, true);
+            return;
+        }
         rearangePatterns();
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_BIT_SHIFT || value > MAX_BIT_SHIFT) {
+        if (v < MIN_BIT_SHIFT || v > MAX_BIT_SHIFT) {
             setValid(false);
             setValidityFlag(FLAG_BIT_SHIFT, true);
         } else {
@@ -228,7 +244,7 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @return Intenzitu jasu výstupu [%]
      */
-    public int getBrightness() {
+    public String getBrightness() {
         return brightness;
     }
 
@@ -237,11 +253,17 @@ public class ConfigurationCVEP extends AConfiguration {
      *
      * @param value Intenzita jasu výstupu [%]
      */
-    public void setBrightness(int value) {
+    public void setBrightness(String value) {
         brightness = value;
         notifyPropertyChanged(BR.brightness);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_BRIGHTNESS, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+        if (v < MIN_BRIGHTNESS || v > MAX_BRIGHTNESS) {
             setValid(false);
             setValidityFlag(FLAG_BRIGHTNESS, true);
         } else {

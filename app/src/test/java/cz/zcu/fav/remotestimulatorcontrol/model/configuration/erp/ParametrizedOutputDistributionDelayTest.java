@@ -47,7 +47,7 @@ public class ParametrizedOutputDistributionDelayTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setDistributionDelay(value);
+        output.setDistributionDelay(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_DISTRIBUTION_DELAY));
         assertEquals(valid, output.isValid());
     }

@@ -42,6 +42,11 @@ public class EditableSeekBarBindingAdapter {
     }
 
     @BindingAdapter({"esbValue"})
+    public static void setValue(EditableSeekBar view, String value) {
+        view.setValue(value);
+    }
+
+    @BindingAdapter({"esbValue"})
     public static void setValue(EditableSeekBar view, int value) {
         view.setValue(value);
     }

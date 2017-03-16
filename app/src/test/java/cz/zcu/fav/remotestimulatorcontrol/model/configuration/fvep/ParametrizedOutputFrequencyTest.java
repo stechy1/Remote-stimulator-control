@@ -47,7 +47,7 @@ public class ParametrizedOutputFrequencyTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setFrequency(value);
+        output.setFrequency(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_FREQUENCY));
         assertEquals(valid, output.isValid());
     }

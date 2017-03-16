@@ -184,6 +184,16 @@ public class PatternWidget extends FlexboxLayout {
      *
      * @param bitCount Počet bitů
      */
+    public void setBitCount(String bitCount) {
+        setBitCount(Integer.parseInt(bitCount));
+    }
+
+    /**
+     * Nastaví počet bitů patternu
+     * Po nastavení se upraví počet checkboxů
+     *
+     * @param bitCount Počet bitů
+     */
     public void setBitCount(int bitCount) {
         this.mBitCount = bitCount;
         rearangeBits();
@@ -197,6 +207,18 @@ public class PatternWidget extends FlexboxLayout {
      */
     public int getValue() {
         return mValue;
+    }
+
+    /**
+     * Nastaví hodnotu patternu
+     * Důležitá je binární podoba čísla
+     * 1 - aktivní, 0 - neaktivní
+     *
+     * @param value     Hodnota patternu
+     * @param propagate True, pokud se má změna hodnoty propagovat i do listeneru
+     */
+    public void setValue(String value, boolean propagate) {
+        setValue(Integer.parseInt(value), propagate);
     }
 
     /**

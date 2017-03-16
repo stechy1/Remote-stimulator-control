@@ -69,7 +69,7 @@ public class XMLHandlerCVEP extends XMLHandler {
                     case START_TAG:
                         break;
                     case TEXT:
-                        text = parser.getText();
+                        text = parser.getText().trim();
                         break;
                     case END_TAG:
                         switch (tagName) {
@@ -77,13 +77,13 @@ public class XMLHandlerCVEP extends XMLHandler {
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
                             case TAG_PULSE_LENGHT:
-                                mConfiguration.setPulsLength(Integer.valueOf(text));
+                                mConfiguration.setPulsLength(text);
                                 break;
                             case TAG_BIT_SHIFT:
-                                mConfiguration.setBitShift(Integer.valueOf(text));
+                                mConfiguration.setBitShift(text);
                                 break;
                             case TAG_BRIGHTNESS:
-                                mConfiguration.setBrightness(Integer.valueOf(text));
+                                mConfiguration.setBrightness(text);
                                 break;
                             case TAG_MAIN_PATTERN_VALUE:
                                 mConfiguration.mainPattern.setValue(Integer.valueOf(text));

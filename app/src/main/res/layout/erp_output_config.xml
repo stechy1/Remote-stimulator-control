@@ -69,7 +69,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_puls_up"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.pulsUp}' />
+                            android:text='@={output.pulsUp}' />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -86,7 +86,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_puls_down"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.pulsDown}' />
+                            android:text='@={output.pulsDown}' />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 
@@ -124,7 +124,7 @@
                             android:ems="10"
                             android:hint="@string/parameter_distribution_delay"
                             android:inputType="numberSigned"
-                            android:text='@={"" + output.distributionDelay}' />
+                            android:text='@={output.distributionDelay}' />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 

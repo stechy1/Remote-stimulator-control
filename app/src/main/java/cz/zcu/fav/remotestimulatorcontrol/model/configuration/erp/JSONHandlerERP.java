@@ -78,11 +78,11 @@ class JSONHandlerERP extends JSONHandler {
      */
     private ConfigurationERP.Output readOutput(JSONObject outputObject, int id) throws JSONException {
 
-        int pulsUp = outputObject.getInt(TAG_PULS_UP);
-        int pulsDown = outputObject.getInt(TAG_PULS_DOWN);
-        int distValue = outputObject.getInt(TAG_DISTRIBUTION_VALUE);
-        int distDelay = outputObject.getInt(TAG_DISTRIBUTION_DELAY);
-        int brightness = outputObject.getInt(TAG_BRIGHTNESS);
+        String pulsUp = outputObject.getString(TAG_PULS_UP);
+        String pulsDown = outputObject.getString(TAG_PULS_DOWN);
+        String distValue = outputObject.getString(TAG_DISTRIBUTION_VALUE);
+        String distDelay = outputObject.getString(TAG_DISTRIBUTION_DELAY);
+        String brightness = outputObject.getString(TAG_BRIGHTNESS);
 
         return new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
     }
@@ -144,8 +144,8 @@ class JSONHandlerERP extends JSONHandler {
             JSONObject jsonConfiguration = new JSONObject(src);
 
             readSelf(jsonConfiguration);
-            mConfiguration.setOut(jsonConfiguration.getInt(TAG_OUT));
-            mConfiguration.setWait(jsonConfiguration.getInt(TAG_WAIT));
+            mConfiguration.setOut(jsonConfiguration.getString(TAG_OUT));
+            mConfiguration.setWait(jsonConfiguration.getString(TAG_WAIT));
             mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(jsonConfiguration.getInt(TAG_EDGE)));
             mConfiguration.setRandom(ConfigurationERP.Random.valueOf(jsonConfiguration.getInt(TAG_RANDOM)));
 

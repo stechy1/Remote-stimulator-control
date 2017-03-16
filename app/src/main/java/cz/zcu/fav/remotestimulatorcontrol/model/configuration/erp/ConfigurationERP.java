@@ -61,10 +61,10 @@ public class ConfigurationERP extends AConfiguration {
     int maxDistributionValue;
     // Parametr out
     @Bindable
-    private int out;
+    private String out;
     // Parametr wait
     @Bindable
-    private int wait;
+    private String wait;
     // Hrana, na kterou bude experiment reagovat
     @Bindable
     private Edge edge;
@@ -84,7 +84,11 @@ public class ConfigurationERP extends AConfiguration {
      * @param name Název konfigurace
      */
     public ConfigurationERP(String name) {
-        this(name, DEF_OUTPUT_COUNT, new ObservableArrayList<Output>(), DEF_RANDOM, DEF_EDGE, DEF_WAIT, DEF_OUT);
+        this(name, DEF_OUTPUT_COUNT, new ObservableArrayList<Output>(),
+                DEF_RANDOM,
+                DEF_EDGE,
+                String.valueOf(DEF_WAIT),
+                String.valueOf(DEF_OUT));
     }
 
     /**
@@ -97,7 +101,7 @@ public class ConfigurationERP extends AConfiguration {
      * @param random      Náhodnost
      * @param outputList  Reference na kolekci výstupů
      */
-    public ConfigurationERP(String name, int outputCount, ObservableArrayList<Output> outputList, Random random, Edge edge, int wait, int out) {
+    public ConfigurationERP(String name, int outputCount, ObservableArrayList<Output> outputList, Random random, Edge edge, String wait, String out) {
         super(name, ConfigurationType.ERP, outputCount);
 
         this.outputList = outputList;
@@ -191,12 +195,12 @@ public class ConfigurationERP extends AConfiguration {
         int vystup = 0; //index výstupu, slouží pro odfiltrování jasu kvůli sdružení u LED 5 a 7
 
         for(Output output : outputList){
-            packets.add(new BtPacket(actualDURATION, DataConvertor.milisecondsTo2B(output.pulsUp)));
-            packets.add(new BtPacket(actualPAUSE, DataConvertor.milisecondsTo2B(output.pulsDown)));
-            packets.add(new BtPacket(actualDISTRIBUTION, DataConvertor.intTo1B(output.distributionValue))); //TODO u distribution parametru ještě neposíláme delay
+            packets.add(new BtPacket(actualDURATION, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
+            packets.add(new BtPacket(actualPAUSE, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
+            packets.add(new BtPacket(actualDISTRIBUTION, DataConvertor.intTo1B(Integer.parseInt(output.distributionValue)))); //TODO u distribution parametru ještě neposíláme delay
 
             if(vystup != 5 && vystup != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
-                packets.add(new BtPacket(actualBRIGHTNESS, DataConvertor.intTo1B(output.brightness)));
+                packets.add(new BtPacket(actualBRIGHTNESS, DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
                 actualBRIGHTNESS = actualBRIGHTNESS.getNext();
             }
 
@@ -242,7 +246,7 @@ public class ConfigurationERP extends AConfiguration {
     protected int calculateSumOfDistributionValue() {
         int sum = 0;
         for (Output output : outputList)
-            sum += output.distributionValue;
+            sum += Integer.parseInt(output.distributionValue);
 
         maxDistributionValue = Math.max(Math.min(MAX_DISTRIBUTION_VALUE - sum, MAX_DISTRIBUTION_VALUE), MIN_DISTRIBUTION_VALUE);
         notifyPropertyChanged(BR.maxDistributionValue);
@@ -283,7 +287,7 @@ public class ConfigurationERP extends AConfiguration {
      *
      * @return Hodnota parametru out
      */
-    public int getOut() {
+    public String getOut() {
         return out;
     }
 
@@ -292,11 +296,17 @@ public class ConfigurationERP extends AConfiguration {
      *
      * @param value Číslo
      */
-    public void setOut(int value) {
+    public void setOut(String value) {
         out = value;
         notifyPropertyChanged(BR.out);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_OUT, true);
+            return;
+        }
+        int v = Integer.valueOf(value);
 
-        if (value < MIN_OUT || value > MAX_OUT) {
+        if (v < MIN_OUT || v > MAX_OUT) {
             setValid(false);
             setValidityFlag(FLAG_OUT, true);
         } else {
@@ -309,7 +319,7 @@ public class ConfigurationERP extends AConfiguration {
      *
      * @return Hodnota parametru wait
      */
-    public int getWait() {
+    public String getWait() {
         return wait;
     }
 
@@ -318,11 +328,17 @@ public class ConfigurationERP extends AConfiguration {
      *
      * @param value Číslo
      */
-    public void setWait(int value) {
+    public void setWait(String value) {
         wait = value;
         notifyPropertyChanged(BR.wait);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_WAIT, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_WAIT || value > MAX_WAIT) {
+        if (v < MIN_WAIT || v > MAX_WAIT) {
             setValid(false);
             setValidityFlag(FLAG_WAIT, true);
         } else {
@@ -476,19 +492,19 @@ public class ConfigurationERP extends AConfiguration {
         private final int id;
         // Doba, po kterou je výstup aktivní [ms]
         @Bindable
-        private int pulsUp;
+        private String pulsUp;
         // Doba, po kterou je výstup neaktivní [ms]
         @Bindable
-        private int pulsDown;
+        private String pulsDown;
         // Parametr distribution value [%]
         @Bindable
-        private int distributionValue;
+        private String distributionValue;
         // Parametr distribution delay [ms]
         @Bindable
-        private int distributionDelay;
+        private String distributionDelay;
         // Jas výstupu [%]
         @Bindable
-        private int brightness;
+        private String brightness;
         // endregion
 
         // region Constructors
@@ -501,7 +517,12 @@ public class ConfigurationERP extends AConfiguration {
          * @param id     Jednoznačný identifikátor výstupu
          */
         public Output(ConfigurationERP config, int id) {
-            this(config, id, DEF_PULS_UP, DEF_PULS_DOWN, DEF_DISTRIBUTION_VALUE, DEF_DISTRIBUTION_DELAY, DEF_BRIGHTNESS);
+            this(config, id,
+                    String.valueOf(DEF_PULS_UP),
+                    String.valueOf(DEF_PULS_DOWN),
+                    String.valueOf(DEF_DISTRIBUTION_VALUE),
+                    String.valueOf(DEF_DISTRIBUTION_DELAY),
+                    String.valueOf(DEF_BRIGHTNESS));
         }
 
         /**
@@ -516,7 +537,8 @@ public class ConfigurationERP extends AConfiguration {
          * @param distributionDelay Patametr delay [ms]
          * @param brightness        Intenzita jasu [%]
          */
-        public Output(ConfigurationERP config, int id, int pulsUp, int pulsDown, int distributionValue, int distributionDelay, int brightness) {
+        public Output(ConfigurationERP config, int id, String pulsUp, String pulsDown,
+                      String distributionValue, String distributionDelay, String brightness) {
             this.config = config;
             this.id = id;
             setPulsUp(pulsUp);
@@ -545,6 +567,8 @@ public class ConfigurationERP extends AConfiguration {
             return output;
         }
 
+        // endregion
+
         // region Getters & Setters
 
         /**
@@ -570,7 +594,7 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @return Doba [ms] po kterou je výstup aktivní
          */
-        public int getPulsUp() {
+        public String getPulsUp() {
             return pulsUp;
         }
 
@@ -579,11 +603,17 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @param value Doba [ms] po kterou je výstup aktivní
          */
-        public void setPulsUp(int value) {
+        public void setPulsUp(String value) {
             pulsUp = value;
             notifyPropertyChanged(BR.pulsUp);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_PULS_UP, true);
+                return;
+            }
+            int v = Integer.parseInt(value);
 
-            if (value < MIN_PULS_UP || value > MAX_PULS_UP) {
+            if (v < MIN_PULS_UP || v > MAX_PULS_UP) {
                 setValid(false);
                 setValidityFlag(FLAG_PULS_UP, true);
             } else {
@@ -596,7 +626,7 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @return Doba [ms] po kterou je výstup neaktivní
          */
-        public int getPulsDown() {
+        public String getPulsDown() {
             return pulsDown;
         }
 
@@ -605,11 +635,17 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @param value Doba [ms] po kterou je výstup neaktivní
          */
-        public void setPulsDown(int value) {
+        public void setPulsDown(String value) {
             pulsDown = value;
             notifyPropertyChanged(BR.pulsDown);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_PULS_DOWN, true);
+                return;
+            }
+            int v = Integer.parseInt(value);
 
-            if (value < MIN_PULS_DOWN || value > MAX_PULS_DOWN) {
+            if (v < MIN_PULS_DOWN || v > MAX_PULS_DOWN) {
                 setValid(false);
                 setValidityFlag(FLAG_PULS_DOWN, true);
             } else {
@@ -622,7 +658,7 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @return Distribution value [%]
          */
-        public int getDistributionValue() {
+        public String getDistributionValue() {
             return distributionValue;
         }
 
@@ -631,12 +667,17 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @param value Distribution value [%]
          */
-        public void setDistributionValue(int value) {
-            if (value == distributionValue) {return; }
+        public void setDistributionValue(String value) {
             distributionValue = value;
             notifyPropertyChanged(BR.distributionValue);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_DISTRIBUTION_VALUE, true);
+                return;
+            }
+            int v = Integer.parseInt(value);
 
-            if (/*config.calculateSumOfDistributionValue() > MAX_DISTRIBUTION_VALUE ||*/ value < MIN_DISTRIBUTION_VALUE || value > MAX_DISTRIBUTION_VALUE) {
+            if (/*config.calculateSumOfDistributionValue() > MAX_DISTRIBUTION_VALUE ||*/ v < MIN_DISTRIBUTION_VALUE || v > MAX_DISTRIBUTION_VALUE) {
                 setValid(false);
                 setValidityFlag(FLAG_DISTRIBUTION_VALUE, true);
             } else {
@@ -649,7 +690,7 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @return Distribution delay [ms]
          */
-        public int getDistributionDelay() {
+        public String getDistributionDelay() {
             return distributionDelay;
         }
 
@@ -658,11 +699,17 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @param value Distribution delay [ms]
          */
-        public void setDistributionDelay(int value) {
+        public void setDistributionDelay(String value) {
             distributionDelay = value;
             notifyPropertyChanged(BR.distributionDelay);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_DISTRIBUTION_DELAY, true);
+                return;
+            }
+            int v = Integer.parseInt(value);
 
-            if (value < MIN_DISTRIBUTION_DELAY || value > MAX_DISTRIBUTION_DELAY) {
+            if (v < MIN_DISTRIBUTION_DELAY || v > MAX_DISTRIBUTION_DELAY) {
                 setValid(false);
                 setValidityFlag(FLAG_DISTRIBUTION_DELAY, true);
             } else {
@@ -675,7 +722,7 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @return Intenzitu jasu výstupu [%]
          */
-        public int getBrightness() {
+        public String getBrightness() {
             return brightness;
         }
 
@@ -684,11 +731,17 @@ public class ConfigurationERP extends AConfiguration {
          *
          * @param value Intenzita jasu výstupu [%]
          */
-        public void setBrightness(int value) {
+        public void setBrightness(String value) {
             brightness = value;
             notifyPropertyChanged(BR.brightness);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_BRIGHTNESS, true);
+                return;
+            }
+            int v = Integer.parseInt(value);
 
-            if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+            if (v < MIN_BRIGHTNESS || v > MAX_BRIGHTNESS) {
                 setValid(false);
                 setValidityFlag(FLAG_BRIGHTNESS, true);
             } else {

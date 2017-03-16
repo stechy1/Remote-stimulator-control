@@ -239,19 +239,19 @@ public class ConfigurationFVEP extends AConfiguration {
         private final int id;
         // Doba, po kterou je výstup aktivní [ms]
         @Bindable
-        private int pulsUp;
+        private String pulsUp;
         // Doba, po kterou je výstup neaktivní [ms]
         @Bindable
-        private int pulsDown;
+        private String pulsDown;
         // Frekvence [ms]
         @Bindable
-        private double frequency;
+        private String frequency;
         // Délka pulzu při nastavení frekvence [%]
         @Bindable
-        private int dutyCycle;
+        private String dutyCycle;
         // Jas výstupu [%]
         @Bindable
-        private int brightness;
+        private String brightness;
         // endregion
 
         // region Constructors
@@ -264,7 +264,12 @@ public class ConfigurationFVEP extends AConfiguration {
          * @param id     Jednoznačný identifikátor výstupu
          */
         public Output(ConfigurationFVEP config, int id) {
-            this(config, id, DEF_PULS_UP, DEF_PULS_DOWN, DEF_FREQUENCY, DEF_DUTY_CYCLE, DEF_BRIGHTNESS);
+            this(config, id,
+                    String.valueOf(DEF_PULS_UP),
+                    String.valueOf(DEF_PULS_DOWN),
+                    String.valueOf(DEF_FREQUENCY),
+                    String.valueOf(DEF_DUTY_CYCLE),
+                    String.valueOf(DEF_BRIGHTNESS));
         }
 
         /**
@@ -279,7 +284,8 @@ public class ConfigurationFVEP extends AConfiguration {
          * @param dutyCycle  Délka pulzu při nastavení frekvence
          * @param brightness Jas výstupu
          */
-        public Output(ConfigurationFVEP config, int id, int pulsUp, int pulsDown, double frequency, int dutyCycle, int brightness) {
+        public Output(ConfigurationFVEP config, int id, String pulsUp, String pulsDown,
+                      String frequency, String dutyCycle, String brightness) {
             this.config = config;
             this.id = id;
             setPulsUp(pulsUp);
@@ -339,7 +345,7 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @return Doba [ms] po kterou je výstup aktivní
          */
-        public int getPulsUp() {
+        public String getPulsUp() {
             return pulsUp;
         }
 
@@ -348,11 +354,17 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @param value Doba [ms] po kterou je výstup aktivní
          */
-        public void setPulsUp(int value) {
+        public void setPulsUp(String value) {
             pulsUp = value;
             notifyPropertyChanged(BR.pulsUp);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_PULS_UP, true);
+                return;
+            }
+            int v = Integer.valueOf(value);
 
-            if (value < MIN_PULS_UP || value > MAX_PULS_UP) {
+            if (v < MIN_PULS_UP || v > MAX_PULS_UP) {
                 setValid(false);
                 setValidityFlag(FLAG_PULS_UP, true);
             } else {
@@ -365,7 +377,7 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @return Doba [ms] po kterou je výstup neaktivní
          */
-        public int getPulsDown() {
+        public String getPulsDown() {
             return pulsDown;
         }
 
@@ -374,11 +386,17 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @param value Doba [ms] po kterou je výstup neaktivní
          */
-        public void setPulsDown(int value) {
+        public void setPulsDown(String value) {
             pulsDown = value;
             notifyPropertyChanged(BR.pulsDown);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_PULS_DOWN, true);
+                return;
+            }
+            int v = Integer.valueOf(value);
 
-            if (value < MIN_PULS_DOWN || value > MAX_PULS_DOWN) {
+            if (v < MIN_PULS_DOWN || v > MAX_PULS_DOWN) {
                 setValid(false);
                 setValidityFlag(FLAG_PULS_DOWN, true);
             } else {
@@ -391,7 +409,7 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @return Frekvence [%]
          */
-        public double getFrequency() {
+        public String getFrequency() {
             return frequency;
         }
 
@@ -400,11 +418,17 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @param value Frekvence [%]
          */
-        public void setFrequency(double value) {
+        public void setFrequency(String value) {
             this.frequency = value;
             notifyPropertyChanged(BR.frequency);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_FREQUENCY, true);
+                return;
+            }
+            double v = Double.valueOf(value);
 
-            if (value < MIN_FREQUENCY || value > MAX_FREQUENCY || value % FREQUENCY_STEP != 0) {
+            if (v < MIN_FREQUENCY || v > MAX_FREQUENCY || v % FREQUENCY_STEP != 0) {
                 setValid(false);
                 setValidityFlag(FLAG_FREQUENCY, true);
             } else {
@@ -417,7 +441,7 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @return Délka pulzu při nastavení frekvence [%]
          */
-        public int getDutyCycle() {
+        public String getDutyCycle() {
             return dutyCycle;
         }
 
@@ -426,11 +450,17 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @param value Délka pulzu při nastavení frekvence [%]
          */
-        public void setDutyCycle(int value) {
+        public void setDutyCycle(String value) {
             this.dutyCycle = value;
             notifyPropertyChanged(BR.dutyCycle);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_DUTY_CYCLE, true);
+                return;
+            }
+            int v = Integer.valueOf(value);
 
-            if (value < MIN_DUTY_CYCLE || value > MAX_DUTY_CYCLE) {
+            if (v < MIN_DUTY_CYCLE || v > MAX_DUTY_CYCLE) {
                 setValid(false);
                 setValidityFlag(FLAG_DUTY_CYCLE, true);
             } else {
@@ -443,7 +473,7 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @return Intenzitu jasu výstupu [%]
          */
-        public int getBrightness() {
+        public String getBrightness() {
             return brightness;
         }
 
@@ -452,11 +482,17 @@ public class ConfigurationFVEP extends AConfiguration {
          *
          * @param value Intenzita jasu výstupu [%]
          */
-        public void setBrightness(int value) {
+        public void setBrightness(String value) {
             brightness = value;
             notifyPropertyChanged(BR.brightness);
+            if (value == null || value.isEmpty()) {
+                setValid(false);
+                setValidityFlag(FLAG_BRIGHTNESS, true);
+                return;
+            }
+            int v = Integer.valueOf(value);
 
-            if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+            if (v < MIN_BRIGHTNESS || v > MAX_BRIGHTNESS) {
                 setValid(false);
                 setValidityFlag(FLAG_BRIGHTNESS, true);
             } else {

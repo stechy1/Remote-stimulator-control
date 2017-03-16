@@ -43,7 +43,7 @@ public class ParametrizedWaitFixedTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setWaitFixed(value);
+        configuration.setWaitFixed(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_WAIT_FIXED));
         assertEquals(valid, configuration.isValid());
     }

@@ -45,7 +45,7 @@ public class ParametrizedOutTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setOut(value);
+        configuration.setOut(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationERP.FLAG_OUT));
         assertEquals(valid, configuration.isValid());
     }

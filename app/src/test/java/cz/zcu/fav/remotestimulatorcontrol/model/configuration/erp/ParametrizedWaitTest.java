@@ -43,7 +43,7 @@ public class ParametrizedWaitTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setWait(value);
+        configuration.setWait(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationERP.FLAG_WAIT));
         assertEquals(valid, configuration.isValid());
     }

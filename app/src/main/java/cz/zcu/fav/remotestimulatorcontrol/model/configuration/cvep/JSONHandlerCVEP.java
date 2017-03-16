@@ -63,9 +63,9 @@ public class JSONHandlerCVEP extends JSONHandler {
             JSONObject configurationObject = new JSONObject(src);
 
             super.readSelf(configurationObject);
-            mConfiguration.setPulsLength(configurationObject.getInt(TAG_PULSE_LENGHT));
-            mConfiguration.setBitShift(configurationObject.getInt(TAG_BIT_SHIFT));
-            mConfiguration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
+            mConfiguration.setPulsLength(configurationObject.getString(TAG_PULSE_LENGHT));
+            mConfiguration.setBitShift(configurationObject.getString(TAG_BIT_SHIFT));
+            mConfiguration.setBrightness(configurationObject.getString(TAG_BRIGHTNESS));
             mConfiguration.mainPattern.setValue(configurationObject.getInt(TAG_MAIN_PATTERN_VALUE));
 
         } catch (JSONException e) {

@@ -12,7 +12,7 @@ import android.databinding.InverseBindingMethods;
 public class PatternBindingAdapter {
 
     @BindingAdapter("bit_count")
-    public static void setBitCount(PatternWidget view, int bitCount) {
+    public static void setBitCount(PatternWidget view, String bitCount) {
         view.setBitCount(bitCount);
     }
 

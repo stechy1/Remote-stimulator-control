@@ -62,7 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="numberSigned"
-                        android:text='@={"" + configuration.pulsLength}' />
+                        android:text='@={configuration.pulsLength}' />
                 </android.support.design.widget.TextInputLayout>
 
                 <cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar
@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     app:alignContent="flex_start"
                     app:alignItems="center"
-                    app:bit_count="@{ConfigurationCVEP.PATTERN_LENGTH}"
+                    app:bit_count='@{"" + ConfigurationCVEP.PATTERN_LENGTH}'
                     app:flexDirection="row"
                     app:flexWrap="wrap"
                     app:justifyContent="flex_start"

@@ -50,16 +50,16 @@ public class ConfigurationTVEP extends AConfiguration {
     public final ObservableArrayList<Pattern> patternList;
     // Velikost patternu [1]
     @Bindable
-    private int patternLength;
+    private String patternLength;
     // Délka pulzu [ms]
     @Bindable
-    private int pulsLength;
+    private String pulsLength;
     // Velikost mezery mezi dvěma pulzy [ms]
     @Bindable
-    private int timeBetween;
+    private String timeBetween;
     // Jas [%]
     @Bindable
-    private int brightness;
+    private String brightness;
     // endregion
 
     // region Constructors
@@ -71,7 +71,11 @@ public class ConfigurationTVEP extends AConfiguration {
      * @param name Název konfigurace
      */
     public ConfigurationTVEP(String name) {
-        this(name, DEF_OUTPUT_COUNT, new ObservableArrayList<Pattern>(), DEF_PATTERN_LENGTH, DEF_PULS_LENGTH, DEF_TIME_BETWEEN, DEF_BRIGHTNESS);
+        this(name, DEF_OUTPUT_COUNT, new ObservableArrayList<Pattern>(),
+                String.valueOf(DEF_PATTERN_LENGTH),
+                String.valueOf(DEF_PULS_LENGTH),
+                String.valueOf(DEF_TIME_BETWEEN),
+                String.valueOf(DEF_BRIGHTNESS));
     }
 
     /**
@@ -86,7 +90,9 @@ public class ConfigurationTVEP extends AConfiguration {
      * @param timeBetween   Délka mezery mezi dvěma pulzy [ms]
      * @param brightness    Jas [%]
      */
-    public ConfigurationTVEP(String name, int outputCount, ObservableArrayList<Pattern> patternList, int patternLength, int pulsLength, int timeBetween, int brightness) {
+    public ConfigurationTVEP(String name, int outputCount, ObservableArrayList<Pattern> patternList,
+                             String patternLength, String pulsLength, String timeBetween,
+                             String brightness) {
         super(name, ConfigurationType.TVEP, outputCount);
 
         this.patternList = patternList;
@@ -190,7 +196,7 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @return Délka patternu
      */
-    public int getPatternLength() {
+    public String getPatternLength() {
         return patternLength;
     }
 
@@ -200,11 +206,17 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @param value Dálka Patternu [1-16]
      */
-    public void setPatternLength(int value) {
+    public void setPatternLength(String value) {
         patternLength = value;
         notifyPropertyChanged(BR.patternLength);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_PATTERN_LENGTH, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_PATTERN_LENGTH || value > MAX_PATTERN_LENGTH) {
+        if (v < MIN_PATTERN_LENGTH || v > MAX_PATTERN_LENGTH) {
             setValid(false);
             setValidityFlag(FLAG_PATTERN_LENGTH, true);
         } else {
@@ -217,7 +229,7 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @return Délka pulsu [ms]
      */
-    public int getPulsLength() {
+    public String getPulsLength() {
         return pulsLength;
     }
 
@@ -226,11 +238,17 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @param value Dálka pulsu [ms]
      */
-    public void setPulsLength(int value) {
+    public void setPulsLength(String value) {
         pulsLength = value;
         notifyPropertyChanged(BR.pulsLength);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_PULS_LENGTH, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_PULS_LENGTH || value > MAX_PULS_LENGTH) {
+        if (v < MIN_PULS_LENGTH || v > MAX_PULS_LENGTH) {
             setValid(false);
             setValidityFlag(FLAG_PULS_LENGTH, true);
         } else {
@@ -243,7 +261,7 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @return Délka mezery mezi dvěma pulzy [ms]
      */
-    public int getTimeBetween() {
+    public String getTimeBetween() {
         return timeBetween;
     }
 
@@ -252,11 +270,17 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @param value Délka mezery mezi dvěma pulzy [ms]
      */
-    public void setTimeBetween(int value) {
+    public void setTimeBetween(String value) {
         this.timeBetween = value;
         notifyPropertyChanged(BR.timeBetween);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_TIME_BETWEEN, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_TIME_BETWEEN || value > MAX_TIME_BETWEEN) {
+        if (v < MIN_TIME_BETWEEN || v > MAX_TIME_BETWEEN) {
             setValid(false);
             setValidityFlag(FLAG_TIME_BETWEEN, true);
         } else {
@@ -269,7 +293,7 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @return Intenzitu jasu výstupu [%]
      */
-    public int getBrightness() {
+    public String getBrightness() {
         return brightness;
     }
 
@@ -278,11 +302,17 @@ public class ConfigurationTVEP extends AConfiguration {
      *
      * @param value Intenzita jasu výstupu [%]
      */
-    public void setBrightness(int value) {
+    public void setBrightness(String value) {
         brightness = value;
         notifyPropertyChanged(BR.brightness);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_BRIGHTNESS, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+        if (v < MIN_BRIGHTNESS || v > MAX_BRIGHTNESS) {
             setValid(false);
             setValidityFlag(FLAG_BRIGHTNESS, true);
         } else {

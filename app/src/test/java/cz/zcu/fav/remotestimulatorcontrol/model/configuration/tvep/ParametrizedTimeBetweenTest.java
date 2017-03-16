@@ -43,7 +43,7 @@ public class ParametrizedTimeBetweenTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setTimeBetween(value);
+        configuration.setTimeBetween(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationTVEP.FLAG_TIME_BETWEEN));
         assertEquals(valid, configuration.isValid());
     }

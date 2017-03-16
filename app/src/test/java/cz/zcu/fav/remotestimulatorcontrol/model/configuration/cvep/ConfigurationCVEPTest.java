@@ -26,21 +26,21 @@ public class ConfigurationCVEPTest {
     // region PULS_LENGTH parameter
     @Test
     public void testGetDefaultPulsLengthValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'pulsLength' má špatnou hodnotu.", ConfigurationCVEP.DEF_PULS_LENGTH, configuration.getPulsLength());
+        assertEquals("Chyba: Výchozí hodnota parametru 'pulsLength' má špatnou hodnotu.", ConfigurationCVEP.DEF_PULS_LENGTH, (int) Integer.valueOf(configuration.getPulsLength()));
     }
     // endregion
 
     // region BIT_SHIFT parameter
     @Test
     public void testGetDefaultBitShiftValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'bitShift' má špatnou hodnotu.", ConfigurationCVEP.DEF_BIT_SHIFT, configuration.getBitShift());
+        assertEquals("Chyba: Výchozí hodnota parametru 'bitShift' má špatnou hodnotu.", ConfigurationCVEP.DEF_BIT_SHIFT, (int) Integer.valueOf(configuration.getBitShift()));
     }
     // endregion
 
     // region BRIGHTNESS parameter
     @Test
     public void testGetDefaultBrightnessValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, configuration.getBrightness());
+        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, (int) Integer.valueOf(configuration.getBrightness()));
     }
     // endregion
 

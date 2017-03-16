@@ -43,7 +43,7 @@ public class ParametrizedPulsLengthTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setPulsLength(value);
+        configuration.setPulsLength(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationCVEP.FLAG_PULS_LENGTH));
         assertEquals(valid, configuration.isValid());
     }

@@ -83,25 +83,25 @@ public class ConfigurationREA extends AConfiguration {
 
     // region Variables
     // Počet cyklů [1]
-    @Bindable private int cycleCount;
+    @Bindable private String cycleCount;
     // Parametr wait fixed [ms]
-    @Bindable private int waitFixed;
+    @Bindable private String waitFixed;
     // Parametr wait random [ms]
-    @Bindable private int waitRandom;
+    @Bindable private String waitRandom;
     // Parametr miss time [ms]
-    @Bindable private int missTime;
+    @Bindable private String missTime;
     // Intenzita jasu [%]
-    @Bindable private int brightness;
+    @Bindable private String brightness;
     // Parametr on fail - co se stane, když osoba nestihne zareagovat
     @Bindable private OnFail onFail;
     // Muž/žena
     @Bindable private Gender gender;
     // Věk testované osoby [1]
-    @Bindable private int age;
+    @Bindable private String age;
     // Výška testované osoby [cm]
-    @Bindable private int height;
+    @Bindable private String height;
     // Váha testované osoby [kg]
-    @Bindable private int weight;
+    @Bindable private String weight;
     // endregion
 
     // region Constructors
@@ -112,7 +112,16 @@ public class ConfigurationREA extends AConfiguration {
      * @param name Název konfigurace
      */
     public ConfigurationREA(String name) {
-        this(name, DEF_OUTPUT_COUNT, DEF_CYCLE_COUNT, DEF_WAIT_FIXED, DEF_WAIT_RANDOM, DEF_MISS_TIME, DEF_BRIGHTNESS, DEF_ON_FAIL, DEF_GENDER, DEF_AGE, DEF_HEIGHT, DEF_WEIGHT);
+        this(name, DEF_OUTPUT_COUNT,
+                String.valueOf(DEF_CYCLE_COUNT),
+                String.valueOf(DEF_WAIT_FIXED),
+                String.valueOf(DEF_WAIT_RANDOM),
+                String.valueOf(DEF_MISS_TIME),
+                String.valueOf(DEF_BRIGHTNESS),
+                DEF_ON_FAIL, DEF_GENDER,
+                String.valueOf(DEF_AGE),
+                String.valueOf(DEF_HEIGHT),
+                String.valueOf(DEF_WEIGHT));
     }
 
     /**
@@ -132,7 +141,9 @@ public class ConfigurationREA extends AConfiguration {
      * @param height Výška testované osoby
      * @param weight Váha testované osoby
      */
-    public ConfigurationREA(String name, int outputCount, int cycleCount, int waitFixed, int waitRandom, int missTime, int brightness, OnFail onFail, Gender gender, int age, int height, int weight) {
+    public ConfigurationREA(String name, int outputCount, String cycleCount, String waitFixed,
+                            String waitRandom, String missTime, String brightness, OnFail onFail,
+                            Gender gender, String age, String height, String weight) {
         super(name, ConfigurationType.REA, outputCount);
 
         setCycleCount(cycleCount);
@@ -194,7 +205,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Počet cyklů [1]
      */
-    public int getCycleCount() {
+    public String getCycleCount() {
         return cycleCount;
     }
 
@@ -203,11 +214,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Počet cyklů [1]
      */
-    public void setCycleCount(int value) {
+    public void setCycleCount(String value) {
         this.cycleCount = value;
         notifyPropertyChanged(BR.cycleCount);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_CYCLE_COUNT, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_CYCLE_COUNT || value > MAX_CYCLE_COUNT) {
+        if (v < MIN_CYCLE_COUNT || v > MAX_CYCLE_COUNT) {
             setValid(false);
             setValidityFlag(FLAG_CYCLE_COUNT, true);
         } else {
@@ -220,7 +237,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Hodnota parametru wait fixed [ms]
      */
-    public int getWaitFixed() {
+    public String getWaitFixed() {
         return waitFixed;
     }
 
@@ -229,11 +246,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Hodnota parametru wait fixed [ms]
      */
-    public void setWaitFixed(int value) {
+    public void setWaitFixed(String value) {
         this.waitFixed = value;
         notifyPropertyChanged(BR.waitFixed);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_WAIT_FIXED, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_WAIT_FIXED || value > MAX_WAIT_FIXED) {
+        if (v < MIN_WAIT_FIXED || v > MAX_WAIT_FIXED) {
             setValid(false);
             setValidityFlag(FLAG_WAIT_FIXED, true);
         } else {
@@ -246,7 +269,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Hodnota parametru wait random [ms]
      */
-    public int getWaitRandom() {
+    public String getWaitRandom() {
         return waitRandom;
     }
 
@@ -255,11 +278,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Hodnota parametru wait random [ms]
      */
-    public void setWaitRandom(int value) {
+    public void setWaitRandom(String value) {
         this.waitRandom = value;
         notifyPropertyChanged(BR.waitRandom);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_WAIT_RANDOM, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_WAIT_RANDOM || value > MAX_WAIT_RANDOM) {
+        if (v < MIN_WAIT_RANDOM || v > MAX_WAIT_RANDOM) {
             setValid(false);
             setValidityFlag(FLAG_WAIT_RANDOM, true);
         } else {
@@ -272,7 +301,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Hodnota parametru miss time [ms]
      */
-    public int getMissTime() {
+    public String getMissTime() {
         return missTime;
     }
 
@@ -281,11 +310,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Hodnota parametru miss time [ms]
      */
-    public void setMissTime(int value) {
+    public void setMissTime(String value) {
         this.missTime = value;
         notifyPropertyChanged(BR.missTime);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_MISS_TIME, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_MISS_TIME || value > MAX_MISS_TIME) {
+        if (v < MIN_MISS_TIME || v > MAX_MISS_TIME) {
             setValid(false);
             setValidityFlag(FLAG_MISS_TIME, true);
         } else {
@@ -298,7 +333,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Intenzitu jasu výstupu [%]
      */
-    public int getBrightness() {
+    public String getBrightness() {
         return brightness;
     }
 
@@ -307,11 +342,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Intenzita jasu výstupu [%]
      */
-    public void setBrightness(int value) {
+    public void setBrightness(String value) {
         brightness = value;
         notifyPropertyChanged(BR.brightness);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_BRIGHTNESS, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+        if (v < MIN_BRIGHTNESS || v > MAX_BRIGHTNESS) {
             setValid(false);
             setValidityFlag(FLAG_BRIGHTNESS, true);
         } else {
@@ -362,7 +403,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Věk testované osoby [1]
      */
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
@@ -371,11 +412,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Věk testované osoby
      */
-    public void setAge(int value) {
+    public void setAge(String value) {
         this.age = value;
         notifyPropertyChanged(BR.age);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_AGE, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_AGE || value > MAX_AGE) {
+        if (v < MIN_AGE || v > MAX_AGE) {
             setValid(false);
             setValidityFlag(FLAG_AGE, true);
         } else {
@@ -388,7 +435,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Výška testované osoby [cm]
      */
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
 
@@ -397,11 +444,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Výška testované osoby [cm]
      */
-    public void setHeight(int value) {
+    public void setHeight(String value) {
         this.height = value;
         notifyPropertyChanged(BR.height);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_HEIGHT, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_HEIGHT || value > MAX_HEIGHT) {
+        if (v < MIN_HEIGHT || v > MAX_HEIGHT) {
             setValid(false);
             setValidityFlag(FLAG_HEIGHT, true);
         } else {
@@ -414,7 +467,7 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @return Váha testované osoby [kg]
      */
-    public int getWeight() {
+    public String getWeight() {
         return weight;
     }
 
@@ -423,11 +476,17 @@ public class ConfigurationREA extends AConfiguration {
      *
      * @param value Váha testované osoby [kg]
      */
-    public void setWeight(int value) {
+    public void setWeight(String value) {
         this.weight = value;
         notifyPropertyChanged(BR.weight);
+        if (value == null || value.isEmpty()) {
+            setValid(false);
+            setValidityFlag(FLAG_WEIGHT, true);
+            return;
+        }
+        int v = Integer.parseInt(value);
 
-        if (value < MIN_WEIGHT || value > MAX_WEIGHT) {
+        if (v < MIN_WEIGHT || v > MAX_WEIGHT) {
             setValid(false);
             setValidityFlag(FLAG_WEIGHT, true);
         } else {

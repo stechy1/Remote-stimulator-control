@@ -19,11 +19,11 @@
             android:name=".ui.configurations.ConfigurationsActivity"
             android:label="@string/nav_configurations"
             android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <!-- Other activity -->
@@ -160,7 +160,13 @@
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
 
+        <activity android:name=".ui.nextgen.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

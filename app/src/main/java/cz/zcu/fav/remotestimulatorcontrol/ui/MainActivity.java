@@ -29,6 +29,7 @@ import java.util.Map;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
+import cz.zcu.fav.remotestimulatorcontrol.ui.about.AboutFragment;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationSharedPreferences;
 import cz.zcu.fav.remotestimulatorcontrol.ui.devices.DeviceListActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.help.HelpFragment;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static {
         FRAGMENT_MAP.put(R.id.nav_experiments, MainFragment.class);
         FRAGMENT_MAP.put(R.id.nav_help, HelpFragment.class);
-        FRAGMENT_MAP.put(R.id.nav_about, null);
+        FRAGMENT_MAP.put(R.id.nav_about, AboutFragment.class);
     }
 
     private static final int REQUEST_CONNECT_DEVICE = 1;

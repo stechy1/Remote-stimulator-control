@@ -25,35 +25,35 @@ public class ConfigurationREATest {
     // region CYCLE_COUNT parameter
     @Test
     public void testGetDefaultCycleCountValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'cycleCount' má špatnou hodnotu.", ConfigurationREA.DEF_CYCLE_COUNT, configuration.getCycleCount());
+        assertEquals("Chyba: Výchozí hodnota parametru 'cycleCount' má špatnou hodnotu.", ConfigurationREA.DEF_CYCLE_COUNT, Integer.parseInt(configuration.getCycleCount()));
     }
     // endregion
 
     // region WAIT_FIXED parameter
     @Test
     public void testGetDefaultWaitFixedValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'waitFixed' má špatnou hodnotu.", ConfigurationREA.DEF_WAIT_FIXED, configuration.getWaitFixed());
+        assertEquals("Chyba: Výchozí hodnota parametru 'waitFixed' má špatnou hodnotu.", ConfigurationREA.DEF_WAIT_FIXED, Integer.parseInt(configuration.getWaitFixed()));
     }
     // endregion
 
     // region WAIT_RANDOM parameter
     @Test
     public void testGetDefaultWaitRandomValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'waitRandom' má špatnou hodnotu.", ConfigurationREA.DEF_WAIT_RANDOM, configuration.getWaitRandom());
+        assertEquals("Chyba: Výchozí hodnota parametru 'waitRandom' má špatnou hodnotu.", ConfigurationREA.DEF_WAIT_RANDOM, Integer.parseInt(configuration.getWaitRandom()));
     }
     // endregion
 
     // region MISS_TIME parameter
     @Test
     public void testGetDefaultMissTimeValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'missTime' má špatnou hodnotu.", ConfigurationREA.DEF_MISS_TIME, configuration.getMissTime());
+        assertEquals("Chyba: Výchozí hodnota parametru 'missTime' má špatnou hodnotu.", ConfigurationREA.DEF_MISS_TIME, Integer.parseInt(configuration.getMissTime()));
     }
     // endregion
 
     // region BRIGHTNESS parameter
     @Test
     public void testGetDefaultBrightnessValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, configuration.getBrightness());
+        assertEquals("Chyba: Výchozí hodnota parametru 'brightness' má špatnou hodnotu.", AConfiguration.DEF_BRIGHTNESS, Integer.parseInt(configuration.getBrightness()));
     }
     // endregion
 
@@ -124,21 +124,21 @@ public class ConfigurationREATest {
     // region AGE parameter
     @Test
     public void testGetDefaultAgeValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'age' má špatnou hodnotu.", ConfigurationREA.DEF_AGE, configuration.getAge());
+        assertEquals("Chyba: Výchozí hodnota parametru 'age' má špatnou hodnotu.", ConfigurationREA.DEF_AGE, Integer.parseInt(configuration.getAge()));
     }
     // endregion
 
     // region HEIGHT parameter
     @Test
     public void testGetDefaultHeightValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'height' má špatnou hodnotu.", ConfigurationREA.DEF_HEIGHT, configuration.getHeight());
+        assertEquals("Chyba: Výchozí hodnota parametru 'height' má špatnou hodnotu.", ConfigurationREA.DEF_HEIGHT, Integer.parseInt(configuration.getHeight()));
     }
     // endregion
 
     // region WEIGHT parameter
     @Test
     public void testGetDefaultweightValue() throws Exception {
-        assertEquals("Chyba: Výchozí hodnota parametru 'weight' má špatnou hodnotu.", ConfigurationREA.DEF_WEIGHT, configuration.getWeight());
+        assertEquals("Chyba: Výchozí hodnota parametru 'weight' má špatnou hodnotu.", ConfigurationREA.DEF_WEIGHT, Integer.parseInt(configuration.getWeight()));
     }
     // endregion
 

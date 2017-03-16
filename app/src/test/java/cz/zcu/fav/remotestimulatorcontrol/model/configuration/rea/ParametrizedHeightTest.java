@@ -43,7 +43,7 @@ public class ParametrizedHeightTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setHeight(value);
+        configuration.setHeight(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_HEIGHT));
         assertEquals(valid, configuration.isValid());
     }

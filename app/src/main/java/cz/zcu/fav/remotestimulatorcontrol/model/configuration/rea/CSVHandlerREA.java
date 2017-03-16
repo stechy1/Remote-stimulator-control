@@ -50,16 +50,16 @@ public class CSVHandlerREA extends CSVHandler {
         reader.close();
 
         readSelf(values);
-        mConfiguration.setCycleCount(Integer.parseInt(values.getNext()));
-        mConfiguration.setWaitFixed(Integer.parseInt(values.getNext()));
-        mConfiguration.setWaitRandom(Integer.parseInt(values.getNext()));
-        mConfiguration.setMissTime(Integer.parseInt(values.getNext()));
-        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.setCycleCount(values.getNext());
+        mConfiguration.setWaitFixed(values.getNext());
+        mConfiguration.setWaitRandom(values.getNext());
+        mConfiguration.setMissTime(values.getNext());
+        mConfiguration.setBrightness(values.getNext());
         mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.parseInt(values.getNext())));
         mConfiguration.setGender(ConfigurationREA.Gender.valueOf(Integer.parseInt(values.getNext())));
-        mConfiguration.setAge(Integer.parseInt(values.getNext()));
-        mConfiguration.setHeight(Integer.parseInt(values.getNext()));
-        mConfiguration.setWeight(Integer.parseInt(values.getNext()));
+        mConfiguration.setAge(values.getNext());
+        mConfiguration.setHeight(values.getNext());
+        mConfiguration.setWeight(values.getNext());
     }
 
     /**

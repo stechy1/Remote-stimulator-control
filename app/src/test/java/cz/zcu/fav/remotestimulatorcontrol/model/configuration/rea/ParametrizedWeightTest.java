@@ -43,7 +43,7 @@ public class ParametrizedWeightTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setWeight(value);
+        configuration.setWeight(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_WEIGHT));
         assertEquals(valid, configuration.isValid());
     }

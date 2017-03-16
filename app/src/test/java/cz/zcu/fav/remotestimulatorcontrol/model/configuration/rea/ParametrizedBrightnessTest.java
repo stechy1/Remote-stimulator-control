@@ -45,7 +45,7 @@ public class ParametrizedBrightnessTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setBrightness(value);
+        configuration.setBrightness(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_BRIGHTNESS));
         assertEquals(valid, configuration.isValid());
     }

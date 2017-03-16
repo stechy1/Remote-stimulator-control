@@ -29,7 +29,7 @@ public class ConfigurationFragmentREA extends ADetailFragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mConfiguration.setBrightness(progress);
+            mConfiguration.setBrightness(String.valueOf(progress));
         }
     };
     // endregion

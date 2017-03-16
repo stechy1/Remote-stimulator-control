@@ -57,16 +57,16 @@ public class JSONHandlerREA extends JSONHandler {
         try {
             JSONObject configurationObject = new JSONObject(src);
             super.readSelf(configurationObject);
-            mConfiguration.setCycleCount(configurationObject.getInt(TAG_CYCLE_COUNT));
-            mConfiguration.setWaitFixed(configurationObject.getInt(TAG_WAIT_FIXED));
-            mConfiguration.setWaitRandom(configurationObject.getInt(TAG_WAIT_RANDOM));
-            mConfiguration.setMissTime(configurationObject.getInt(TAG_MISS_TIME));
-            mConfiguration.setBrightness(configurationObject.getInt(TAG_BRIGHTNESS));
+            mConfiguration.setCycleCount(configurationObject.getString(TAG_CYCLE_COUNT));
+            mConfiguration.setWaitFixed(configurationObject.getString(TAG_WAIT_FIXED));
+            mConfiguration.setWaitRandom(configurationObject.getString(TAG_WAIT_RANDOM));
+            mConfiguration.setMissTime(configurationObject.getString(TAG_MISS_TIME));
+            mConfiguration.setBrightness(configurationObject.getString(TAG_BRIGHTNESS));
             mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(configurationObject.getInt(TAG_ON_FAIL)));
             mConfiguration.setGender(ConfigurationREA.Gender.valueOf(configurationObject.getInt(TAG_GENDER)));
-            mConfiguration.setAge(configurationObject.getInt(TAG_A));
-            mConfiguration.setHeight(configurationObject.getInt(TAG_H));
-            mConfiguration.setWeight(configurationObject.getInt(TAG_W));
+            mConfiguration.setAge(configurationObject.getString(TAG_A));
+            mConfiguration.setHeight(configurationObject.getString(TAG_H));
+            mConfiguration.setWeight(configurationObject.getString(TAG_W));
         } catch(JSONException e){
             e.printStackTrace();
         }

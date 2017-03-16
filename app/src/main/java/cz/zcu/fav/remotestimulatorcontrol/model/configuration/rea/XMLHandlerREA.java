@@ -78,7 +78,7 @@ public class XMLHandlerREA extends XMLHandler {
                     case START_TAG:
                         break;
                     case TEXT:
-                        text = parser.getText();
+                        text = parser.getText().trim();
                         break;
                     case END_TAG:
                         switch (tagName) {
@@ -86,19 +86,19 @@ public class XMLHandlerREA extends XMLHandler {
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
                             case TAG_CYCLE_COUNT:
-                                mConfiguration.setCycleCount(Integer.valueOf(text));
+                                mConfiguration.setCycleCount(text);
                                 break;
                             case TAG_WAIT_FIXED:
-                                mConfiguration.setWaitFixed(Integer.valueOf(text));
+                                mConfiguration.setWaitFixed(text);
                                 break;
                             case TAG_WAIT_RANDOM:
-                                mConfiguration.setWaitRandom(Integer.valueOf(text));
+                                mConfiguration.setWaitRandom(text);
                                 break;
                             case TAG_MISS_TIME:
-                                mConfiguration.setMissTime(Integer.valueOf(text));
+                                mConfiguration.setMissTime(text);
                                 break;
                             case TAG_BRIGHTNESS:
-                                mConfiguration.setBrightness(Integer.valueOf(text));
+                                mConfiguration.setBrightness(text);
                                 break;
                             case TAG_ON_FAIL:
                                 mConfiguration.setOnFail(ConfigurationREA.OnFail.valueOf(Integer.valueOf(text)));
@@ -107,13 +107,13 @@ public class XMLHandlerREA extends XMLHandler {
                                 mConfiguration.setGender(ConfigurationREA.Gender.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_A:
-                                mConfiguration.setAge(Integer.valueOf(text));
+                                mConfiguration.setAge(text);
                                 break;
                             case TAG_H:
-                                mConfiguration.setHeight(Integer.valueOf(text));
+                                mConfiguration.setHeight(text);
                                 break;
                             case TAG_W:
-                                mConfiguration.setWeight(Integer.valueOf(text));
+                                mConfiguration.setWeight(text);
                                 break;
                         }
                         break;

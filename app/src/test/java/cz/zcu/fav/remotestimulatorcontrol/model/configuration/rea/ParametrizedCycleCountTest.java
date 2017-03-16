@@ -43,7 +43,7 @@ public class ParametrizedCycleCountTest {
 
     @Test
     public void testParametrized() throws Exception {
-        configuration.setCycleCount(value);
+        configuration.setCycleCount(String.valueOf(value));
         assertEquals(valid, configuration.isFlagValid(ConfigurationREA.FLAG_CYCLE_COUNT));
         assertEquals(valid, configuration.isValid());
     }

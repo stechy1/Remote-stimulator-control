@@ -1,6 +1,5 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp;
 
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 
@@ -9,13 +8,13 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Code;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Codes;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.DataConvertor;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
 
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MAX_DISTRIBUTION_VALUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MIN_DISTRIBUTION_VALUE;
@@ -431,7 +430,7 @@ public class ConfigurationERP extends AConfiguration {
         Output duplicate(ConfigurationERP parent);
     }
 
-    public static final class Output extends BaseObservable implements IValidate, IDuplicable {
+    public static final class Output extends BaseModel implements IDuplicable {
 
         // region Constants
         // Minimání hodnota parametru pulsUp
@@ -490,12 +489,6 @@ public class ConfigurationERP extends AConfiguration {
         // Jas výstupu [%]
         @Bindable
         private int brightness;
-        // Příznak, zda-li je výstup validní
-        @Bindable
-        private boolean valid = true;
-        // Příznak validity jednotlivých hodnot
-        @Bindable
-        private int validityFlag;
         // endregion
 
         // region Constructors
@@ -535,34 +528,6 @@ public class ConfigurationERP extends AConfiguration {
 
         // endregion
 
-        // region Private methods
-
-        /**
-         * Nastaví validitu zadanému příznaku
-         *
-         * @param flag  Příznak
-         * @param value True, pokud je příznak validní, jinak false
-         */
-        private void setValidityFlag(int flag, boolean value) {
-            int oldFlagValue = validityFlag;
-            if (value) {
-                validityFlag |= flag;
-            } else {
-                validityFlag &= ~flag;
-            }
-
-            if (validityFlag == oldFlagValue) {
-                return;
-            }
-
-            notifyPropertyChanged(BR.validityFlag);
-
-            if (validityFlag == 0) {
-                setValid(true);
-            }
-        }
-        // endregion
-
         // region Public methods
 
         /**
@@ -579,51 +544,6 @@ public class ConfigurationERP extends AConfiguration {
 
             return output;
         }
-
-        /**
-         * Vrází příznak validity parametrů
-         *
-         * @return Příznak validity parametrů
-         */
-        @Override
-        public int getValidityFlag() {
-            return validityFlag;
-        }
-
-        /**
-         * Zjistí validitu výstupu
-         *
-         * @return True, pokud je výstup validní, jinak false
-         */
-        @Override
-        public boolean isValid() {
-            return valid;
-        }
-
-        /**
-         * Nastaví validitu výstupu
-         *
-         * @param valid True, pokud je výstup validní, jinak false
-         */
-        @Override
-        public void setValid(boolean valid) {
-            this.valid = valid;
-            notifyPropertyChanged(BR.valid);
-
-            config.setOutputValidity(id, !valid);
-        }
-
-        /**
-         * Zjistí, zda-li je příznak validní, nebo ne
-         *
-         * @param flag Příznak
-         * @return True, pokud je validní, jinak false
-         */
-        @Override
-        public boolean isFlagValid(int flag) {
-            return !((validityFlag & flag) == flag);
-        }
-        // endregion
 
         // region Getters & Setters
 

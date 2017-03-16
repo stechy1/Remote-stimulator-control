@@ -1,17 +1,15 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation;
 
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.net.Uri;
-import android.util.Log;
 
 import java.io.File;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.ExtensionType;
+import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
 import cz.zcu.fav.remotestimulatorcontrol.util.EnumUtil;
 
 import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.ConfigurationImportActivity.FLAG_NAME;
@@ -21,7 +19,7 @@ import static cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.C
 /**
  * Pomocná konfigurace sloužící pro databingind třídy {@link ConfigurationImportActivity}
  */
-public class ObservableConfiguration extends BaseObservable implements IValidate {
+public class ObservableConfiguration extends BaseModel {
 
     // region Constants
     // Logovací tag
@@ -29,12 +27,6 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
     // endregion
 
     // region Variables
-    // Validita konfigurace - 0 = validní
-    @Bindable
-    private int validityFlag = FLAG_NAME | FLAG_TYPE;
-    // Příznak validity konfigurace. True, pokud je validní, jinak false
-    @Bindable
-    private boolean valid;
     // Název konfigurace
     @Bindable
     private String name = "";
@@ -47,58 +39,13 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
     // Cesta k souboru
     @Bindable
     private String filePath = "...";
-    // Příznak indikující, zda-li byla změněna interní datová struktura konfigurace
-    @Bindable
-    boolean changed = false;
     // endregion
 
-    @Override
-    public int getValidityFlag() {
-        return changed ? validityFlag : 0;
+    {
+        validityFlag = FLAG_NAME | FLAG_TYPE;
     }
 
-    @Override
-    public boolean isFlagValid(int flag) {
-        return !((validityFlag & flag) == flag);
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public void setValid(boolean valid) {
-        this.valid = valid;
-        notifyPropertyChanged(BR.valid);
-    }
-
-    // region Getters & Setters
-    /**
-     * Nastaví validitu zadanému příznaku
-     *
-     * @param flag  Příznak
-     * @param value True, pokud je příznak validní, jinak false
-     */
-    protected void setValidityFlag(int flag, boolean value) {
-        Log.d("obsimpconf", String.valueOf(value));
-        int oldFlagValue = this.validityFlag;
-        if (value) {
-            validityFlag |= flag;
-        } else {
-            validityFlag &= ~flag;
-        }
-
-        if (validityFlag == oldFlagValue) {
-            return;
-        }
-
-        notifyPropertyChanged(BR.validityFlag);
-
-        if (validityFlag == 0) {
-            setValid(true);
-        }
-    }
+    // region Public methods
 
     /**
      * Vrátí název konfigurace
@@ -233,13 +180,5 @@ public class ObservableConfiguration extends BaseObservable implements IValidate
         notifyPropertyChanged(BR.validityFlag);
     }
 
-    /**
-     * Vrátí true, pokud se změnil vnitřní stav objektu, jinak false
-     *
-     * @return True, pokud se změnil vnitřní stav objektu, jinak false
-     */
-    public boolean isChanged() {
-        return changed;
-    }
     // endregion
 }

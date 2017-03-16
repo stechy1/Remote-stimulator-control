@@ -1,6 +1,5 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.configuration.fvep;
 
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 
@@ -9,10 +8,10 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
+import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.IValidate;
 
 public class ConfigurationFVEP extends AConfiguration {
 
@@ -193,7 +192,7 @@ public class ConfigurationFVEP extends AConfiguration {
         Output duplicate(ConfigurationFVEP parent);
     }
 
-    public static final class Output extends BaseObservable implements IValidate, IDuplicable {
+    public static final class Output extends BaseModel implements IDuplicable {
 
         // region Constants
         // Minimání hodnota parametru pulsUp
@@ -253,12 +252,6 @@ public class ConfigurationFVEP extends AConfiguration {
         // Jas výstupu [%]
         @Bindable
         private int brightness;
-        // Příznak, zda-li je výstup validní
-        @Bindable
-        private boolean valid = true;
-        // Příznak validity jednotlivých hodnot
-        @Bindable
-        private int validityFlag;
         // endregion
 
         // region Constructors
@@ -298,34 +291,6 @@ public class ConfigurationFVEP extends AConfiguration {
 
         // endregion
 
-        // region Private methods
-
-        /**
-         * Nastaví validitu zadanému příznaku
-         *
-         * @param flag  Příznak
-         * @param value True, pokud je příznak validní, jinak false
-         */
-        private void setValidityFlag(int flag, boolean value) {
-            int oldFlagValue = validityFlag;
-            if (value) {
-                validityFlag |= flag;
-            } else {
-                validityFlag &= ~flag;
-            }
-
-            if (validityFlag == oldFlagValue) {
-                return;
-            }
-
-            notifyPropertyChanged(BR.validityFlag);
-
-            if (validityFlag == 0) {
-                setValid(true);
-            }
-        }
-        // endregion
-
         // region Public methods
         /**
          * Vytvoří a vrátí nový zduplikovaný output
@@ -342,50 +307,12 @@ public class ConfigurationFVEP extends AConfiguration {
             return output;
         }
 
-        /**
-         * Vrází příznak validity parametrů
-         *
-         * @return Příznak validity parametrů
-         */
-        @Override
-        public int getValidityFlag() {
-            return validityFlag;
-        }
-
-        /**
-         * Zjistí validitu výstupu
-         *
-         * @return True, pokud je výstup validní, jinak false
-         */
-        @Override
-        public boolean isValid() {
-            return valid;
-        }
-
-        /**
-         * Nastaví validitu výstupu
-         *
-         * @param valid True, pokud je výstup validní, jinak false
-         */
         @Override
         public void setValid(boolean valid) {
-            this.valid = valid;
-            notifyPropertyChanged(BR.valid);
+           super.setValid(valid);
 
             config.setOutputValidity(id, !valid);
         }
-
-        /**
-         * Zjistí, zda-li je příznak validní, nebo ne
-         *
-         * @param flag Příznak
-         * @return True, pokud je validní, jinak false
-         */
-        @Override
-        public boolean isFlagValid(int flag) {
-            return !((validityFlag & flag) == flag);
-        }
-        // endregion
 
         // region Getters & Setters
 

@@ -5,13 +5,15 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationTestRunner;
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtilsTest;
 
 /**
  * Spouštěcí třída jednotlivých testů
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-        ConfigurationTestRunner.class
+        ConfigurationTestRunner.class,
+        BitUtilsTest.class
 })
 public class TestRunner {
     // Zde opravdu nic není

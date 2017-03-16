@@ -368,6 +368,10 @@ public class EditableSeekBar extends RelativeLayout implements SeekBar.OnSeekBar
         return currentValue;
     }
 
+    public void setValue(String value) {
+        setValue(Integer.parseInt(value));
+    }
+
     public void setValue(Integer value) {
         if (value == null) {
             return;

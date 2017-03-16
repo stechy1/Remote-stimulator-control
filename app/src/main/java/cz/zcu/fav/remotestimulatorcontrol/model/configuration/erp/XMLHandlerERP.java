@@ -124,7 +124,7 @@ public class XMLHandlerERP extends XMLHandler {
                         }
                         break;
                     case TEXT:
-                        text = parser.getText();
+                        text = parser.getText().trim();
                         break;
                     case END_TAG:
                         switch (tagName) {
@@ -133,10 +133,11 @@ public class XMLHandlerERP extends XMLHandler {
                                 mConfiguration.outputList.clear();
                                 break;
                             case TAG_OUT:
-                                mConfiguration.setOut(Integer.valueOf(text));
+                                mConfiguration.setOut(text);
                                 break;
                             case TAG_WAIT:
-                                mConfiguration.setWait(Integer.valueOf(text));
+                                mConfiguration.setWait(text
+                                );
                                 break;
                             case TAG_EDGE:
                                 mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(Integer.valueOf(text)));
@@ -145,19 +146,19 @@ public class XMLHandlerERP extends XMLHandler {
                                 mConfiguration.setRandom(ConfigurationERP.Random.valueOf(Integer.valueOf(text)));
                                 break;
                             case TAG_PULS_UP:
-                                output.setPulsUp(Integer.valueOf(text));
+                                output.setPulsUp(text);
                                 break;
                             case TAG_PULS_DOWN:
-                                output.setPulsDown(Integer.valueOf(text));
+                                output.setPulsDown(text);
                                 break;
                             case TAG_DISTRIBUTION_VALUE:
-                                output.setDistributionValue(Integer.valueOf(text));
+                                output.setDistributionValue(text);
                                 break;
                             case TAG_DISTRIBUTION_DELAY:
-                                output.setDistributionDelay(Integer.valueOf(text));
+                                output.setDistributionDelay(text);
                                 break;
                             case TAG_BRIGHTNESS:
-                                output.setBrightness(Integer.valueOf(text));
+                                output.setBrightness(text);
                                 break;
                             case TAG_OUTPUT:
                                 mConfiguration.outputList.add(output);

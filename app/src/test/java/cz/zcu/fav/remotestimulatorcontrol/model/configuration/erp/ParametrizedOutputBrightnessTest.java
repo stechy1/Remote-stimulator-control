@@ -49,7 +49,7 @@ public class ParametrizedOutputBrightnessTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setBrightness(value);
+        output.setBrightness(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(ConfigurationERP.Output.FLAG_BRIGHTNESS));
         assertEquals(valid, output.isValid());
     }

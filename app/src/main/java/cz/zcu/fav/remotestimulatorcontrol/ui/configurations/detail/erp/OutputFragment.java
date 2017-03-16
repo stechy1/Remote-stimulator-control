@@ -28,7 +28,7 @@ public class OutputFragment extends Fragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged distributionValueChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mOutput.setDistributionValue(progress);
+            mOutput.setDistributionValue(String.valueOf(progress));
         }
     };
     @SuppressWarnings("unused")
@@ -36,7 +36,7 @@ public class OutputFragment extends Fragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mOutput.setBrightness(progress);
+            mOutput.setBrightness(String.valueOf(progress));
         }
     };
     // endregion

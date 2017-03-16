@@ -57,11 +57,11 @@ public class CSVHandlerERP extends CSVHandler {
      * @return {@link ConfigurationERP.Output}
      */
     private ConfigurationERP.Output readOutput(IndexedValues values, int id) {
-        int pulsUp = Integer.parseInt(values.getNext());
-        int pulsDown = Integer.parseInt(values.getNext());
-        int distValue = Integer.parseInt(values.getNext());
-        int distDelay = Integer.parseInt(values.getNext());
-        int brightness = Integer.parseInt(values.getNext());
+        String pulsUp = values.getNext();
+        String pulsDown = values.getNext();
+        String distValue = values.getNext();
+        String distDelay = values.getNext();
+        String brightness = values.getNext();
 
         return new ConfigurationERP.Output(mConfiguration, id, pulsUp, pulsDown, distValue, distDelay, brightness);
     }
@@ -107,8 +107,8 @@ public class CSVHandlerERP extends CSVHandler {
         reader.close();
 
         readSelf(values);
-        mConfiguration.setOut(Integer.parseInt(values.getNext()));
-        mConfiguration.setWait(Integer.parseInt(values.getNext()));
+        mConfiguration.setOut(values.getNext());
+        mConfiguration.setWait(values.getNext());
         mConfiguration.setEdge(ConfigurationERP.Edge.valueOf(Integer.parseInt(values.getNext())));
         mConfiguration.setRandom(ConfigurationERP.Random.valueOf(Integer.parseInt(values.getNext())));
 

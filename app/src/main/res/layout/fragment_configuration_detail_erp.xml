@@ -62,7 +62,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:inputType="numberSigned"
-                            android:text='@={"" + configuration.out}' />
+                            android:text='@={configuration.out}' />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -78,7 +78,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="numberSigned"
-                            android:text='@={"" + configuration.wait}' />
+                            android:text='@={configuration.wait}' />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 

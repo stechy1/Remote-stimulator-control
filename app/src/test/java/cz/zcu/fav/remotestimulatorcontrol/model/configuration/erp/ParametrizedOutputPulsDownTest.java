@@ -47,7 +47,7 @@ public class ParametrizedOutputPulsDownTest {
 
     @Test
     public void testParametrized() throws Exception {
-        output.setPulsDown(value);
+        output.setPulsDown(String.valueOf(value));
         assertEquals(valid, output.isFlagValid(Output.FLAG_PULS_DOWN));
         assertEquals(valid, output.isValid());
     }

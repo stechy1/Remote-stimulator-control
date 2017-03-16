@@ -107,10 +107,10 @@ public class JSONHandlerTVEP extends JSONHandler {
             JSONObject jsonConfiguration = new JSONObject(src);
 
             super.readSelf(jsonConfiguration);
-            mConfiguration.setPatternLength(jsonConfiguration.getInt(TAG_PATTERN_LENGHT));
-            mConfiguration.setTimeBetween(jsonConfiguration.getInt(TAG_PULS_SKEW));
-            mConfiguration.setPulsLength(jsonConfiguration.getInt(TAG_PULS_LENGHT));
-            mConfiguration.setBrightness(jsonConfiguration.getInt(TAG_BRIGHTNESS));
+            mConfiguration.setPatternLength(jsonConfiguration.getString(TAG_PATTERN_LENGHT));
+            mConfiguration.setTimeBetween(jsonConfiguration.getString(TAG_PULS_SKEW));
+            mConfiguration.setPulsLength(jsonConfiguration.getString(TAG_PULS_LENGHT));
+            mConfiguration.setBrightness(jsonConfiguration.getString(TAG_BRIGHTNESS));
 
             JSONArray patternArray = jsonConfiguration.getJSONArray(TAG_PATTERNS);
             readPatterns(patternArray);

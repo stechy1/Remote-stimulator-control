@@ -75,10 +75,10 @@ public class CSVHandlerTVEP extends CSVHandler {
         reader.close();
 
         readSelf(values);
-        mConfiguration.setPatternLength(Integer.parseInt(values.getNext()));
-        mConfiguration.setTimeBetween(Integer.parseInt(values.getNext()));
-        mConfiguration.setPulsLength(Integer.parseInt(values.getNext()));
-        mConfiguration.setBrightness(Integer.parseInt(values.getNext()));
+        mConfiguration.setPatternLength(values.getNext());
+        mConfiguration.setTimeBetween(values.getNext());
+        mConfiguration.setPulsLength(values.getNext());
+        mConfiguration.setBrightness(values.getNext());
 
         readPatterns(values);
     }

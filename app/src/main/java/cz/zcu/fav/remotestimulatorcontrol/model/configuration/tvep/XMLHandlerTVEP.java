@@ -99,7 +99,7 @@ public class XMLHandlerTVEP extends XMLHandler {
                         }
                         break;
                     case TEXT:
-                        text = parser.getText();
+                        text = parser.getText().trim();
                         break;
                     case END_TAG:
                         switch (tagName) {
@@ -107,16 +107,16 @@ public class XMLHandlerTVEP extends XMLHandler {
                                 mConfiguration.setOutputCount(Integer.valueOf(text));
                                 break;
                             case TAG_PATTERN_LENGHT:
-                                mConfiguration.setPatternLength(Integer.valueOf(text));
+                                mConfiguration.setPatternLength(text);
                                 break;
                             case TAG_PULS_SKEW:
-                                mConfiguration.setTimeBetween(Integer.valueOf(text));
+                                mConfiguration.setTimeBetween(text);
                                 break;
                             case TAG_PULS_LENGHT:
-                                mConfiguration.setPulsLength(Integer.valueOf(text));
+                                mConfiguration.setPulsLength(text);
                                 break;
                             case TAG_BRIGHTNESS:
-                                mConfiguration.setBrightness(Integer.valueOf(text));
+                                mConfiguration.setBrightness(text);
                             case TAG_PATTERN:
                                 mConfiguration.patternList.add(pattern);
                         }

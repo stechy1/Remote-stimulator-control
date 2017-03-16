@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     app:alignContent="flex_start"
                     app:alignItems="center"
-                    app:bit_count="@{ConfigurationCVEP.PATTERN_LENGTH}"
+                    app:bit_count='@{"" + ConfigurationCVEP.PATTERN_LENGTH}'
                     app:flexDirection="row"
                     app:flexWrap="wrap"
                     app:justifyContent="flex_start"

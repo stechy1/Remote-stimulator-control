@@ -29,14 +29,14 @@ public class ConfigurationFragmentTVEP extends ADetailFragment {
     public final EditableSeekBar.OnEditableSeekBarProgressChanged patternLengthChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mConfiguration.setPatternLength(progress);
+            mConfiguration.setPatternLength(String.valueOf(progress));
         }
     };
     // Listener pro změnu intenzity jasu
     public final EditableSeekBar.OnEditableSeekBarProgressChanged brightnessChanged = new EditableSeekBar.OnEditableSeekBarProgressChanged() {
         @Override
         public void onProgressChange(SeekBar seekBar, int progress, boolean fromUser) {
-            mConfiguration.setBrightness(progress);
+            mConfiguration.setBrightness(String.valueOf(progress));
         }
     };
     // endregion

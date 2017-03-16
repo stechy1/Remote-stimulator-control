@@ -688,14 +688,14 @@ public class ConfigurationsActivity extends AppCompatActivity
                         break;
                 }
                 break;
-            case R.id.menu_main_sort:
-                Intent intent = new Intent(this, ConfigurationSortingActivity.class);
-                intent.putExtra(ConfigurationSortingActivity.SORTING_FLAG, mSortingFlag);
-                startActivityForResult(intent, REQUEST_SORTING);
-                break;
-            case R.id.menu_main_import:
-                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT_CONFIGURATION);
-                break;
+//            case R.id.menu_main_sort:
+//                Intent intent = new Intent(this, ConfigurationSortingActivity.class);
+//                intent.putExtra(ConfigurationSortingActivity.SORTING_FLAG, mSortingFlag);
+//                startActivityForResult(intent, REQUEST_SORTING);
+//                break;
+//            case R.id.menu_main_import:
+//                startActivityForResult(new Intent(this, ConfigurationImportActivity.class), REQUEST_IMPORT_CONFIGURATION);
+//                break;
         }
 
         return super.onOptionsItemSelected(item);

@@ -6,20 +6,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityHelpBinding;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentHelpBinding;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
-public class HelpActivity extends AppCompatActivity {
 
-    ActivityHelpBinding mBinding;
+public class HelpFragment extends Fragment {
 
+    private FragmentHelpBinding mBinding;
+    // region Variables
     private final BroadcastReceiver mDataReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -36,33 +36,23 @@ public class HelpActivity extends AppCompatActivity {
             }
         }
     };
+    // endregion
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_help);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_help, container, false);
+        mBinding.setController(this);
+        mBinding.executePendingBindings();
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        getActivity().registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
 
-        registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
+        return mBinding.getRoot();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(mDataReceiver);
+    public void onDestroy() {
+        getActivity().unregisterReceiver(mDataReceiver);
         super.onDestroy();
     }
 
@@ -70,6 +60,7 @@ public class HelpActivity extends AppCompatActivity {
         String text = mBinding.editText1.getText().toString();
         Intent intent = new Intent(BluetoothService.ACTION_SEND_DATA);
         intent.putExtra(BluetoothService.DATA_CONTENT, text.getBytes());
-        sendBroadcast(intent);
+        getActivity().sendBroadcast(intent);
     }
+
 }

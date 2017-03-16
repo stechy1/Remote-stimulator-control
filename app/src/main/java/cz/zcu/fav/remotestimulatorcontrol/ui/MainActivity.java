@@ -31,6 +31,7 @@ import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationSharedPreferences;
 import cz.zcu.fav.remotestimulatorcontrol.ui.devices.DeviceListActivity;
+import cz.zcu.fav.remotestimulatorcontrol.ui.help.HelpFragment;
 import cz.zcu.fav.remotestimulatorcontrol.ui.settings.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,14 +48,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final Map<Integer, Class> FRAGMENT_MAP = new HashMap<>(4);
     static {
         FRAGMENT_MAP.put(R.id.nav_experiments, MainFragment.class);
-        FRAGMENT_MAP.put(R.id.nav_settings, null);
-        FRAGMENT_MAP.put(R.id.nav_help, null);
+        FRAGMENT_MAP.put(R.id.nav_help, HelpFragment.class);
         FRAGMENT_MAP.put(R.id.nav_about, null);
     }
 
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
-    private static final int REQUEST_SETTINGS = 3;
 
     // endregion
 
@@ -334,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            mDrawerLayout.closeDrawers();
             return true;
         }
 

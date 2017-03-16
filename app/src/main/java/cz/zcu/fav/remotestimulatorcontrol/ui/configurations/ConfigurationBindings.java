@@ -2,13 +2,9 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.configurations;
 
 import android.databinding.BindingAdapter;
 import android.databinding.BindingConversion;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableInt;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.widget.CheckBox;
@@ -47,11 +43,6 @@ public final class ConfigurationBindings {
     }
     // endregion
 
-    @InverseBindingAdapter(attribute = "value")
-    public static String getTextFromEditText(TextInputEditText editText) {
-        return editText.getText().toString();
-    }
-
     @BindingAdapter(value = {"validityFlag", "validity", "errorText"}, requireAll = false)
     public static void setErrorMessage(TextInputLayout view, int validityFlag, int validity, String message) {
         view.setError(((validity & validityFlag) == validityFlag) ? message : null);
@@ -84,18 +75,6 @@ public final class ConfigurationBindings {
             imageView.setBackgroundColor(invalidBackground[0]);
         }
     }
-
-//    @BindingAdapter({"configuration_type", "valid"})
-//    public static void setToolbarBackground(Toolbar toolbar, String type, boolean valid) {
-//        if (valid) {
-//            int[] validBackgrounds = toolbar.getContext().getResources().getIntArray(R.array.config_type_color_array);
-//            toolbar.setBackgroundColor(validBackgrounds[ConfigurationType.valueOf(type).ordinal()]);
-//        } else {
-//            int[] invalidBackground = toolbar.getContext().getResources().getIntArray(R.array.config_invalid_color);
-//            toolbar.setBackgroundColor(invalidBackground[0]);
-//        }
-//    }
-
 
     @BindingAdapter({"media_type", "media_flag"})
     public static void mediaTypeProccess(RadioButton radioButton, MediaType mediaType, MediaType mediaFlag) {
@@ -133,15 +112,5 @@ public final class ConfigurationBindings {
     @BindingConversion
     public static String configurationTypeToString(ConfigurationType type) {
         return type.name();
-    }
-
-    @BindingConversion
-    public static int observableIntToInt(ObservableInt observableInt) {
-        return observableInt.get();
-    }
-
-    @BindingConversion
-    public static boolean observableBooleanToBoolean(ObservableBoolean observableBoolean) {
-        return observableBoolean.get();
     }
 }

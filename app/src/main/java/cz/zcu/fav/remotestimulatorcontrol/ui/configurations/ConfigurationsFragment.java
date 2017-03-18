@@ -10,7 +10,6 @@ import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -44,8 +43,6 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.factory.Configuratio
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.importation.ConfigurationImportActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.rename.ConfigurationRenameActivity;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.sorting.ConfigurationSortingActivity;
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -246,9 +243,8 @@ public class ConfigurationsFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-        mRecyclerView.setItemAnimator(new LandingAnimator(new FastOutLinearInInterpolator()));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(new AlphaInAnimationAdapter(mConfigurationAdapter));
+        mRecyclerView.setAdapter(mConfigurationAdapter);
         mRecyclerView.addOnItemTouchListener(mItemTouchListener);
         mGestureDetector = new GestureDetectorCompat(getActivity(), new RecyclerViewGestureListener());
     }

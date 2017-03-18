@@ -19,7 +19,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -46,8 +45,6 @@ import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -195,9 +192,8 @@ public class MediaFragment extends Fragment {
         mMediaAdapter = new MediaAdapter(mManager.mediaList);
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setItemAnimator(new LandingAnimator(new FastOutLinearInInterpolator()));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(new AlphaInAnimationAdapter(mMediaAdapter));
+        mRecyclerView.setAdapter(mMediaAdapter);
         mRecyclerView.addOnItemTouchListener(mItemTouchListener);
         mGestureDetector = new GestureDetectorCompat(getActivity(), new RecyclerViewGestureListener());
     }

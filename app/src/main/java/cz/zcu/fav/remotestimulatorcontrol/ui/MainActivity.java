@@ -1,6 +1,7 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -266,6 +268,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Log.d(TAG, "Pokus o připojení k bluetooth zařízení");
+                        String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
+                        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
+                        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
+                        intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_ON);
+                        intent.putExtra(BluetoothService.DEVICE, device);
+                        sendBroadcast(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Nastala neočekávaná vyjímka při připojování k bluetooth zařízení", e);
+                    }
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK) {
+                    Log.i(TAG, "Bluetooth je aktivovaný");
+                } else {
+                    Log.i(TAG, "Bluetooth není aktivovaný");
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(BLUETOOTH_DEVICE_NAME, mConnectedDeviceName);
         outState.putInt(BLUETOOTH_STATUS, mBluetoothServiceStatus);
@@ -294,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         mMenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
+        setBluetoothStatusIcon(mBluetoothServiceStatus);
 
         return super.onCreateOptionsMenu(menu);
     }

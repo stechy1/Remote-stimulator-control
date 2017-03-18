@@ -1,6 +1,5 @@
 package cz.zcu.fav.remotestimulatorcontrol.ui;
 
-
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,8 +43,6 @@ public class MainFragment extends Fragment {
 
     private FragmentMainBinding mBinding;
 
-    // endregion
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
@@ -54,6 +51,8 @@ public class MainFragment extends Fragment {
         }
     };
     private int mFragmentId;
+
+    // endregion
 
     /**
      * Zobrazí vybraný fragment

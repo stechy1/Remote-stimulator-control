@@ -461,8 +461,6 @@ public class ConfigurationsFragment extends Fragment {
         mMenu = menu;
 
         inflater.inflate(R.menu.main_fragment_menu, menu);
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

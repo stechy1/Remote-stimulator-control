@@ -368,8 +368,6 @@ public class ProfileFragment extends Fragment {
         mMenu = menu;
 
         inflater.inflate(R.menu.menu_profile, menu);
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

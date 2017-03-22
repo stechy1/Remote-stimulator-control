@@ -455,7 +455,7 @@ public class MediaFragment extends Fragment {
     private class ActionBarCallback implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.experiments_context_menu, menu);
+            mode.getMenuInflater().inflate(R.menu.media_context_menu, menu);
             mActionMode = mode;
 
             mFab.setVisibility(View.GONE);
@@ -474,49 +474,9 @@ public class MediaFragment extends Fragment {
                 return false;
             }
 
-            String name = mManager.mediaList.get(selectedItems.get(0)).getName();
-            Intent intent;
             switch (item.getItemId()) {
-                case R.id.context_duplicate: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-//                    intent = new Intent(OutputProfilesActivity.this, ProfileDuplicateActivity.class);
-//                    intent.putExtra(ProfileDuplicateActivity.PROFILE_ID, selectedItems.get(0));
-//                    intent.putExtra(ProfileDuplicateActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_DUPLICATE_PROFILE);
-
-                    return true;
-                case R.id.context_delete: // Smažeme konfigurace
+                case R.id.context_delete: // Smažeme vybraná média
                     mManager.prepareToDelete(selectedItems);
-
-                    return true;
-                case R.id.context_rename: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-//                    intent = new Intent(OutputProfilesActivity.this, ProfileRenameActivity.class);
-//                    intent.putExtra(ProfileRenameActivity.PROFILE_ID, selectedItems.get(0));
-//                    intent.putExtra(ProfileRenameActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_RENAME_PROFILE);
-
-                    return true;
-                case R.id.context_select_all:
-                    mMediaAdapter.selectAll();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_inverse:
-                    mMediaAdapter.invertSelection();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_none:
-                    mMediaAdapter.selectNone();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
                     return true;
                 default:
                     return false;

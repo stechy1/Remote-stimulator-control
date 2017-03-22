@@ -134,7 +134,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case BluetoothService.STATE_CONNECTED:
                 Log.d(TAG, "Zařízení je připojeno");
                 if (mMenu != null) {
-                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connected);
+                    MenuItem item = mMenu.findItem(R.id.menu_main_connect);
+                    if (item != null) {
+                        item.setIcon(R.drawable.bluetooth_connected);
+                    }
                 }
                 mBluetoothServiceStatus = BluetoothService.STATE_CONNECTED;
                 setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
@@ -148,7 +151,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case BluetoothService.STATE_NONE:
                 Log.d(TAG, "Zařízení je odpojeno");
                 if (mMenu != null) {
-                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connect);
+                    MenuItem item = mMenu.findItem(R.id.menu_main_connect);
+                    if (item != null) {
+                        item.setIcon(R.drawable.bluetooth_connect);
+                    }
                 }
                 mBluetoothServiceStatus = BluetoothService.STATE_NONE;
                 setStatus(R.string.title_not_connected);

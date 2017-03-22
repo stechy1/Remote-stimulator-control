@@ -47,7 +47,12 @@ public class MainFragment extends Fragment {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            return showFragment(item.getItemId());
+            boolean success = showFragment(item.getItemId());
+            if (success) {
+                getActivity().setTitle(item.getTitle());
+            }
+
+            return success;
         }
     };
     private int mFragmentId;

@@ -201,12 +201,12 @@ public class ConfigurationERP extends AConfiguration {
 
             if(vystup != 5 && vystup != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
                 packets.add(new BtPacket(actualBRIGHTNESS, DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
-                actualBRIGHTNESS = actualBRIGHTNESS.getNext();
+                actualBRIGHTNESS = actualBRIGHTNESS.next;
             }
 
-            actualDURATION = actualDURATION.getNext();
-            actualPAUSE = actualPAUSE.getNext();
-            actualDISTRIBUTION = actualDISTRIBUTION.getNext();
+            actualDURATION = actualDURATION.next;
+            actualPAUSE = actualPAUSE.next;
+            actualDISTRIBUTION = actualDISTRIBUTION.next;
 
 
             vystup++;

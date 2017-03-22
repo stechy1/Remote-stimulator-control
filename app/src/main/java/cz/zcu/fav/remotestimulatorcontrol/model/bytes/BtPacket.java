@@ -23,7 +23,7 @@ public class BtPacket {
      */
     public BtPacket(Code code) {
         this.code = code;
-        fillPacket(new byte[]{0x00, code.getCode()});
+        fillPacket(new byte[]{0x00, code.code});
     }
 
     /**
@@ -35,7 +35,7 @@ public class BtPacket {
     public BtPacket(Code code, byte[] data) {
         this.code = code;
         ByteBuffer buffer = ByteBuffer.allocate(2 + data.length)
-                .put(ByteBuffer.allocate(2).put(1, code.getCode())).put((data));
+                .put(ByteBuffer.allocate(2).put(1, code.code)).put((data));
 
         buffer.put(0, (byte) (buffer.capacity() - 2));
         fillPacket(buffer.array());
@@ -44,7 +44,7 @@ public class BtPacket {
     @Override
     public String toString() {
         String text = new String(value, 0, usedBytes);
-        return usedBytes + "B | " + code.getDescription() + " | " + text;
+        return usedBytes + "B | " + code.description + " | " + text;
     }
 
     /**

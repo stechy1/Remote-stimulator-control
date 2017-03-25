@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -256,8 +257,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setTitle(title);
 
-        registerReceiver(mBluetoothDeviceNameReceiver, new IntentFilter(BluetoothService.ACTION_DEVICE_NAME));
-        registerReceiver(mBluetoothStateReceiver, new IntentFilter(BluetoothService.ACTION_STATE_CHANGE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothDeviceNameReceiver, new IntentFilter(BluetoothService.ACTION_DEVICE_NAME));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, new IntentFilter(BluetoothService.ACTION_STATE_CHANGE));
 
         mBinding.navView.setCheckedItem(mFragmentId);
     }
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
                         intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_ON);
                         intent.putExtra(BluetoothService.DEVICE, device);
-                        sendBroadcast(intent);
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Nastala neočekávaná vyjímka při připojování k bluetooth zařízení", e);
@@ -315,8 +316,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(mBluetoothDeviceNameReceiver);
-        unregisterReceiver(mBluetoothStateReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBluetoothDeviceNameReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBluetoothStateReceiver);
         super.onDestroy();
     }
 
@@ -359,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     case BluetoothService.STATE_CONNECTED:
                         Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
                         intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_OFF);
-                        sendBroadcast(intent);
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         break;
                 }
                 return true;

@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,7 +54,7 @@ public class HelpFragment extends Fragment {
         mBinding.setController(this);
         mBinding.executePendingBindings();
 
-        getActivity().registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
 
         return mBinding.getRoot();
     }
@@ -65,7 +66,7 @@ public class HelpFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        getActivity().unregisterReceiver(mDataReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mDataReceiver);
         super.onDestroy();
     }
 

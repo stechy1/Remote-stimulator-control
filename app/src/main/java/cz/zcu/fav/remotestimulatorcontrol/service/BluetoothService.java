@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class BluetoothService extends Service {
 
         Intent intent = new Intent(ACTION_STATE_CHANGE);
         intent.putExtra(STATE_CHANGE, state);
-        sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**
@@ -145,7 +146,7 @@ public class BluetoothService extends Service {
         Log.w(TAG, "Připojení selhalo");
         stop();
 
-        sendBroadcast(new Intent(ACTION_CONNECTION_FAILED));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_CONNECTION_FAILED));
     }
 
     /**
@@ -155,7 +156,7 @@ public class BluetoothService extends Service {
         Log.i(TAG, "Připojení bylo ztraceno");
         stop();
 
-        sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
     }
 
     /**
@@ -182,7 +183,7 @@ public class BluetoothService extends Service {
 
         Intent intent = new Intent(ACTION_DEVICE_NAME);
         intent.putExtra(DEVICE_NAME, device.getName());
-        sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
         setState(STATE_CONNECTED);
     }
@@ -238,8 +239,8 @@ public class BluetoothService extends Service {
     @Override
     public void onCreate() {
         Log.d("BluetoothService", "Služba spuštěna");
-        registerReceiver(mStatusReceiver, new IntentFilter(ACTION_REQUEST_STATE_CHANGE));
-        registerReceiver(mSenderReceiver, new IntentFilter(ACTION_SEND_DATA));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mStatusReceiver, new IntentFilter(ACTION_REQUEST_STATE_CHANGE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSenderReceiver, new IntentFilter(ACTION_SEND_DATA));
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         running = true;
         super.onCreate();
@@ -260,8 +261,8 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         stop();
-        unregisterReceiver(mStatusReceiver);
-        unregisterReceiver(mSenderReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStatusReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSenderReceiver);
         Log.d(TAG, "Služba ukončena");
         super.onDestroy();
     }
@@ -363,7 +364,7 @@ public class BluetoothService extends Service {
                     Intent intent = new Intent(ACTION_DATA_RECEIVED);
                     intent.putExtra(DATA_RECEIVED_BYTES, count);
                     intent.putExtra(DATA_RECEIVED_BUFFER, buffer);
-                    sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
                 } catch (Exception e) {
                     connectionLost();
                     break;

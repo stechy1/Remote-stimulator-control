@@ -45,6 +45,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileSynchronizerService;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -313,6 +314,7 @@ public class MediaFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_media_synchronize:
                 Log.d(TAG, "Synchronizuji");
+                FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

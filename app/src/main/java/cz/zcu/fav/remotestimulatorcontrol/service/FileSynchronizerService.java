@@ -8,13 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 
@@ -27,7 +25,7 @@ public class FileSynchronizerService extends IntentService {
 
     private static final String SERVICE_NAME = "FileSynchronizerService";
 
-    public static final int COUNT = 50;
+    public static final int COUNT = 10;
 
     private static final String ACTION_SYNCHRONIZE = "cz.zcu.fav.remotestimulatorcontrol.service.action.SYNCHRONIZE";
     private static final String ACTION_UPLOAD = "cz.zcu.fav.remotestimulatorcontrol.service.action.UPLOAD_MEDIA";
@@ -46,21 +44,16 @@ public class FileSynchronizerService extends IntentService {
             final String action = intent.getAction();
 
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
-                final int NO_DATA = -1;
-                int length = intent.getIntExtra(BluetoothService.DATA_RECEIVED_BYTES, NO_DATA);
                 byte[] received = intent.getByteArrayExtra(BluetoothService.DATA_RECEIVED_BUFFER);
-                if (length == NO_DATA) {
-                    return;
-                }
 
-                bytes = Arrays.copyOf(received, length);
+                incommingPacket = new BtPacket(received);
 
                 sem.release();
             }
         }
     };
 
-    private byte[] bytes;
+    private BtPacket incommingPacket;
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mNotifyBuilder;
 
@@ -141,9 +134,6 @@ public class FileSynchronizerService extends IntentService {
     }
 
     private void handleActionSynchronize(String mediaRootDirectory) {
-        ByteBuffer buffer = ByteBuffer.allocate(64);
-        buffer.put(RemoteFileServer.Codes.OP_HELLO.code);
-
         mNotifyBuilder
                 .setContentTitle("Media synchronization")
                 .setContentText("Synchronization is in progress")
@@ -153,12 +143,12 @@ public class FileSynchronizerService extends IntentService {
         mNotifyManager.notify(1, mNotifyBuilder.build());
 
         int i = 0;
-        sendData(buffer.array());
+        sendData(new BtPacket().setMessageType(RemoteFileServer.Codes.OP_HELLO).getContent());
 
         do {
             waitOnSemaphore();
 
-            mNotifyBuilder.setProgress(COUNT, i++, false);
+            mNotifyBuilder.setProgress(COUNT, ++i, false);
             mNotifyManager.notify(1, mNotifyBuilder.build());
 
             Intent intent = new Intent(ACTION_SYNCHRONIZATION);

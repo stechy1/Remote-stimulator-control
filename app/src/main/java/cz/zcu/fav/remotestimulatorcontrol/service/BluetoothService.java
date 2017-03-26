@@ -18,6 +18,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+
 public class BluetoothService extends Service {
 
     // region Constants
@@ -238,7 +240,7 @@ public class BluetoothService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("BluetoothService", "Služba spuštěna");
+        Log.d(TAG, "Služba spuštěna");
         LocalBroadcastManager.getInstance(this).registerReceiver(mStatusReceiver, new IntentFilter(ACTION_REQUEST_STATE_CHANGE));
         LocalBroadcastManager.getInstance(this).registerReceiver(mSenderReceiver, new IntentFilter(ACTION_SEND_DATA));
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -335,6 +337,7 @@ public class BluetoothService extends Service {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private final byte[] data = new byte[BtPacket.PACKET_SIZE];
 
         ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -352,19 +355,29 @@ public class BluetoothService extends Service {
 
         @Override
         public void run() {
-            byte[] buffer = new byte[1024];
+            byte[] tempBuffer = new byte[BtPacket.PACKET_SIZE];
             int count;
+            int totalSize = 0;
 
             while (true) {
                 try {
-                    Arrays.fill(buffer, (byte)0);
-                    count = mmInStream.read(buffer);
-                    Log.d(TAG, "Received: " + new String(buffer, 0, count));
+                    Arrays.fill(tempBuffer, (byte)0);
+                    count = mmInStream.read(tempBuffer);
 
-                    Intent intent = new Intent(ACTION_DATA_RECEIVED);
-                    intent.putExtra(DATA_RECEIVED_BYTES, count);
-                    intent.putExtra(DATA_RECEIVED_BUFFER, buffer);
-                    LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
+                    int freeBytes = BtPacket.PACKET_SIZE - totalSize;
+                    int byteCount = count > freeBytes ? freeBytes : count;
+
+                    System.arraycopy(tempBuffer, 0, data, totalSize, byteCount);
+                    totalSize += count;
+
+                    if (totalSize >= BtPacket.PACKET_SIZE) {
+                        Intent intent = new Intent(ACTION_DATA_RECEIVED);
+                        intent.putExtra(DATA_RECEIVED_BUFFER, Arrays.copyOf(data, data.length));
+                        LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
+                        totalSize %= BtPacket.PACKET_SIZE;
+                        // Zkopírování zbývajících dat z bufferu do hlavních dat pro příští pouití
+                        System.arraycopy(tempBuffer, count - totalSize, data, 0, totalSize);
+                    }
                 } catch (Exception e) {
                     connectionLost();
                     break;

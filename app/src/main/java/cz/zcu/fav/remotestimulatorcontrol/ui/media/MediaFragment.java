@@ -2,7 +2,12 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.media;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
@@ -18,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -75,6 +81,7 @@ public class MediaFragment extends Fragment {
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
     private MediaPlayer mediaPlayer;
+    private ProgressDialog mProgressDialog;
 
     private boolean permissionGranted = false;
     private boolean mDeleteConfirmed = true;
@@ -182,6 +189,29 @@ public class MediaFragment extends Fragment {
             // Zde opravdu nic není
         }
     };
+    private final BroadcastReceiver mFileServiceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            switch (action) {
+                case FileSynchronizerService.ACTION_SYNCHRONIZATION:
+                    if (mProgressDialog == null) {
+                        return;
+                    }
+
+                    int progress = intent.getIntExtra(FileSynchronizerService.PARAM_UPDATE_PROCESS, 0);
+                    mProgressDialog.setProgress(progress);
+                    break;
+                case FileSynchronizerService.ACTION_DONE:
+                    if (mProgressDialog == null) {
+                        return;
+                    }
+
+                    mProgressDialog.cancel();
+                    break;
+            }
+        }
+    };
 
     // endregion
 
@@ -265,6 +295,12 @@ public class MediaFragment extends Fragment {
 
         permissionGranted = checkReadExternalPermission();
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(FileSynchronizerService.ACTION_SYNCHRONIZATION);
+        filter.addAction(FileSynchronizerService.ACTION_DONE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
+                filter);
+
         return mBinding.getRoot();
     }
 
@@ -279,6 +315,12 @@ public class MediaFragment extends Fragment {
         outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, mActionMode != null);
         outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, mMediaAdapter.getSelectedItemsIndex());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mFileServiceReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -314,6 +356,27 @@ public class MediaFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_media_synchronize:
                 Log.d(TAG, "Synchronizuji");
+
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setMessage("Media synchronization");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setProgress(0);
+                mProgressDialog.setMax(FileSynchronizerService.COUNT);
+                mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "cancel sync");
+                    }
+                });
+                mProgressDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Hide", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "Hide dialog");
+                    }
+                });
+                mProgressDialog.show();
+
                 FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());
                 return true;
             default:

@@ -1,10 +1,12 @@
 package cz.zcu.fav.remotestimulatorcontrol.service;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -12,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
+import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 
@@ -24,11 +27,16 @@ public class FileSynchronizerService extends IntentService {
 
     private static final String SERVICE_NAME = "FileSynchronizerService";
 
+    public static final int COUNT = 50;
+
     private static final String ACTION_SYNCHRONIZE = "cz.zcu.fav.remotestimulatorcontrol.service.action.SYNCHRONIZE";
     private static final String ACTION_UPLOAD = "cz.zcu.fav.remotestimulatorcontrol.service.action.UPLOAD_MEDIA";
+    public static final String ACTION_SYNCHRONIZATION = "cz.zcu.fav.remotestimulatorcontrol.service.action.SYNCHRONIZATION";
+    public static final String ACTION_DONE = "cz.zcu.fav.remotestimulatorcontrol.service.action.DONE";
 
     private static final String PARAM_MEDIA_ROOT = "cz.zcu.fav.remotestimulatorcontrol.service.extra.MEDIA_ROOT";
     private static final String PARAM_MEDIA_PATH = "cz.zcu.fav.remotestimulatorcontrol.service.extra.MEDIA_PATH";
+    public static final String PARAM_UPDATE_PROCESS = "cz.zcu.fav.remotestimulatorcontrol.service.extra.UPDATE_PROCESS";
 
     private final Semaphore sem = new Semaphore(0);
 
@@ -36,7 +44,6 @@ public class FileSynchronizerService extends IntentService {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            Log.d(TAG, "Broadcast receiver neco prijal");
 
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
                 final int NO_DATA = -1;
@@ -46,15 +53,16 @@ public class FileSynchronizerService extends IntentService {
                     return;
                 }
 
-                bytes = received;
+                bytes = Arrays.copyOf(received, length);
 
-                Log.d(TAG, "Uvolnuji semafor; " + Arrays.toString(bytes));
                 sem.release();
             }
         }
     };
 
     private byte[] bytes;
+    private NotificationManager mNotifyManager;
+    private NotificationCompat.Builder mNotifyBuilder;
 
     /**
      * Vytvoří novou IntentService
@@ -81,6 +89,8 @@ public class FileSynchronizerService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
+        mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyBuilder = new NotificationCompat.Builder(this);
         LocalBroadcastManager.getInstance(this).registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
     }
 
@@ -108,23 +118,62 @@ public class FileSynchronizerService extends IntentService {
         }
     }
 
-    private void handleActionSynchronize(String mediaRootDirectory) {
-        ByteBuffer buffer = ByteBuffer.allocate(64);
-        buffer.put(RemoteFileServer.Codes.OP_HELLO.code);
-
+    /**
+     * Pošle data k odeslání do {@link BluetoothService}
+     *
+     * @param buffer Data, která se mají odeslat
+     */
+    private void sendData(byte[] buffer) {
         Intent intent = new Intent(BluetoothService.ACTION_SEND_DATA);
-        intent.putExtra(BluetoothService.DATA_CONTENT, buffer.array());
+        intent.putExtra(BluetoothService.DATA_CONTENT, buffer);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 
-        Log.d(TAG, "Zamykam semafor");
+    /**
+     * Počká na semaforu, dokud nebude uvolněn <=> příjdou nová data
+     */
+    private void waitOnSemaphore() {
         try {
             sem.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
-        Log.d(TAG, "Semafor byl uvolnen");
-        Log.d(TAG, new String(bytes));
+    private void handleActionSynchronize(String mediaRootDirectory) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        buffer.put(RemoteFileServer.Codes.OP_HELLO.code);
+
+        mNotifyBuilder
+                .setContentTitle("Media synchronization")
+                .setContentText("Synchronization is in progress")
+                .setSmallIcon(R.mipmap.launcher_icon)
+                //.add
+                .setProgress(COUNT, 0, false);
+        mNotifyManager.notify(1, mNotifyBuilder.build());
+
+        int i = 0;
+        sendData(buffer.array());
+
+        do {
+            waitOnSemaphore();
+
+            mNotifyBuilder.setProgress(COUNT, i++, false);
+            mNotifyManager.notify(1, mNotifyBuilder.build());
+
+            Intent intent = new Intent(ACTION_SYNCHRONIZATION);
+            intent.putExtra(PARAM_UPDATE_PROCESS, i);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+        } while(i != COUNT);
+
+        mNotifyBuilder
+                .setContentText("Synchronization complete")
+                .setProgress(0,0,false);
+        mNotifyManager.notify(1, mNotifyBuilder.build());
+
+        Intent intent = new Intent(ACTION_DONE);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void handleActionUpload(String filePath) {

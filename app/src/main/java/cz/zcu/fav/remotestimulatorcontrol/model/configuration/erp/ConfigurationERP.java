@@ -9,7 +9,7 @@ import java.util.List;
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketOld;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Code;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Codes;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.DataConvertor;
@@ -181,11 +181,11 @@ public class ConfigurationERP extends AConfiguration {
     }
 
     @Override
-    public List<BtPacket> getPackets() {
-        List<BtPacket> packets = new ArrayList<>();
+    public List<BtPacketOld> getPackets() {
+        List<BtPacketOld> packets = new ArrayList<>();
 
-        packets.add(new BtPacket(Codes.EDGE, DataConvertor.intTo1B(edge.ordinal())));
-        packets.add(new BtPacket(Codes.RANDOMNESS_ON, DataConvertor.intTo1B(random.ordinal()))); //TODO jak je to s tím kódem náhodnosti?
+        packets.add(new BtPacketOld(Codes.EDGE, DataConvertor.intTo1B(edge.ordinal())));
+        packets.add(new BtPacketOld(Codes.RANDOMNESS_ON, DataConvertor.intTo1B(random.ordinal()))); //TODO jak je to s tím kódem náhodnosti?
 
         Code actualDURATION = Codes.OUTPUT0_DURATION;
         Code actualPAUSE = Codes.OUTPUT0_PAUSE;
@@ -195,12 +195,12 @@ public class ConfigurationERP extends AConfiguration {
         int vystup = 0; //index výstupu, slouží pro odfiltrování jasu kvůli sdružení u LED 5 a 7
 
         for(Output output : outputList){
-            packets.add(new BtPacket(actualDURATION, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
-            packets.add(new BtPacket(actualPAUSE, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
-            packets.add(new BtPacket(actualDISTRIBUTION, DataConvertor.intTo1B(Integer.parseInt(output.distributionValue)))); //TODO u distribution parametru ještě neposíláme delay
+            packets.add(new BtPacketOld(actualDURATION, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
+            packets.add(new BtPacketOld(actualPAUSE, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
+            packets.add(new BtPacketOld(actualDISTRIBUTION, DataConvertor.intTo1B(Integer.parseInt(output.distributionValue)))); //TODO u distribution parametru ještě neposíláme delay
 
             if(vystup != 5 && vystup != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
-                packets.add(new BtPacket(actualBRIGHTNESS, DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
+                packets.add(new BtPacketOld(actualBRIGHTNESS, DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
                 actualBRIGHTNESS = actualBRIGHTNESS.next;
             }
 

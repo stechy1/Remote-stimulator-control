@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -194,14 +193,14 @@ public class MediaFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             switch (action) {
-                case FileSynchronizerService.ACTION_SYNCHRONIZATION:
-                    if (mProgressDialog == null) {
-                        return;
-                    }
-
-                    int progress = intent.getIntExtra(FileSynchronizerService.PARAM_UPDATE_PROCESS, 0);
-                    mProgressDialog.setProgress(progress);
-                    break;
+//                case FileSynchronizerService.ACTION_SYNCHRONIZATION:
+//                    if (mProgressDialog == null) {
+//                        return;
+//                    }
+//
+//                    int progress = intent.getIntExtra(FileSynchronizerService.PARAM_UPDATE_PROCESS, 0);
+//                    mProgressDialog.setProgress(progress);
+//                    break;
                 case FileSynchronizerService.ACTION_DONE:
                     if (mProgressDialog == null) {
                         return;
@@ -296,7 +295,6 @@ public class MediaFragment extends Fragment {
         permissionGranted = checkReadExternalPermission();
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(FileSynchronizerService.ACTION_SYNCHRONIZATION);
         filter.addAction(FileSynchronizerService.ACTION_DONE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
                 filter);
@@ -357,25 +355,25 @@ public class MediaFragment extends Fragment {
             case R.id.menu_media_synchronize:
                 Log.d(TAG, "Synchronizuji");
 
-                mProgressDialog = new ProgressDialog(getActivity());
-                mProgressDialog.setMessage("Media synchronization");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.setProgress(0);
-                mProgressDialog.setMax(FileSynchronizerService.COUNT);
-                mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "cancel sync");
-                    }
-                });
-                mProgressDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Hide", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Hide dialog");
-                    }
-                });
-                mProgressDialog.show();
+//                mProgressDialog = new ProgressDialog(getActivity());
+//                mProgressDialog.setMessage("Media synchronization");
+//                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//                mProgressDialog.setIndeterminate(false);
+//                mProgressDialog.setProgress(0);
+//                mProgressDialog.setMax(FileSynchronizerService.COUNT);
+//                mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Log.d(TAG, "cancel sync");
+//                    }
+//                });
+//                mProgressDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Hide", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Log.d(TAG, "Hide dialog");
+//                    }
+//                });
+//                mProgressDialog.show();
 
                 FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());
                 return true;

@@ -23,6 +23,7 @@ public class BtPacketAdvanced extends BtPacket {
     // region Variables
 
     private boolean hello = false;
+    private int dataIndex;
 
     // endregion
 
@@ -33,6 +34,7 @@ public class BtPacketAdvanced extends BtPacket {
      */
     public BtPacketAdvanced() {
         super();
+        setHello(false);
     }
 
     /**
@@ -53,6 +55,7 @@ public class BtPacketAdvanced extends BtPacket {
      */
     public BtPacketAdvanced(byte[] buffer) {
         super(buffer);
+        setHello(false);
     }
 
     /**
@@ -64,6 +67,7 @@ public class BtPacketAdvanced extends BtPacket {
      */
     public BtPacketAdvanced(byte[] buffer, int length) {
         super(buffer, length);
+        setHello(false);
     }
 
     // endregion
@@ -101,6 +105,29 @@ public class BtPacketAdvanced extends BtPacket {
      */
     public boolean hasCommand(byte command) {
         return ((content[INDEX_COMMAND]) &  command) ==  command;
+    }
+
+    /**
+     * Vloží do packetu data na správné místo
+     *
+     * @param data Data, která se mají vložit
+     * @return Počet bytů, které zbývají volné
+     *         Pokud bude počet záporný, tak to znamená,
+     *         že takový počet bytů se nevešel do aktuálního packetu a je potřeba to poslat
+     *         na dvakrát
+     */
+    public int insertData(byte[] data) {
+        int remaining = getMaxDataSize() - data.length;
+        System.arraycopy(data, 0, content, dataIndex,
+                (remaining > 0)
+                        ? data.length
+                        : data.length + remaining); // Pokud chci poslat více dat, než můžu, musím je osekat
+
+        if (remaining > 0) {
+            dataIndex += data.length;
+        }
+
+        return remaining;
     }
 
     // endregion
@@ -191,6 +218,9 @@ public class BtPacketAdvanced extends BtPacket {
 
         if (hello) {
             content[INDEX_HELLO_VERSION] = RemoteFileServer.PROTOCOL_VERSION;
+            dataIndex = INDEX_HELLO_DATA;
+        } else {
+            dataIndex = INDEX_DATA;
         }
 
         return this;

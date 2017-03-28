@@ -35,8 +35,8 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/nav_text_settings"
-            android:theme="@style/AppTheme.ActionBar"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.ActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -120,6 +120,7 @@
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
         <service android:name=".service.FileSynchronizerService" />
+        <service android:name=".service.FileLsService" />
     </application>
 
 </manifest>

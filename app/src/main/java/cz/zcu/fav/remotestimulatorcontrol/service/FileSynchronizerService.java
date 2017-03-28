@@ -1,64 +1,47 @@
 package cz.zcu.fav.remotestimulatorcontrol.service;
 
-import android.app.IntentService;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.concurrent.Semaphore;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
-
 /**
- * Service sloužící ke komunikaci se vzdáleným souborovým serverem
+ * Service sloužící k synchronizaci souborů se vzdáleným souborovým serverem
  */
-public class FileSynchronizerService extends IntentService {
+public class FileSynchronizerService extends RemoteServerIntentService {
+
+    // region Constants
 
     private static final String TAG = "FileSyncService";
 
-    private static final String SERVICE_NAME = "FileSynchronizerService";
+    public static final String SERVICE_NAME = "FileSynchronizerService";
 
-    public static final int COUNT = 10;
-
-    private static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";
-    private static final String PARAM_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.extra.";
+    private static final String FILE_MASK = "*.jpg;*.gif;*.png";
+    private static final String DEFAUT_REMOTE_DIRECTORY = "~/";
 
     private static final String ACTION_SYNCHRONIZE = ACTION_PREFIX + "SYNCHRONIZE";
-    private static final String ACTION_UPLOAD = ACTION_PREFIX + "UPLOAD_MEDIA";
-    public static final String ACTION_SYNCHRONIZATION = ACTION_PREFIX + "SYNCHRONIZATION";
-    public static final String ACTION_LS = ACTION_PREFIX + "LS";
+
     public static final String ACTION_DONE = ACTION_PREFIX + "DONE";
 
     private static final String PARAM_MEDIA_ROOT = PARAM_PREFIX + "MEDIA_ROOT";
     private static final String PARAM_MEDIA_PATH = PARAM_PREFIX + "MEDIA_PATH";
-    public static final String PARAM_UPDATE_PROCESS = PARAM_PREFIX + "UPDATE_PROCESS";
     private static final String PARAM_REMOTE_FOLDER = PARAM_PREFIX + "REMOTE_FOLDER";
+    public static final String PARAM_UPDATE_PROCESS = PARAM_PREFIX + "UPDATE_PROCESS";
 
-    private final Semaphore sem = new Semaphore(0);
+    // endregion
 
-    private final BroadcastReceiver mDataReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
+    // region Variables
 
-            if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
-                byte[] received = intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT);
+    private final Semaphore serviceLock = new Semaphore(0);
 
-                incommingPacket = new BtPacket(received);
-
-                sem.release();
-            }
-        }
-    };
-
-    private BtPacket incommingPacket;
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mNotifyBuilder;
+
+    // endregion
+
+    // region Constructors
 
     /**
      * Vytvoří novou IntentService
@@ -67,6 +50,16 @@ public class FileSynchronizerService extends IntentService {
         super(SERVICE_NAME);
     }
 
+    // endregion
+
+    // region Public static methods
+
+    /**
+     * Spustí intent zodpovědný za synchronizaci souborů
+     *
+     * @param context {@link Context}
+     * @param mediaRootDirectory Lokální adresář, který se má synchronizovat se vzdáleným
+     */
     public static void startActionSynchronize(Context context, String mediaRootDirectory) {
         Intent intent = new Intent(context, FileSynchronizerService.class);
         intent.setAction(ACTION_SYNCHRONIZE);
@@ -74,73 +67,27 @@ public class FileSynchronizerService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionUpload(Context context, AMedia media) {
-        Intent intent = new Intent(context, FileSynchronizerService.class);
-        intent.setAction(ACTION_SYNCHRONIZE);
-        intent.putExtra(PARAM_MEDIA_PATH, media.getMediaFile().getAbsolutePath());
-        context.startService(intent);
-    }
+    // endregion
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-//        mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        mNotifyBuilder = new NotificationCompat.Builder(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
-    }
-
-    @Override
-    public void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDataReceiver);
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent == null) {
-            return;
-        }
-        final String action = intent.getAction();
-        switch (action) {
-            case ACTION_SYNCHRONIZE:
-                String mediaRootDirectory = intent.getStringExtra(PARAM_MEDIA_ROOT);
-                handleActionSynchronize(mediaRootDirectory);
-                break;
-            case ACTION_LS:
-                String remoteFolder = intent.getStringExtra(PARAM_REMOTE_FOLDER);
-                handleActionLs(remoteFolder);
-                break;
-            case ACTION_UPLOAD:
-                String filePath = intent.getStringExtra(PARAM_MEDIA_PATH);
-                handleActionUpload(filePath);
-                break;
-        }
-    }
-
-    /**
-     * Pošle data k odeslání do {@link BluetoothService}
-     *
-     * @param packet Packet, který se má odeslat
-     */
-    private void sendData(BtPacket packet) {
-        BluetoothService.sendData(this, packet);
-    }
-
-    /**
-     * Počká na semaforu, dokud nebude uvolněn <=> příjdou nová data
-     */
-    private void waitOnSemaphore() {
+    // region Private methods
+    private void lockService() {
         try {
-            sem.acquire();
+            serviceLock.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+    // region Handle methods
+
     private void handleActionSynchronize(String mediaRootDirectory) {
 
+        unregisterReceiverInternal();
+        FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK);
 
+        lockService();
+
+        registerReceiverInternal();
 
 //        mNotifyBuilder
 //                .setContentTitle("Media synchronization")
@@ -173,18 +120,35 @@ public class FileSynchronizerService extends IntentService {
 //        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private void handleActionUpload(String filePath) {
+    // endregion
 
+    // endregion
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+        final String action = intent.getAction();
+        switch (action) {
+            case ACTION_SYNCHRONIZE:
+                String mediaRootDirectory = intent.getStringExtra(PARAM_MEDIA_ROOT);
+                handleActionSynchronize(mediaRootDirectory);
+                break;
+        }
     }
 
-    /**
-     * Zde se získá obsah vzdáleného adresáře
-     *
-     * @param remoteFolder Cesta ke vzdálenému adresáři
-     */
-    private void handleActionLs(String remoteFolder) {
+    @Override
+    protected void onSubServiceDone(Intent intent) {
+        String destService = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
+        if (!destService.equals(SERVICE_NAME)) {
+            return;
+        }
 
-
-
+        serviceLock.release();
     }
+
+
+
+    // endregion
 }

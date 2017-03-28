@@ -400,7 +400,7 @@ public class BluetoothService extends Service {
                     Arrays.fill(tempBuffer, (byte)0);
                     count = mmInStream.read(tempBuffer);
 
-                    Log.d(TAG, "Received: " + count + " bytes");
+                    Log.d(TAG, "Received: " + count + " bytes; " + Arrays.toString(tempBuffer));
 
                     int freeBytes = BtPacket.PACKET_SIZE - totalSize;
                     int byteCount = count > freeBytes ? freeBytes : count;
@@ -409,12 +409,17 @@ public class BluetoothService extends Service {
                     totalSize += count;
 
                     if (totalSize >= BtPacket.PACKET_SIZE) {
+
+                        Log.d(TAG, "Vytvářím nový packet: " + Arrays.toString(data));
                         Intent intent = new Intent(ACTION_DATA_RECEIVED);
                         intent.putExtra(EXTRA_DATA_CONTENT, Arrays.copyOf(data, data.length));
                         LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
                         totalSize %= BtPacket.PACKET_SIZE;
-                        // Zkopírování zbývajících dat z bufferu do hlavních dat pro příští pouití
+                        Log.d(TAG, "Bylo přijato navíc: " + totalSize + " bytů");
+                        // Zkopírování zbývajících dat z bufferu do hlavních dat pro příští použití
+                        Arrays.fill(data, totalSize, data.length, (byte) 0);
                         System.arraycopy(tempBuffer, count - totalSize, data, 0, totalSize);
+                        Log.d(TAG, "Zbyvajici data byla prenesena do noveho kola. " + Arrays.toString(data));
                     }
                 } catch (Exception e) {
                     connectionLost();

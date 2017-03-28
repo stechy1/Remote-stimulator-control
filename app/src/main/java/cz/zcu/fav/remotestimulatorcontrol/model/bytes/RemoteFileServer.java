@@ -2,13 +2,13 @@ package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
 
 import android.os.Build;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_DATA;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.LS_FLAG_NO_DIRS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_LS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_CONTINUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PREFIX;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
 
 /**
@@ -24,6 +24,11 @@ public final class RemoteFileServer {
         throw new AssertionError();
     }
 
+    /**
+     * Vrátí packet, s parametry, aby prošel před stimulátor rovnou do vzdáleného serveru
+     *
+     * @return {@link BtPacketAdvanced} Packet v základní konfiguraci pro vzdálený server
+     */
     public static BtPacketAdvanced getServerPacket() {
         return (BtPacketAdvanced) new BtPacketAdvanced().setHeader(Codes.FULL_LENGTH_MESSAGE).setMessageType(Codes.COMMUNICATION_OP_CODE);
     }
@@ -41,7 +46,7 @@ public final class RemoteFileServer {
 
         packet.content[INDEX_HELLO_VERSION] = PROTOCOL_VERSION;
         String name = Build.MANUFACTURER + Build.MODEL;
-        System.arraycopy(name.getBytes(), 0, packet.content, INDEX_HELLO_DATA - PREFIX, name.length());
+        packet.insertData(name.getBytes());
 
         return packet;
     }
@@ -55,6 +60,17 @@ public final class RemoteFileServer {
         return getServerPacket()
                 .setCommand((byte) (TYPE_REQUEST + OP_BYE + PART_CONTINUE))
                 .setIteration((byte) 0);
+    }
+
+    public static BtPacketAdvanced getLsPacket() {
+        BtPacketAdvanced packet = getServerPacket()
+                .setCommand((byte) (TYPE_REQUEST + OP_LS + PART_LAST));
+
+        // Nastavení příznaku, že nebudu brát v potaz složky
+        //packet.content[INDEX_DATA] = LS_FLAG_NO_DIRS;
+        packet.insertData(new byte[] {LS_FLAG_NO_DIRS});
+
+        return packet;
     }
 
     public static class Codes {

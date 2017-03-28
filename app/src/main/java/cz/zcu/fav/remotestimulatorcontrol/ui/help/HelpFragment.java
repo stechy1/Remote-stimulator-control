@@ -92,9 +92,7 @@ public class HelpFragment extends Fragment {
         System.arraycopy(s.getBytes(), 0, data, INDEX_HELLO_DATA - PREFIX, s.length());
         packet.setData(data);
 
-        Intent intent = new Intent(BluetoothService.ACTION_SEND_DATA);
-        intent.putExtra(BluetoothService.EXTRA_DATA_CONTENT, packet.getContent());
-        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+        BluetoothService.sendData(getActivity(), packet);
     }
 
 }

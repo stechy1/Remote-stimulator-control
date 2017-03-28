@@ -29,6 +29,7 @@ public class BluetoothService extends Service {
     private static final String TAG = "BluetoothService";
     private static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";
     private static final String EXTRA_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.extra";
+    private static final String PARAM_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.PARAM";
 
 
     // Akce service
@@ -45,10 +46,14 @@ public class BluetoothService extends Service {
     public static final String EXTRA_DEVICE_MAC = EXTRA_PREFIX + "EXTRA_DEVICE_MAC";
     public static final String EXTRA_STATE_CHANGE = EXTRA_PREFIX + "EXTRA_STATE_CHANGE";
     public static final String EXTRA_REQUEST_STATE = EXTRA_PREFIX + "EXTRA_REQUEST_STATE";
-    public static final String EXTRA_STATE_OFF = EXTRA_PREFIX + "EXTRA_STATE_OFF";
-    public static final String EXTRA_STATE_ON = EXTRA_PREFIX + "EXTRA_STATE_ON";
     public static final String EXTRA_DEVICE = EXTRA_PREFIX + "EXTRA_DEVICE";
     public static final String EXTRA_DATA_CONTENT = EXTRA_PREFIX + "EXTRA_DATA_CONTENT";
+
+    public enum RequestState {
+        STATE_ON, STATE_OFF
+    }
+//    public static final String PARAM_STATE_OFF = PARAM_PREFIX + "PARAM_STATE_OFF";
+//    public static final String PARAM_STATE_ON = PARAM_PREFIX + "PARAM_STATE_ON";
 
     // Stav připojení zařízení
     // Výchozí stav
@@ -70,13 +75,16 @@ public class BluetoothService extends Service {
             final String action = intent.getAction();
 
             if (action.equals(ACTION_REQUEST_STATE_CHANGE)) {
-                final String state = intent.getStringExtra(EXTRA_REQUEST_STATE);
-                if (state.equals(EXTRA_STATE_OFF)) {
-                    Log.d(TAG, "Odpojuji zařízení");
-                    stop();
-                } else if (state.equals(EXTRA_STATE_ON)) {
+                final RequestState state = (RequestState) intent.getSerializableExtra(EXTRA_REQUEST_STATE);
+                switch (state) {
+                    case STATE_ON:
                     Log.d(TAG, "Připojuji se k zařízení");
                     connectToDevice((BluetoothDevice) intent.getParcelableExtra(EXTRA_DEVICE));
+                        break;
+                    case STATE_OFF:
+                    Log.d(TAG, "Odpojuji zařízení");
+                    stop();
+                        break;
                 }
             }
         }
@@ -114,6 +122,19 @@ public class BluetoothService extends Service {
     public static void sendData(Context context, BtPacket packet) {
         Intent intent = new Intent(ACTION_SEND_DATA);
         intent.putExtra(EXTRA_DATA_CONTENT, packet.getContent());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void changeState(Context context, RequestState requestState) {
+        changeState(context, requestState, null);
+    }
+
+    public static void changeState(Context context, RequestState requestState, BluetoothDevice device) {
+        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
+        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, requestState);
+        if (device != null) {
+            intent.putExtra(EXTRA_DEVICE, device);
+        }
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
     // endregion

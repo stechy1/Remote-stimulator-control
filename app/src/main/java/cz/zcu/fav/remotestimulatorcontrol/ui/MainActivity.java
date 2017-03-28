@@ -291,10 +291,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.d(TAG, "Pokus o připojení k bluetooth zařízení");
                         String mac = data.getStringExtra(BluetoothService.EXTRA_DEVICE_MAC);
                         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
-                        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, BluetoothService.EXTRA_STATE_ON);
-                        intent.putExtra(BluetoothService.EXTRA_DEVICE, device);
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                        BluetoothService.changeState(this, BluetoothService.RequestState.STATE_ON, device);
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Nastala neočekávaná vyjímka při připojování k bluetooth zařízení", e);
@@ -366,9 +363,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     case BluetoothService.STATE_CONNECTED:
                         BluetoothService.sendData(this, RemoteFileServer.getByePacket());
-                        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, BluetoothService.EXTRA_STATE_OFF);
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                        BluetoothService.changeState(this, BluetoothService.RequestState.STATE_OFF);
                         break;
                 }
                 return true;

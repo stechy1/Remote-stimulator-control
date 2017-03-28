@@ -77,6 +77,28 @@ public class FileLsService extends RemoteServerIntentService {
         packet.insertData(new byte[] {(byte) 0});
         sendData(packet);
 
+        waitOnSemaphore();
+
+        byte[] firstData = incommingPacket.getData();
+        if (!incommingPacket.isResponse(RemoteFileServer.Codes.RESPONSE_OK)) {
+            Log.e(TAG, "Příkaz LS selhal");
+            sendEchoDone(new Intent(), FileSynchronizerService.SERVICE_NAME);
+        }
+        // Odtud získám počet packetů
+        int size = 0;
+        size |= firstData[1] << 24;
+        size |= firstData[2] << 16;
+        size |= firstData[3] << 8;
+        size |= firstData[4];
+        Log.d(TAG, "Index2: " + firstData[1] + "Index2: " + firstData[2] + "Index3: " + firstData[3] + "Index4: " + firstData[4]);
+        Log.d(TAG, "Velikost: " + size + "; Pocet packetů: " + size / 60.0);
+
+        byte[] hash = new byte[16];
+        System.arraycopy(firstData, 0, hash, 0, hash.length);
+
+        int count = (int) Math.round(Math.ceil(size / 60.0));
+        Log.d(TAG, "Finalni pocet packetu: " + count);
+
         int i = 0;
 
         do {
@@ -87,9 +109,10 @@ public class FileLsService extends RemoteServerIntentService {
             Log.d(TAG, Arrays.toString(data));
             Log.d(TAG, "IsLastPart: " + incommingPacket.hasCommand(RemoteFileServer.Codes.PART_LAST));
             i++;
-        } while(i < 2);//while (!incommingPacket.hasCommand(RemoteFileServer.Codes.PART_LAST));
+        } while(i < count);
 
         Log.d(TAG, Arrays.toString(bytes.toArray()));
+
 
 
         Intent intent = new Intent();

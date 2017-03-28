@@ -130,6 +130,16 @@ public class BtPacketAdvanced extends BtPacket {
         return remaining;
     }
 
+    /**
+     * Zjistí, zda-li packet obsahuje testovanou odpověd
+     *
+     * @param response Testovaný typ odpovědi
+     * @return True, pokud daný typ obsahuje, jinak false
+     */
+    public boolean isResponse(byte response) {
+        return ((content[INDEX_DATA]) &  response) ==  response;
+    }
+
     // endregion
 
     // region Getters & Setters

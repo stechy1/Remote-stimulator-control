@@ -41,7 +41,7 @@ public class DeviceListActivity extends Activity {
             String address = info.substring(info.length() - 17);
 
             Intent intent = new Intent();
-            intent.putExtra(BluetoothService.DEVICE_MAC, address);
+            intent.putExtra(BluetoothService.EXTRA_DEVICE_MAC, address);
 
             setResult(Activity.RESULT_OK, intent);
             finish();

@@ -31,6 +31,8 @@ import java.util.Map;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.about.AboutFragment;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationSharedPreferences;
@@ -74,26 +76,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CharSequence mTitle;
     private int mBluetoothServiceStatus;
     private int mFragmentId;
-    // BroadcastReceiver pro nastavení názvu zařízení
-    private final BroadcastReceiver mBluetoothDeviceNameReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothService.ACTION_DEVICE_NAME)) {
-                mConnectedDeviceName = intent.getStringExtra(BluetoothService.DEVICE_NAME);
-            }
-        }
-    };
     // BroadcastReceiver pro reakci na změnu stavu připojení k zařízení
     private final BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if (action.equals(BluetoothService.ACTION_STATE_CHANGE)) {
-                final int state = intent.getIntExtra(BluetoothService.STATE_CHANGE, BluetoothService.STATE_NONE);
-                setBluetoothStatusIcon(state);
+            switch (action) {
+                case BluetoothService.ACTION_STATE_CHANGE:
+                    final int state = intent.getIntExtra(BluetoothService.EXTRA_STATE_CHANGE, BluetoothService.STATE_NONE);
+                    setBluetoothStatusIcon(state);
+                    if (state == BluetoothService.STATE_CONNECTED) {
+                        BluetoothService.sendData(MainActivity.this, RemoteFileServer.getHelloPacket());
+                    }
+                    break;
+                case BluetoothService.ACTION_DEVICE_NAME:
+                    mConnectedDeviceName = intent.getStringExtra(BluetoothService.EXTRA_DEVICE_NAME);
+                    break;
+                case BluetoothService.ACTION_DATA_RECEIVED:
+                    BtPacketAdvanced packet = new BtPacketAdvanced(intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT));
+                    if (packet.hasCommand(RemoteFileServer.Codes.OP_HELLO)) {
+                        Toast.makeText(MainActivity.this, new String(packet.getData(), 0, packet.getMaxDataSize()), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
         }
     };
@@ -257,8 +262,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setTitle(title);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothDeviceNameReceiver, new IntentFilter(BluetoothService.ACTION_DEVICE_NAME));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, new IntentFilter(BluetoothService.ACTION_STATE_CHANGE));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothService.ACTION_DEVICE_NAME);
+        filter.addAction(BluetoothService.ACTION_STATE_CHANGE);
+        filter.addAction(BluetoothService.ACTION_DATA_RECEIVED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, filter);
 
         mBinding.navView.setCheckedItem(mFragmentId);
     }
@@ -281,11 +289,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (resultCode == RESULT_OK) {
                     try {
                         Log.d(TAG, "Pokus o připojení k bluetooth zařízení");
-                        String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
+                        String mac = data.getStringExtra(BluetoothService.EXTRA_DEVICE_MAC);
                         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
                         Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_ON);
-                        intent.putExtra(BluetoothService.DEVICE, device);
+                        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, BluetoothService.EXTRA_STATE_ON);
+                        intent.putExtra(BluetoothService.EXTRA_DEVICE, device);
                         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
@@ -316,7 +324,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBluetoothDeviceNameReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBluetoothStateReceiver);
         super.onDestroy();
     }
@@ -358,8 +365,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
                         break;
                     case BluetoothService.STATE_CONNECTED:
+                        BluetoothService.sendData(this, RemoteFileServer.getByePacket());
                         Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_OFF);
+                        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, BluetoothService.EXTRA_STATE_OFF);
                         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         break;
                 }

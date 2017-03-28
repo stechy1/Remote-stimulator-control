@@ -13,8 +13,9 @@ import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
+
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
 
 /**
  * Service sloužící ke komunikaci se vzdáleným souborovým serverem
@@ -44,7 +45,7 @@ public class FileSynchronizerService extends IntentService {
             final String action = intent.getAction();
 
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
-                byte[] received = intent.getByteArrayExtra(BluetoothService.DATA_RECEIVED_BUFFER);
+                byte[] received = intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT);
 
                 incommingPacket = new BtPacket(received);
 
@@ -118,7 +119,7 @@ public class FileSynchronizerService extends IntentService {
      */
     private void sendData(byte[] buffer) {
         Intent intent = new Intent(BluetoothService.ACTION_SEND_DATA);
-        intent.putExtra(BluetoothService.DATA_CONTENT, buffer);
+        intent.putExtra(BluetoothService.EXTRA_DATA_CONTENT, buffer);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -143,7 +144,8 @@ public class FileSynchronizerService extends IntentService {
         mNotifyManager.notify(1, mNotifyBuilder.build());
 
         int i = 0;
-        sendData(new BtPacket().setMessageType(RemoteFileServer.Codes.OP_HELLO).getContent());
+
+        sendData(new BtPacket().setMessageType(OP_HELLO).getContent());
 
         do {
             waitOnSemaphore();

@@ -1,9 +1,9 @@
 package cz.zcu.fav.remotestimulatorcontrol.util;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
@@ -16,14 +16,14 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 
 /**
  * @version 2009-07-03
@@ -242,6 +242,7 @@ public class FileUtils {
      * @see #getFile(Context, Uri)
      * @author paulburke
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
 
         if (DEBUG)
@@ -480,6 +481,30 @@ public class FileUtils {
                 os.close();
             }
         }
+    }
+
+    public static byte[] md5(final byte[] bytes) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
+            digest.update(bytes);
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString().getBytes();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return new byte[16];
     }
 
 }

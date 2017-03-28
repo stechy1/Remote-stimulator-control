@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +19,18 @@ import android.view.ViewGroup;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentHelpBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
+
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_COMMAND;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_DATA;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_ITER;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PREFIX;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
 
 public class HelpFragment extends Fragment {
 
@@ -29,13 +42,12 @@ public class HelpFragment extends Fragment {
             final String action = intent.getAction();
 
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
-                int length = intent.getIntExtra(BluetoothService.DATA_RECEIVED_BYTES, -1);
-                byte[] bytes = intent.getByteArrayExtra(BluetoothService.DATA_RECEIVED_BUFFER);
-                if (length == -1) {
-                    return;
-                }
+                byte[] bytes = intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT);
 
-                mBinding.textView2.setText(new String(bytes, 0, length));
+                BtPacket packet = new BtPacket(bytes);
+                Log.d("fjsdlkfasd", "Neco jsem dostal");
+
+                mBinding.textView2.setText(new String(bytes, 0, bytes.length));
             }
         }
     };
@@ -71,10 +83,18 @@ public class HelpFragment extends Fragment {
     }
 
     public void onSend(View view) {
-        String text = mBinding.editText1.getText().toString();
+        BtPacket packet = RemoteFileServer.getServerPacket();
+        byte[] data = new byte[62];
+        data[INDEX_COMMAND - PREFIX] = TYPE_REQUEST + PART_LAST + OP_HELLO;
+        data[INDEX_ITER - PREFIX] = 0;
+        data[INDEX_HELLO_VERSION - PREFIX] = 0; // Verze protokolu
+        String s = Build.MANUFACTURER + Build.MODEL;
+        System.arraycopy(s.getBytes(), 0, data, INDEX_HELLO_DATA - PREFIX, s.length());
+        packet.setData(data);
+
         Intent intent = new Intent(BluetoothService.ACTION_SEND_DATA);
-        intent.putExtra(BluetoothService.DATA_CONTENT, text.getBytes());
-        getActivity().sendBroadcast(intent);
+        intent.putExtra(BluetoothService.EXTRA_DATA_CONTENT, packet.getContent());
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
     }
 
 }

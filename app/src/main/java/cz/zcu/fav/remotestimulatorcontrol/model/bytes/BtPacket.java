@@ -30,7 +30,7 @@ public class BtPacket {
     // region Variables
 
     // Obsah celého packetu
-    private final byte[] content;
+    protected final byte[] content;
     // Délka samotných dat v packetu
     private int dataLength;
 
@@ -209,13 +209,12 @@ public class BtPacket {
      * @return {@link BtPacket} pro flow interface
      */
     public BtPacket setData(byte[] data) {
-        if (data.length > PACKET_SIZE - HEADER_AND_MESSAGE_TYPE_SIZE) {
+        int dataLength = data.length;
+        if (dataLength > PACKET_SIZE - HEADER_AND_MESSAGE_TYPE_SIZE) {
             throw new IllegalArgumentException("Velikost dat je příliš velká");
         }
 
-        int dataLength = data.length;
-        Arrays.fill(content, (byte) 0);
-        System.arraycopy(data, 0, content, HEADER_AND_MESSAGE_TYPE_SIZE - 1, dataLength);
+        System.arraycopy(data, 0, content, HEADER_AND_MESSAGE_TYPE_SIZE, dataLength);
         setDataLength(dataLength);
 
         return this;

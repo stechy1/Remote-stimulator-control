@@ -1,16 +1,80 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
 
+import android.os.Build;
+
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_DATA;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_CONTINUE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PREFIX;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
+
 /**
  * Pomocná knihovní třída obsahující všechny kódové značky, které jsou potřebné pro komunikaci
  * se respbery PI, kvůlí vzdálenému souborovému systému
  */
 public final class RemoteFileServer {
 
+    // Verze přenosového protokolu pouze pro souborov systém
+    public static final byte PROTOCOL_VERSION = (byte) 0x00;
+
     private RemoteFileServer() {
         throw new AssertionError();
     }
 
+    public static BtPacketAdvanced getServerPacket() {
+        return (BtPacketAdvanced) new BtPacketAdvanced().setHeader(Codes.FULL_LENGTH_MESSAGE).setMessageType(Codes.COMMUNICATION_OP_CODE);
+    }
+
+    /**
+     * Vytvoří hello packet, kterým se aplikace představí vzdálenému serveru
+     *
+     * @return {@link BtPacketAdvanced} packet obsahující hello zprávu
+     */
+    public static BtPacketAdvanced getHelloPacket() {
+        BtPacketAdvanced packet = getServerPacket()
+                .setHello(true)
+                .setCommand((byte) (TYPE_REQUEST + PART_LAST + OP_HELLO))
+                .setIteration((byte) 0);
+
+        packet.content[INDEX_HELLO_VERSION] = PROTOCOL_VERSION;
+        String name = Build.MANUFACTURER + Build.MODEL;
+        System.arraycopy(name.getBytes(), 0, packet.content, INDEX_HELLO_DATA - PREFIX, name.length());
+
+        return packet;
+    }
+
+    /**
+     * Vrátí packet, který obsahuje zprávu na rozloučení se se serverem
+     *
+     * @return {@link BtPacketAdvanced} Packet obsahující rozlučkovou zprávu
+     */
+    public static BtPacketAdvanced getByePacket() {
+        return getServerPacket()
+                .setCommand((byte) (TYPE_REQUEST + OP_BYE + PART_CONTINUE))
+                .setIteration((byte) 0);
+    }
+
     public static class Codes {
+
+        // v protokolu znamena 62 znaku dlouhou zpravu
+        public static final byte FULL_LENGTH_MESSAGE = (byte) 0x3E;
+        // v protokolu definovan jako posledni z bloku reserved
+        public static final byte COMMUNICATION_OP_CODE = (byte) 0xBF; // TODO v budoucnu zmenit na jinou
+
+        public static final int TRASFER_DATA_SIZE = 60;
+        // pri prijeti nevidim prvni dva byte musim je tedy odecist
+        public static final int PREFIX = 2;
+        // indexy bytu
+        public static final int INDEX_COMMAND = 2;
+        public static final int INDEX_ITER = 3;
+        public static final int INDEX_HELLO_VERSION = 4;
+        public static final int INDEX_RESPONSE = 4;
+        public static final int INDEX_HELLO_DATA = 5; // Pouze pro hello command
+        public static final int INDEX_DATA = 4; // Pro všechny ostatní data
+
         public static final byte SECTION_TYPE = (byte) 0xC0;
         // to co posila klient serveru
         public static final byte TYPE_REQUEST = (byte) 0x00;
@@ -66,6 +130,7 @@ public final class RemoteFileServer {
         public static final byte RESPONSE_GET_FILE_NOT_FOUND = (byte) 0x06;
 
         // LS flagy
+        public static final byte LS_FLAG_NO_DIRS = (byte) 0x00;
         public static final byte LS_FLAG_DIRS = (byte) 0x01;
     }
 }

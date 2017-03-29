@@ -82,12 +82,10 @@ public class FileSynchronizerService extends RemoteServerIntentService {
 
     private void handleActionSynchronize(String mediaRootDirectory) {
 
-        unregisterReceiverInternal();
-        FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK);
+        FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
 
         lockService();
 
-        registerReceiverInternal();
 
 //        mNotifyBuilder
 //                .setContentTitle("Media synchronization")

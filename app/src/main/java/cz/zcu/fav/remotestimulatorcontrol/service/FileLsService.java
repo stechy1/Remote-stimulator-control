@@ -12,6 +12,7 @@ import java.util.List;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 
 
 /**
@@ -52,13 +53,18 @@ public class FileLsService extends RemoteServerIntentService {
      * Spustí intent pro získání obsahu vzdáleného adresáře
      *
      * @param context {@link Context}
+     * @param remoteFolder Název vzdáleného adresáře
+     * @param fileMask Maska souborů, které se mají načítat
+     * @param callbackServiceName Název služby/aktivity, která má zaregistrovaný {@link android.content.BroadcastReceiver}
+     *                            pomocí něhož dokáe zareagovat na odpověď
      */
-    public static void startActionLs(Context context, String remoteFolder, String fileMask) {
+    public static void startActionLs(Context context, String remoteFolder, String fileMask, String callbackServiceName) {
         Intent intent = new Intent(context, FileLsService.class);
         intent.setAction(ACTION_LS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(PARAM_REMOTE_FOLDER, remoteFolder);
         intent.putExtra(PARAM_FILE_MASK, fileMask);
+        intent.putExtra(PARAM_ECHO_SERVICE_NAME, callbackServiceName);
         context.startService(intent);
     }
     // endregion
@@ -85,16 +91,12 @@ public class FileLsService extends RemoteServerIntentService {
         byte[] firstData = incommingPacket.getData();
         if (!incommingPacket.isResponse(RemoteFileServer.Codes.RESPONSE_OK)) {
             Log.e(TAG, "Příkaz LS selhal");
-            sendEchoDone(new Intent(), FileSynchronizerService.SERVICE_NAME);
+            sendEchoDone(new Intent());
         }
         // Odtud získám počet packetů
-        int size = 0;
-        size |= firstData[1] << 24;
-        size |= firstData[2] << 16;
-        size |= firstData[3] << 8;
-        size |= firstData[4];
+        int size = BitUtils.intFromBytes(firstData, 1);
 
-        byte[] hash = new byte[16];
+        byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
 
         int count = (int) Math.round(Math.ceil(size / 60.0));
@@ -112,33 +114,36 @@ public class FileLsService extends RemoteServerIntentService {
 
         byte[] totalBytes = new byte[BtPacket.PACKET_SIZE * bytes.size()];
         final int totalBytesLength = totalBytes.length;
-        int index = 0;
-        for (byte[] aByte : bytes) {
-            System.arraycopy(aByte, 0, totalBytes, index, aByte.length);
-            index += aByte.length;
+        {
+            int index = 0;
+            for (byte[] aByte : bytes) {
+                System.arraycopy(aByte, 0, totalBytes, index, aByte.length);
+                index += aByte.length;
+            }
         }
 
-        index = 2;
+        int index = 2;
         int fileCount = 0;
-        fileCount |= totalBytes[0] << 8;
-        fileCount |= totalBytes[1];
+        fileCount |= ((totalBytes[0] << 8) & 0xFF00);
+        fileCount |= ((totalBytes[1]) & 0xFF);
 
+        // Složení dat v bytech [4:FileSize][16:Hash][FileName][0]
         final ArrayList<RemoteFileEntry> entries = new ArrayList<>(fileCount);
         for (int i = 0; i < fileCount; i++) {
             if (index >= totalBytesLength) {
                 break;
             }
-            int fileSize = 0;
-            fileSize |= ((totalBytes[index + 0] << 24) & 0xFF000000);
-            fileSize |= ((totalBytes[index + 1] << 16) & 0xFF0000);
-            fileSize |= ((totalBytes[index + 2] << 8) & 0xFF00);
-            fileSize |= (totalBytes[index + 3] & 0xFF);
-            index += 4;
 
-            byte[] fileHashBytes = new byte[16];
+            // Získání velikosti souboru
+            int fileSize = BitUtils.intFromBytes(totalBytes, index);
+            index += 4; // Posun indexu o 4, protože int má 4 byty
+
+            // Načtení hashe souboru
+            byte[] fileHashBytes = new byte[RemoteFileServer.HASH_SIZE];
             System.arraycopy(totalBytes, index, fileHashBytes, 0, fileHashBytes.length);
             String fileHash = new String(fileHashBytes);
-            index += 16;
+            index += RemoteFileServer.HASH_SIZE;
+            // Načtení názvu souboru
             StringBuilder sb = new StringBuilder();
             while (true) {
                 if (index >= totalBytesLength) {
@@ -158,8 +163,7 @@ public class FileLsService extends RemoteServerIntentService {
 
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra(PARAM_REMOTE_ENTRY_LIST, entries);
-        sendEchoDone(intent, FileSynchronizerService.SERVICE_NAME);
-
+        sendEchoDone(intent);
     }
 
     // endregion
@@ -177,6 +181,7 @@ public class FileLsService extends RemoteServerIntentService {
         if (action.equals(ACTION_LS)) {
             String remoteFolder = intent.getStringExtra(PARAM_REMOTE_FOLDER);
             String fileMask = intent.getStringExtra(PARAM_FILE_MASK);
+            callbackName = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
             handleActionLs(remoteFolder, fileMask);
         }
     }

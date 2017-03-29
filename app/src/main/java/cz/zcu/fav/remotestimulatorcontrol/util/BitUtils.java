@@ -51,4 +51,21 @@ public final class BitUtils {
     public static int clearBit(int original, int value) {
         return setBit(original, value, false);
     }
+
+    /**
+     * Vyparsuje z bytového pole integer na základě offsetu
+     *
+     * @param src Pole bytů
+     * @param offset Offset, od kterého se má číst číslo
+     * @return Číslo, které je sestavené ze čtyř bytů
+     */
+    public static int intFromBytes(byte[] src, int offset) {
+        int fileSize = 0;
+        fileSize |= ((src[offset + 0] << 24) & 0xFF000000); // První byte
+        fileSize |= ((src[offset + 1] << 16) & 0xFF0000);   // Druhý byte
+        fileSize |= ((src[offset + 2] << 8) & 0xFF00);      // Třetí byte
+        fileSize |= (src[offset + 3] & 0xFF);               // Čtvrtý byte
+
+        return fileSize;
+    }
 }

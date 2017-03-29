@@ -20,6 +20,9 @@ public final class RemoteFileServer {
     // Verze přenosového protokolu pouze pro souborov systém
     public static final byte PROTOCOL_VERSION = (byte) 0x00;
 
+    // Počet bytů, které zabírá hash
+    public static final int HASH_SIZE = 16;
+
     private RemoteFileServer() {
         throw new AssertionError();
     }

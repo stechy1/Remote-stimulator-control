@@ -64,6 +64,8 @@ public abstract class RemoteServerIntentService extends IntentService {
         }
     };
 
+    // Název služby/aktivity, která bude reagovat na výsledek
+    protected String callbackName;
     protected BtPacketAdvanced incommingPacket;
     protected byte iterator;
     // endregion
@@ -89,9 +91,9 @@ public abstract class RemoteServerIntentService extends IntentService {
      *
      * @param intent {@link Intent} obsahující data
      */
-    protected void sendEchoDone(Intent intent, String destinationService) {
+    protected void sendEchoDone(Intent intent) {
         intent.setAction(ACTION_ECHO_SERVICE_DONE);
-        intent.putExtra(PARAM_ECHO_SERVICE_NAME, destinationService);
+        intent.putExtra(PARAM_ECHO_SERVICE_NAME, callbackName);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

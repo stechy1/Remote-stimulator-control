@@ -10,7 +10,6 @@ import android.util.Log;
 
 import java.util.concurrent.Semaphore;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 
 /**
@@ -27,6 +26,8 @@ public abstract class RemoteServerIntentService extends IntentService {
     protected static final String ACTION_ECHO_SERVICE_DONE = ACTION_PREFIX + "ECHO_SERVICE_DONE";
     protected static final String PARAM_ECHO_SERVICE_NAME = PARAM_PREFIX + "ECHO_SERVICE_NAME";
 
+    private static byte GLOBAL_ITERATION = 10;
+
     // endregion
 
     // region Variables
@@ -40,7 +41,12 @@ public abstract class RemoteServerIntentService extends IntentService {
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
                 byte[] received = intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT);
 
-                incommingPacket = new BtPacketAdvanced(received);
+                BtPacketAdvanced packet = new BtPacketAdvanced(received);
+                if (packet.getIteration() != iterator) {
+                    return;
+                }
+
+                incommingPacket = packet;
 
                 sem.release();
             }
@@ -59,6 +65,7 @@ public abstract class RemoteServerIntentService extends IntentService {
     };
 
     protected BtPacketAdvanced incommingPacket;
+    protected byte iterator;
     // endregion
 
     // region Constructors
@@ -70,6 +77,7 @@ public abstract class RemoteServerIntentService extends IntentService {
      */
     public RemoteServerIntentService(String name) {
         super(name);
+        iterator = (byte) (GLOBAL_ITERATION++ % Byte.MAX_VALUE);
     }
 
     // endregion
@@ -100,7 +108,8 @@ public abstract class RemoteServerIntentService extends IntentService {
      *
      * @param packet Packet, který se má odeslat
      */
-    protected void sendData(BtPacket packet) {
+    protected void sendData(BtPacketAdvanced packet) {
+        packet.setIteration(iterator);
         BluetoothService.sendData(this, packet);
     }
 
@@ -113,6 +122,18 @@ public abstract class RemoteServerIntentService extends IntentService {
     }
 
     protected void onSubServiceDone(Intent intent) {}
+
+    /**
+     * Vrátí iterátor pro danou službu
+     * Slouží pouze pro komunikaci se vzdáleným souborovým serverem
+     * Když se iterátor dostane na maximální hodnotu bytu, tak se opět
+     * vynuluje a jede od začátku
+     *
+     * @return Iterátor, pro identifikaci služby
+     */
+    protected byte getIterator() {
+        return iterator;
+    }
 
     // endregion
 

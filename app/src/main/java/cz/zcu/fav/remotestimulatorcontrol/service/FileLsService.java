@@ -24,6 +24,8 @@ public class FileLsService extends RemoteServerIntentService {
 
     private static final String TAG = "FileLsService";
 
+    public static final String SERVICE_NAME = "FileLsService";
+
     private static final String ACTION_LS = ACTION_PREFIX + "LS";
 
     private static final String PARAM_REMOTE_FOLDER = PARAM_PREFIX + "REMOTE_FOLDER";
@@ -42,7 +44,7 @@ public class FileLsService extends RemoteServerIntentService {
      * Vytvoří novou service, která se postará o získání obsahu vzdáleného adresáře
      */
     public FileLsService() {
-        super("FileLsService");
+        super(SERVICE_NAME);
     }
 
     // endregion
@@ -163,6 +165,7 @@ public class FileLsService extends RemoteServerIntentService {
 
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra(PARAM_REMOTE_ENTRY_LIST, entries);
+        intent.putExtra(PARAM_SRC_SERVICE_NAME, SERVICE_NAME);
         sendEchoDone(intent);
     }
 
@@ -184,6 +187,11 @@ public class FileLsService extends RemoteServerIntentService {
             callbackName = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
             handleActionLs(remoteFolder, fileMask);
         }
+    }
+
+    @Override
+    protected String getServiceName() {
+        return SERVICE_NAME;
     }
 
     public static class RemoteFileEntry implements Parcelable {

@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -480,6 +481,56 @@ public class FileUtils {
             if (os != null) {
                 os.close();
             }
+        }
+    }
+
+    /**
+     * Spočítá MD5 hash ze zadaného souboru
+     *
+     * @param file Soubor, pro který má být spočítán hash
+     * @return MD5 hash souboru
+     * @throws IOException Pokud nastane chyba při čtení souboru
+     */
+    public static byte[] md5FromFile(File file) throws IOException {
+        final String MD5 = "MD5";
+        byte[] buffer = new byte[1024];
+        try {
+            MessageDigest md = MessageDigest.getInstance(MD5);
+            InputStream is = null;
+            DigestInputStream dis = null;
+            try {
+                is = new FileInputStream(file);
+                dis = new DigestInputStream(is, md);
+
+                int numRead = 0;
+                do {
+                    numRead = is.read();
+                    if (numRead > 0) {
+                        md.update(buffer, 0, numRead);
+                    }
+                } while (numRead != -1);
+
+                return md.digest();
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // Nemělo by nikdy nastat
+                    }
+                }
+                if (dis != null) {
+                    try {
+                        dis.close();
+                    } catch (IOException e) {
+                        // Nemělo by nikdy nastat
+                    }
+                }
+            }
+
+        } catch (NoSuchAlgorithmException e) {
+            // Nemělo by nikdy nastat
+            return null;
         }
     }
 

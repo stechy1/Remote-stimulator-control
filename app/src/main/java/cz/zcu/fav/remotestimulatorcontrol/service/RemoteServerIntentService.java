@@ -25,6 +25,7 @@ public abstract class RemoteServerIntentService extends IntentService {
 
     protected static final String ACTION_ECHO_SERVICE_DONE = ACTION_PREFIX + "ECHO_SERVICE_DONE";
     protected static final String PARAM_ECHO_SERVICE_NAME = PARAM_PREFIX + "ECHO_SERVICE_NAME";
+    protected static final String PARAM_SRC_SERVICE_NAME = PARAM_PREFIX + "SRC_SERVICE_NAME";
 
     private static byte GLOBAL_ITERATION = 10;
 
@@ -94,6 +95,7 @@ public abstract class RemoteServerIntentService extends IntentService {
     protected void sendEchoDone(Intent intent) {
         intent.setAction(ACTION_ECHO_SERVICE_DONE);
         intent.putExtra(PARAM_ECHO_SERVICE_NAME, callbackName);
+        intent.putExtra(PARAM_SRC_SERVICE_NAME, getServiceName());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -115,27 +117,14 @@ public abstract class RemoteServerIntentService extends IntentService {
         BluetoothService.sendData(this, packet);
     }
 
-    protected void registerReceiverInternal() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
-    }
-
-    protected void unregisterReceiverInternal() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDataReceiver);
-    }
+    /**
+     * Vrátí název služby
+     *
+     * @return Název služby
+     */
+    protected abstract String getServiceName();
 
     protected void onSubServiceDone(Intent intent) {}
-
-    /**
-     * Vrátí iterátor pro danou službu
-     * Slouží pouze pro komunikaci se vzdáleným souborovým serverem
-     * Když se iterátor dostane na maximální hodnotu bytu, tak se opět
-     * vynuluje a jede od začátku
-     *
-     * @return Iterátor, pro identifikaci služby
-     */
-    protected byte getIterator() {
-        return iterator;
-    }
 
     // endregion
 
@@ -144,15 +133,15 @@ public abstract class RemoteServerIntentService extends IntentService {
         super.onCreate();
         LocalBroadcastManager.getInstance(this).registerReceiver(mServiceEchoReceiver,
                 new IntentFilter(ACTION_ECHO_SERVICE_DONE));
-        registerReceiverInternal();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mDataReceiver, new IntentFilter(BluetoothService.ACTION_DATA_RECEIVED));
     }
 
     @Override
     public void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceEchoReceiver);
-        unregisterReceiverInternal();
-        Log.d(TAG, "Zavírám intent service");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDataReceiver);
+        Log.d(TAG, "Zavírám intent service: " + getServiceName());
         super.onDestroy();
     }
-
 }

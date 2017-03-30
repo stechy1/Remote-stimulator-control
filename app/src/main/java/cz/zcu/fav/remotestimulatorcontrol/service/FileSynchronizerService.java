@@ -107,9 +107,11 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         }
 
         // Vypočítám hashe jednotlivých souborů
+        // Pozor!!! Tato akce trvá velmi dlouho, takže je nutné opravdu čekat
         List<byte[]> hashes = new ArrayList<>(localFiles.size());
         for (File file : localFiles) {
             try {
+                Log.d(TAG, "Počítam hash souboru: " + file.getName());
                 hashes.add(FileUtils.md5FromFile(file));
             } catch (IOException e) {
                 Log.e(TAG, "Nepodařilo se získat MD5 hash ze souboru: " + file.getName());
@@ -117,7 +119,6 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         }
 
         // Projdu všechny vzdálené soubory a zjistím, které musím stáhnout
-        // Pozor!!! Tato akce trvá velmi dlouho, takže je nutné opravdu čekat
         for (FileLsService.RemoteFileEntry remoteFileEntry : remoteFileEntries) {
             // Získám index hashe
             int index = hashes.indexOf(remoteFileEntry.hash);

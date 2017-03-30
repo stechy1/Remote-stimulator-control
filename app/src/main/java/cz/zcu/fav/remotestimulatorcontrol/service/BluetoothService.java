@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 
 public class BluetoothService extends Service {
 
@@ -407,7 +408,7 @@ public class BluetoothService extends Service {
                     totalSize += count;
 
                     if (totalSize >= BtPacket.PACKET_SIZE) {
-                        Log.d(TAG, "Vytvářím nový packet: " + Arrays.toString(data));
+                        Log.d(TAG, "Vytvářím nový packet: " + BitUtils.byteArrayToHex(data));
                         Intent intent = new Intent(ACTION_DATA_RECEIVED);
                         intent.putExtra(EXTRA_DATA_CONTENT, Arrays.copyOf(data, data.length));
                         LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
@@ -427,7 +428,7 @@ public class BluetoothService extends Service {
         void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                Log.d(TAG, "Bylo odesláno: " + Arrays.toString(buffer));
+                Log.d(TAG, "Bylo odesláno: " + BitUtils.byteArrayToHex(buffer));
 
             } catch (IOException e) {
                 Log.e(TAG, "Nastala neočekávaná vyjímka během zápisu dat");

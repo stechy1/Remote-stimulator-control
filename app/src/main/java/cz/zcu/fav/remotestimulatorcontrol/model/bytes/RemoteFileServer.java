@@ -7,6 +7,7 @@ import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Co
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_LS;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_PUT;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_CONTINUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
@@ -39,7 +40,7 @@ public final class RemoteFileServer {
     /**
      * Vytvoří hello packet, kterým se aplikace představí vzdálenému serveru
      *
-     * @return {@link BtPacketAdvanced} packet obsahující hello zprávu
+     * @return {@link BtPacketAdvanced} Pcket obsahující hello zprávu
      */
     public static BtPacketAdvanced getHelloPacket() {
         BtPacketAdvanced packet = getServerPacket()
@@ -65,6 +66,11 @@ public final class RemoteFileServer {
                 .setIteration((byte) 0);
     }
 
+    /**
+     * Vrátí packet, který obsahuje informaci, že se bude získávat obsah vzdáleného adresáře
+     *
+     * @return {@link BtPacketAdvanced} Packet s příkazem LS
+     */
     public static BtPacketAdvanced getLsPacket() {
         BtPacketAdvanced packet = getServerPacket()
                 .setCommand((byte) (TYPE_REQUEST + OP_LS + PART_LAST));
@@ -74,6 +80,15 @@ public final class RemoteFileServer {
         packet.insertData(new byte[] {LS_FLAG_NO_DIRS});
 
         return packet;
+    }
+
+    /**
+     * Vrátí packet, který obsahuje informaci, že se bude nahrávat soubor na server
+     *
+     * @return {@link BtPacketAdvanced} Packet s příkazem PUT
+     */
+    public static BtPacketAdvanced getPutPacket() {
+        return getServerPacket().setCommand((byte) (OP_PUT + TYPE_REQUEST + PART_LAST));
     }
 
     public static class Codes {

@@ -511,6 +511,18 @@ public class FileUtils {
                 } while (numRead != -1);
 
                 return md.digest();
+
+//                StringBuffer sb = new StringBuffer();
+//                for (byte aByte1 : bytes) {
+//                    sb.append(Integer.toHexString((aByte1 & 0xFF) | 0x100).substring(1, 3));
+//                }
+//                return sb.toString().getBytes();
+
+//                StringBuilder sb = new StringBuilder(bytes.length);
+//                for (byte aByte : bytes) {
+//                    sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+//                }
+//                return sb.toString().getBytes();
             } finally {
                 if (is != null) {
                     try {

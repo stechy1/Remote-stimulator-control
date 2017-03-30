@@ -98,6 +98,12 @@ public class FileLsService extends RemoteServerIntentService {
         // Odtud získám počet packetů
         int size = BitUtils.intFromBytes(firstData, 1);
 
+        // Žádné soubory nejsou na vzdáleném serveru
+        if (size == 0) {
+            exit(new ArrayList<RemoteFileEntry>(0));
+            return;
+        }
+
         byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
 
@@ -106,12 +112,12 @@ public class FileLsService extends RemoteServerIntentService {
         {
             int i = 0;
 
-            do {
+            while (i < count) {
                 waitOnSemaphore();
                 byte[] data = incommingPacket.getData();
                 bytes.add(data);
                 i++;
-            } while (i < count);
+            }
         }
 
         byte[] totalBytes = new byte[BtPacket.PACKET_SIZE * bytes.size()];
@@ -163,6 +169,15 @@ public class FileLsService extends RemoteServerIntentService {
             Log.d(TAG, "Název souboru: " + fileName + "; velikost souboru: " + fileSize + "; hash: " + fileHash);
         }
 
+        exit(entries);
+    }
+
+    /**
+     * Pošle intent s výsledky
+     *
+     * @param entries Kolekce všech souborů
+     */
+    private void exit(ArrayList<RemoteFileEntry> entries) {
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra(PARAM_REMOTE_ENTRY_LIST, entries);
         intent.putExtra(PARAM_SRC_SERVICE_NAME, SERVICE_NAME);

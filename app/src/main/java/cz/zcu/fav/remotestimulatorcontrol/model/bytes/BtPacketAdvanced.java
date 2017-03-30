@@ -166,6 +166,18 @@ public class BtPacketAdvanced extends BtPacket {
     }
 
     /**
+     * Přidá příkaz do hlavičky
+     *
+     * @param command Příkaz
+     * @return {@link BtPacketAdvanced} pro flow interface
+     */
+    public BtPacketAdvanced addCommand(byte command) {
+        content[INDEX_COMMAND] |= command;
+
+        return this;
+    }
+
+    /**
      * Vrátí byte, který obsahuje iteraci packetu <=> pořadí packetu
      *
      * @return Pořadí packetu

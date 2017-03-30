@@ -94,9 +94,9 @@ public class FileSynchronizerService extends RemoteServerIntentService {
      *
      * @param localDirectory Lokální adresář se soubory, které se budou mergovat
      */
-    private Pair<ArrayList<String>, ArrayList<String>> mergeFiles(File localDirectory) {
-        final Pair<ArrayList<String>, ArrayList<String>> result =
-                new Pair<>(new ArrayList<String>(), new ArrayList<String>());
+    private Pair<ArrayList<File>, ArrayList<String>> mergeFiles(File localDirectory) {
+        final Pair<ArrayList<File>, ArrayList<String>> result =
+                new Pair<>(new ArrayList<File>(), new ArrayList<String>());
         final File[] localFilesArray = localDirectory.listFiles();
         final List<File> localFiles;
         if (localFilesArray == null) {
@@ -128,14 +128,12 @@ public class FileSynchronizerService extends RemoteServerIntentService {
                 localFiles.remove(index);
             } else {
                 // Když neexistuje, tak to dám na seznam souborů, co musím stáhnout
-                result.second.add(remoteFileEntry.name);
+                result.second.add(DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
             }
         }
 
         // Zbylé soubory se musejí nahrát na server
-        for (File file : localFiles) {
-            result.first.add(file.getName());
-        }
+        result.first.addAll(localFiles);
 
         return result;
     }
@@ -149,11 +147,13 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         // Abych počkal na dokončení, tak se zamknu na semaforu
         lockService();
         // Teď mám přístupnou proměnnou "remoteFileEntries"
-        Pair<ArrayList<String>, ArrayList<String>> mergedFiles =
+        Pair<ArrayList<File>, ArrayList<String>> mergedFiles =
                 mergeFiles(new File(mediaRootDirectory));
 
-        for (String toUpload : mergedFiles.first) {
+        for (File toUpload : mergedFiles.first) {
             Log.d(TAG, "Musím nahrát: " + toUpload + " soubor");
+            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY);
+            //lockService();
         }
 
         for (String toDownload : mergedFiles.second) {

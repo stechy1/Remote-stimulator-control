@@ -68,4 +68,32 @@ public final class BitUtils {
 
         return fileSize;
     }
+
+    /**
+     * Naparsuje integer do bytového pole od zadaného offsetu
+     *
+     * @param value Hodnota, která se má parsovat
+     * @param dest Cílové pole, do kterého se hodnota vloží
+     * @param offset Offset v poli
+     */
+    public static void intToBytes(int value, byte[] dest, int offset) {
+        dest[offset + 0] = (byte) ((value >>> 24) & 0xFF); // První byte
+        dest[offset + 1] = (byte) ((value >>> 16) & 0xFF); // První byte
+        dest[offset + 2] = (byte) ((value >>> 8) & 0xFF); // První byte
+        dest[offset + 3] = (byte) (value  & 0xFF);        // První byte
+    }
+
+    /**
+     * Metoda pro konverzi bytů na hexa
+     *
+     * @param bytes Byty, které se mají konvertovat
+     * @return Řetězec z hexa znaků
+     */
+    public static String byteArrayToHex(byte[] a) {
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for(byte b : a) {
+            sb.append(String.format("%02x ", b));
+        }
+        return sb.toString();
+    }
 }

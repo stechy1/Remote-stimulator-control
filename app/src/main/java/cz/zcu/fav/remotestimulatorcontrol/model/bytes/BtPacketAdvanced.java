@@ -119,11 +119,11 @@ public class BtPacketAdvanced extends BtPacket {
     public int insertData(byte[] data) {
         int remaining = getMaxDataSize() - data.length;
         System.arraycopy(data, 0, content, dataIndex,
-                (remaining > 0)
+                (remaining >= 0)
                         ? data.length
                         : data.length + remaining); // Pokud chci poslat více dat, než můžu, musím je osekat
 
-        if (remaining > 0) {
+        if (remaining >= 0) {
             dataIndex += data.length;
         }
 

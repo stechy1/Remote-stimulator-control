@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -510,19 +511,14 @@ public class FileUtils {
                     }
                 } while (numRead != -1);
 
-                return md.digest();
+                byte[] bytes = md.digest();
+                ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+                for (byte aByte : bytes) {
+                    byteBuffer.put((byte) ((aByte & 0xFF) | 0x100));
+                }
+                Log.d(TAG, "Spočítaný hash: " + BitUtils.byteArrayToHex(byteBuffer.array()));
+                return byteBuffer.array();
 
-//                StringBuffer sb = new StringBuffer();
-//                for (byte aByte1 : bytes) {
-//                    sb.append(Integer.toHexString((aByte1 & 0xFF) | 0x100).substring(1, 3));
-//                }
-//                return sb.toString().getBytes();
-
-//                StringBuilder sb = new StringBuilder(bytes.length);
-//                for (byte aByte : bytes) {
-//                    sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
-//                }
-//                return sb.toString().getBytes();
             } finally {
                 if (is != null) {
                     try {
@@ -539,35 +535,9 @@ public class FileUtils {
                     }
                 }
             }
-
         } catch (NoSuchAlgorithmException e) {
             // Nemělo by nikdy nastat
             return null;
         }
     }
-
-    public static byte[] md5(final byte[] bytes) {
-        final String MD5 = "MD5";
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
-            digest.update(bytes);
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (byte aMessageDigest : messageDigest) {
-                String h = Integer.toHexString(0xFF & aMessageDigest);
-                while (h.length() < 2)
-                    h = "0" + h;
-                hexString.append(h);
-            }
-            return hexString.toString().getBytes();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return new byte[16];
-    }
-
 }

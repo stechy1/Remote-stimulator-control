@@ -149,7 +149,6 @@ public class FileLsService extends RemoteServerIntentService {
             // Načtení hashe souboru
             byte[] fileHashBytes = new byte[RemoteFileServer.HASH_SIZE];
             System.arraycopy(totalBytes, index, fileHashBytes, 0, fileHashBytes.length);
-            String fileHash = new String(fileHashBytes);
             index += RemoteFileServer.HASH_SIZE;
             // Načtení názvu souboru
             StringBuilder sb = new StringBuilder();
@@ -166,7 +165,7 @@ public class FileLsService extends RemoteServerIntentService {
             }
             String fileName = sb.toString();
             entries.add(new RemoteFileEntry(fileName, fileSize, fileHashBytes));
-            Log.d(TAG, "Název souboru: " + fileName + "; velikost souboru: " + fileSize + "; hash: " + fileHash);
+            Log.d(TAG, "Název souboru: " + fileName + "; velikost souboru: " + fileSize + "; hash: " + BitUtils.byteArrayToHex(fileHashBytes));
         }
 
         exit(entries);

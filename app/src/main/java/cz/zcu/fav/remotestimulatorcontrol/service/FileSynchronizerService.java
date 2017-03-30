@@ -48,6 +48,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mNotifyBuilder;
     private final List<FileLsService.RemoteFileEntry> remoteFileEntries = new ArrayList<>();
+    private File mediaRootDirectory;
 
     // endregion
 
@@ -91,13 +92,11 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     /**
      * Projde všechny lokální a vzdálené soubory a zjistí, které je potřeba
      * stahnout a které se musí nahrát na vzdálený server
-     *
-     * @param localDirectory Lokální adresář se soubory, které se budou mergovat
      */
-    private Pair<ArrayList<File>, ArrayList<String>> mergeFiles(File localDirectory) {
+    private Pair<ArrayList<File>, ArrayList<String>> mergeFiles() {
         final Pair<ArrayList<File>, ArrayList<String>> result =
                 new Pair<>(new ArrayList<File>(), new ArrayList<String>());
-        final File[] localFilesArray = localDirectory.listFiles();
+        final File[] localFilesArray = mediaRootDirectory.listFiles();
         final List<File> localFiles;
         if (localFilesArray == null) {
             localFiles = new ArrayList<>(0);
@@ -141,6 +140,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     // region Handle methods
 
     private void handleActionSynchronize(String mediaRootDirectory) {
+        this.mediaRootDirectory = new File(mediaRootDirectory);
         // Nejdříve se spustí další intent service pro načtení souborů ze vzdáleného
         // adresáře
         FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
@@ -148,20 +148,20 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         lockService();
         // Teď mám přístupnou proměnnou "remoteFileEntries"
         Pair<ArrayList<File>, ArrayList<String>> mergedFiles =
-                mergeFiles(new File(mediaRootDirectory));
+                mergeFiles();
 
         for (File toUpload : mergedFiles.first) {
             Log.d(TAG, "Musím nahrát: " + toUpload + " soubor");
-            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY);
+            //FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY);
             //lockService();
         }
 
         for (String toDownload : mergedFiles.second) {
             Log.d(TAG, "Musím stáhnout: " + toDownload + " soubor");
+            FileDownloadService.startActionDownload(this, toDownload, SERVICE_NAME);
+            lockService();
         }
 
-        // TODO nahrát potřebné soubory
-        // TODO stáhnout potřebné soubory
         // Synchonizace je dokončena
 
 //        mNotifyBuilder
@@ -235,6 +235,15 @@ public class FileSynchronizerService extends RemoteServerIntentService {
                     final List<FileLsService.RemoteFileEntry> entries = intent
                             .getParcelableArrayListExtra(FileLsService.PARAM_REMOTE_ENTRY_LIST);
                     remoteFileEntries.addAll(entries);
+                    break;
+                case FileDownloadService.SERVICE_NAME:
+                    final String fileName = intent.getStringExtra(FileDownloadService.PARAM_DOWNLOADED_FILE_NAME);
+                    File file = new File(getCacheDir(), fileName);
+                    try {
+                        FileUtils.copy(file, new File(mediaRootDirectory, fileName));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Nepodařilo se nakopírovat soubor", e);
+                    }
                     break;
             }
         }

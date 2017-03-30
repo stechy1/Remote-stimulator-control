@@ -122,6 +122,7 @@
         <service android:name=".service.FileSynchronizerService" />
         <service android:name=".service.FileLsService" />
         <service android:name=".service.FileUploadService" />
+        <service android:name=".service.FileDownloadService" />
     </application>
 
 </manifest>

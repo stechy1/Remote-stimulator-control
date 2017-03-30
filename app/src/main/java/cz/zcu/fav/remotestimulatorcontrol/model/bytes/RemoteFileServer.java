@@ -5,6 +5,7 @@ import android.os.Build;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.LS_FLAG_NO_DIRS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_GET;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_LS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_PUT;
@@ -89,6 +90,15 @@ public final class RemoteFileServer {
      */
     public static BtPacketAdvanced getPutPacket() {
         return getServerPacket().setCommand((byte) (OP_PUT + TYPE_REQUEST + PART_LAST));
+    }
+
+    /**
+     * Vrátí packet, který obsahuje informaci, že se bude stahovat soubor ze serveru
+     *
+     * @return {@link BtPacketAdvanced} Packet s příkazem GET
+     */
+    public static BtPacketAdvanced getGetPacket() {
+        return getServerPacket().setCommand((byte) (OP_GET + TYPE_REQUEST + PART_LAST));
     }
 
     public static class Codes {

@@ -52,13 +52,13 @@ public class FileLsService extends RemoteServerIntentService {
     // region Public static methods
 
     /**
-     * Spustí intent pro získání obsahu vzdáleného adresáře
+     * Spustí službu zodpovědnou za získání obsahu vzdáleného adresáře
      *
      * @param context {@link Context}
      * @param remoteFolder Název vzdáleného adresáře
      * @param fileMask Maska souborů, které se mají načítat
      * @param callbackServiceName Název služby/aktivity, která má zaregistrovaný {@link android.content.BroadcastReceiver}
-     *                            pomocí něhož dokáe zareagovat na odpověď
+     *                            pomocí něhož dokáže zareagovat na odpověď
      */
     public static void startActionLs(Context context, String remoteFolder, String fileMask, String callbackServiceName) {
         Intent intent = new Intent(context, FileLsService.class);

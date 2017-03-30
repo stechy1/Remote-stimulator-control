@@ -50,7 +50,7 @@ public class FileUploadService extends RemoteServerIntentService {
     // region Public static methods
 
     /**
-     * Spustí intent zodpovědný za upload souboru
+     * Spustí službu zodpovědnou za upload souboru
      *
      * @param context {@link Context}
      * @param filePath Cesta k souboru, který se má nahrát

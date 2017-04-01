@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -73,6 +74,15 @@ public class FileLsService extends RemoteServerIntentService {
 
     //region Private methods
 
+    private void sendFirstPacket(String remoteFolder, String fileMask) {
+        BtPacketAdvanced packet = RemoteFileServer.getLsPacket();
+        packet.insertData(remoteFolder.getBytes());
+        packet.insertData(new byte[]{(byte) 0});
+        packet.insertData(fileMask.getBytes());
+        packet.insertData(new byte[]{(byte) 0});
+        sendData(packet);
+    }
+
     // region Handle methods
 
     /**
@@ -81,19 +91,23 @@ public class FileLsService extends RemoteServerIntentService {
      * @param remoteFolder Cesta ke vzdálenému adresáři
      */
     private void handleActionLs(String remoteFolder, String fileMask) {
-        BtPacketAdvanced packet = RemoteFileServer.getLsPacket();
-        packet.insertData(remoteFolder.getBytes());
-        packet.insertData(new byte[]{(byte) 0});
-        packet.insertData(fileMask.getBytes());
-        packet.insertData(new byte[]{(byte) 0});
-        sendData(packet);
+        updateProgressTitle("LS action");
+        sendFirstPacket(remoteFolder, fileMask);
+        BtPacketAdvanced firstPacket = null;
+        try {
+             firstPacket = incommintPackets.poll(DEFAULT_WAIT_TIME_FOR_PACKET, DEFAULT_WAIT_UNIT);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (firstPacket == null) {
+            sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+            return;
+        }
 
-        waitOnSemaphore();
-
-        byte[] firstData = incommingPacket.getData();
-        if (!incommingPacket.isResponse(RemoteFileServer.Codes.RESPONSE_OK)) {
+        byte[] firstData = firstPacket.getData();
+        if (!firstPacket.isResponse(RemoteFileServer.Codes.RESPONSE_OK)) {
             Log.e(TAG, "Příkaz LS selhal");
-            sendEchoDone(new Intent());
+            sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
         }
         // Odtud získám počet packetů
         int size = BitUtils.intFromBytes(firstData, 1);
@@ -107,16 +121,27 @@ public class FileLsService extends RemoteServerIntentService {
         byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
 
-        int count = (int) Math.round(Math.ceil(size / 60.0));
+        int count = (int) Math.round(Math.ceil(size / (double) BtPacketAdvanced.MAX_DATA_SIZE));
 
         {
             int i = 0;
 
             while (i < count) {
-                waitOnSemaphore();
+                BtPacketAdvanced incommingPacket = null;
+                try {
+                    incommingPacket = incommintPackets.poll(DEFAULT_WAIT_TIME_FOR_PACKET, DEFAULT_WAIT_UNIT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (incommingPacket == null) {
+                    sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+                    return;
+                }
+
+                i++;
                 byte[] data = incommingPacket.getData();
                 bytes.add(data);
-                i++;
             }
         }
 
@@ -188,7 +213,7 @@ public class FileLsService extends RemoteServerIntentService {
     // endregion
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(@Nullable Intent intent) {
         if (intent == null) {
             return;
         }

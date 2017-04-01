@@ -15,8 +15,10 @@ public class BtPacketAdvanced extends BtPacket {
 
     // region Constants
 
-    private static final int MAX_HELLO_DATA_SIZE = 59;
-    private static final int MAX_DATA_SIZE = 60;
+    // Maximální počet bytů, které je možné poslat v hello packetu
+    public static final int MAX_HELLO_DATA_SIZE = 59;
+    // Maximální počet bytů, které je možné poslat ve standartním packetu
+    public static final int MAX_DATA_SIZE = 60;
 
     // endregion
 
@@ -104,7 +106,7 @@ public class BtPacketAdvanced extends BtPacket {
      * @return True, pokud packet obsahuje hledaný příkaz, jinak false
      */
     public boolean hasCommand(byte command) {
-        return ((content[INDEX_COMMAND]) &  command) ==  command;
+        return ((content[INDEX_COMMAND]) & command) ==  command;
     }
 
     /**

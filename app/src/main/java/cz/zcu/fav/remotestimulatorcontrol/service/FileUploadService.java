@@ -54,13 +54,16 @@ public class FileUploadService extends RemoteServerIntentService {
      *
      * @param context {@link Context}
      * @param filePath Cesta k souboru, který se má nahrát
+     * @param callbackServiceName Název služby/aktivity, která má zaregistrovaný {@link android.content.BroadcastReceiver}
+     *                            pomocí něhož dokáže zareagovat na odpověď
      */
-    public static void startActionUpload(Context context, String filePath, String remoteDirectory) {
+    public static void startActionUpload(Context context, String filePath, String remoteDirectory, String callbackServiceName) {
         Intent intent = new Intent(context, FileUploadService.class);
         intent.setAction(ACTION_UPLOAD);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(PARAM_FILE_PATH, filePath);
         intent.putExtra(PARAM_REMOTE_DIRECTORY, remoteDirectory);
+        intent.putExtra(PARAM_ECHO_SERVICE_NAME, callbackServiceName);
         context.startService(intent);
     }
     // endregion
@@ -90,6 +93,7 @@ public class FileUploadService extends RemoteServerIntentService {
     // region Handle methods
 
     private void handleActionUpload(String filePath, String remoteDirectory) {
+        updateProgressTitle("File upload");
         final File file = new File(filePath);
 
         try {
@@ -175,6 +179,7 @@ public class FileUploadService extends RemoteServerIntentService {
             case ACTION_UPLOAD:
                 final String filePath = intent.getStringExtra(PARAM_FILE_PATH);
                 final String remoteDirectory = intent.getStringExtra(PARAM_REMOTE_DIRECTORY);
+                callbackName = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
                 handleActionUpload(filePath, remoteDirectory);
                 break;
         }

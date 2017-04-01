@@ -8,6 +8,8 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
@@ -28,7 +30,7 @@ public class FileDownloadService extends RemoteServerIntentService {
     // endregion
 
     // region Variables
-
+    private BlockingQueue<BtPacketAdvanced> packetQueue = new ArrayBlockingQueue<>(1000);
     // endregion
 
     // region Constructors
@@ -74,25 +76,49 @@ public class FileDownloadService extends RemoteServerIntentService {
 
     // region Handle methods
     private void handleActionDownload(String remoteFilePath) {
+        updateProgressTitle("File download");
         sendFirstPacket(remoteFilePath);
-        waitOnSemaphore();
 
-        if (incommingPacket.isResponse(RemoteFileServer.Codes.RESPONSE_GET_FILE_NOT_FOUND)) {
+        BtPacketAdvanced firstPacket = null;
+        try {
+            firstPacket = incommintPackets.poll(DEFAULT_WAIT_TIME_FOR_PACKET, DEFAULT_WAIT_UNIT);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (firstPacket == null) {
+            sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+            return;
+        }
+
+        if (firstPacket.isResponse(RemoteFileServer.Codes.RESPONSE_GET_FILE_NOT_FOUND)) {
             Log.e(TAG, "Soubor nebyl nalezen");
+            sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
             return;
         }
 
         final String fileName = remoteFilePath.substring(remoteFilePath.lastIndexOf("/"));
-        final byte[] firstData = incommingPacket.getData();
+        final byte[] firstData = firstPacket.getData();
         final int size = BitUtils.intFromBytes(firstData, 1); // Na indexu 0 je result
         final byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
         File outputFile = new File(getCacheDir(), fileName);
         FileOutputStream outputStream = null;
         try {
+            BtPacketAdvanced incommingPacket = null;
              outputStream = new FileOutputStream(outputFile);
             do {
-                waitOnSemaphore();
+                try {
+                    incommingPacket = incommintPackets.poll(DEFAULT_WAIT_TIME_FOR_PACKET, DEFAULT_WAIT_UNIT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (incommingPacket == null) {
+                    sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+                    return;
+                }
+
                 byte[] data = incommingPacket.getData();
                 outputStream.write(data);
             } while (!incommingPacket.hasCommand(RemoteFileServer.Codes.PART_LAST));

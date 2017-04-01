@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothService.ACTION_DEVICE_NAME);
         filter.addAction(BluetoothService.ACTION_STATE_CHANGE);
-        filter.addAction(BluetoothService.ACTION_DATA_RECEIVED);
+        //filter.addAction(BluetoothService.ACTION_DATA_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, filter);
 
         mBinding.navView.setCheckedItem(mFragmentId);

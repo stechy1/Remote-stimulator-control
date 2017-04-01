@@ -93,7 +93,7 @@ public class MediaFragment extends Fragment {
     };
     private int selectedMedia;
 
-    private Handler.Callback managerCallback = new Handler.Callback() {
+    private final Handler.Callback managerCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             boolean success;
@@ -192,26 +192,42 @@ public class MediaFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            if (mProgressDialog == null) {
+                return;
+            }
             switch (action) {
-//                case FileSynchronizerService.ACTION_SYNCHRONIZATION:
-//                    if (mProgressDialog == null) {
-//                        return;
-//                    }
-//
-//                    int progress = intent.getIntExtra(FileSynchronizerService.PARAM_UPDATE_PROCESS, 0);
-//                    mProgressDialog.setProgress(progress);
-//                    break;
+                case FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE:
+                    final String message = intent.getStringExtra(FileSynchronizerService.PARAM_PROGRESS_MESSAGE);
+                    Log.d(TAG, "Aktualizuji zprávu progressu na: " + message);
+                    mProgressDialog.setMessage(message);
+                    break;
+                case FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS:
+                    final int progress = intent.getIntExtra(FileSynchronizerService.PARAM_MAX_PROGRESS, 0);
+                    totalMaxProgress += progress;
+                    Log.d(TAG, "Inkrementuji progress na: " + totalMaxProgress);
+                    mProgressDialog.setMax(totalMaxProgress);
+                    break;
+                case FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS:
+                    totalProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAIN_PROGRESS, 0);
+                    Log.d(TAG, "Aktualizuji main progress na: " + totalProgress);
+                    mProgressDialog.setProgress(totalProgress);
+                    break;
+                case FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS:
+                    totalSecProgress += intent.getIntExtra(FileSynchronizerService.PARAM_SECONDARY_PROGRESS, 0);
+                    Log.d(TAG, "Aktualizuji secondary progress na: " + totalSecProgress);
+                    mProgressDialog.setProgress(totalSecProgress);
+                    break;
                 case FileSynchronizerService.ACTION_DONE:
-                    if (mProgressDialog == null) {
-                        return;
-                    }
-
+                    Log.d(TAG, "Progress done");
                     mProgressDialog.cancel();
                     break;
             }
         }
     };
 
+    private int totalMaxProgress;
+    private int totalProgress;
+    private int totalSecProgress;
     // endregion
 
     // region Private methods
@@ -296,6 +312,10 @@ public class MediaFragment extends Fragment {
         permissionGranted = checkReadExternalPermission();
 
         IntentFilter filter = new IntentFilter();
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE);
+        filter.addAction(FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS);
         filter.addAction(FileSynchronizerService.ACTION_DONE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
                 filter);
@@ -356,25 +376,19 @@ public class MediaFragment extends Fragment {
             case R.id.menu_media_synchronize:
                 Log.d(TAG, "Synchronizuji");
 
-//                mProgressDialog = new ProgressDialog(getActivity());
-//                mProgressDialog.setMessage("Media synchronization");
-//                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//                mProgressDialog.setIndeterminate(false);
-//                mProgressDialog.setProgress(0);
-//                mProgressDialog.setMax(FileSynchronizerService.COUNT);
-//                mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Log.d(TAG, "cancel sync");
-//                    }
-//                });
-//                mProgressDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Hide", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Log.d(TAG, "Hide dialog");
-//                    }
-//                });
-//                mProgressDialog.show();
+                totalMaxProgress = 0;
+                totalProgress = 0;
+                totalSecProgress = 0;
+
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setTitle("Media synchronization");
+                mProgressDialog.setMessage("Testovací titulek");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setMax(totalMaxProgress);
+                mProgressDialog.setProgress(totalProgress);
+                mProgressDialog.setSecondaryProgress(totalSecProgress);
+                mProgressDialog.show();
 
                 FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());
                 return true;

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String mConnectedDeviceName;
     private CharSequence mTitle;
-    private int mBluetoothServiceStatus;
+    private BluetoothService.ConnectionState mBluetoothServiceStatus;
     private int mFragmentId;
     // BroadcastReceiver pro reakci na změnu stavu připojení k zařízení
     private final BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             switch (action) {
                 case BluetoothService.ACTION_STATE_CHANGE:
-                    final int state = intent.getIntExtra(BluetoothService.EXTRA_STATE_CHANGE, BluetoothService.STATE_NONE);
+                    final BluetoothService.ConnectionState state = (BluetoothService.ConnectionState) intent.getSerializableExtra(BluetoothService.EXTRA_STATE_CHANGE);
                     setBluetoothStatusIcon(state);
-                    if (state == BluetoothService.STATE_CONNECTED) {
+                    if (state == BluetoothService.ConnectionState.CONNECTED) {
                         BluetoothService.sendData(MainActivity.this, RemoteFileServer.getHelloPacket());
                     }
                     break;
@@ -133,11 +133,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Nastaví ikonu představující stav připojení k zařízení
      *
-     * @param state Stav připojení
+     * @param state {@link BluetoothService.ConnectionState} Stav připojení
      */
-    private void setBluetoothStatusIcon(int state) {
+    private void setBluetoothStatusIcon(BluetoothService.ConnectionState state) {
+        mBluetoothServiceStatus = state;
         switch (state) {
-            case BluetoothService.STATE_CONNECTED:
+            case CONNECTED:
                 Log.d(TAG, "Zařízení je připojeno");
                 if (mMenu != null) {
                     MenuItem item = mMenu.findItem(R.id.menu_main_connect);
@@ -145,16 +146,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         item.setIcon(R.drawable.bluetooth_connected);
                     }
                 }
-                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTED;
                 setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                 break;
-            case BluetoothService.STATE_CONNECTING:
+            case CONNECTING:
                 Log.d(TAG, "Zařízení se připojuje");
-                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTING;
                 setStatus(R.string.title_connecting);
                 break;
-            case BluetoothService.STATE_LISTEN:
-            case BluetoothService.STATE_NONE:
+            case DISCONNECT:
                 Log.d(TAG, "Zařízení je odpojeno");
                 if (mMenu != null) {
                     MenuItem item = mMenu.findItem(R.id.menu_main_connect);
@@ -162,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         item.setIcon(R.drawable.bluetooth_connect);
                     }
                 }
-                mBluetoothServiceStatus = BluetoothService.STATE_NONE;
                 setStatus(R.string.title_not_connected);
                 break;
         }
@@ -251,11 +248,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         CharSequence title;
         if (savedInstanceState != null) {
-            setBluetoothStatusIcon(savedInstanceState.getInt(BLUETOOTH_STATUS));
+            setBluetoothStatusIcon((BluetoothService.ConnectionState) savedInstanceState.getSerializable(BLUETOOTH_STATUS));
             title = savedInstanceState.getString(ACTIVITY_TITLE);
             mFragmentId = savedInstanceState.getInt(SELECTED_FRAGMENT_ID);
         } else {
-            setBluetoothStatusIcon(BluetoothService.STATE_NONE);
+            setBluetoothStatusIcon(BluetoothService.ConnectionState.DISCONNECT);
             title = getString(R.string.nav_configurations);
             showFragment(R.id.nav_experiments);
         }
@@ -313,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(BLUETOOTH_DEVICE_NAME, mConnectedDeviceName);
-        outState.putInt(BLUETOOTH_STATUS, mBluetoothServiceStatus);
+        outState.putSerializable(BLUETOOTH_STATUS, mBluetoothServiceStatus);
         outState.putString(ACTIVITY_TITLE, (String) mTitle);
         outState.putInt(SELECTED_FRAGMENT_ID, mFragmentId);
         super.onSaveInstanceState(outState);
@@ -357,11 +354,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 switch (mBluetoothServiceStatus) {
-                    case BluetoothService.STATE_NONE:
-                    case BluetoothService.STATE_LISTEN:
+                    case DISCONNECT:
                         startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
                         break;
-                    case BluetoothService.STATE_CONNECTED:
+                    case CONNECTED:
                         BluetoothService.sendData(this, RemoteFileServer.getByePacket());
                         BluetoothService.changeState(this, BluetoothService.RequestState.STATE_OFF);
                         break;

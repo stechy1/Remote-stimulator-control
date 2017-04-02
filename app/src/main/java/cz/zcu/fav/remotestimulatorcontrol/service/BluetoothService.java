@@ -30,8 +30,6 @@ public class BluetoothService extends Service {
     private static final String TAG = "BluetoothService";
     private static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";
     private static final String EXTRA_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.extra";
-    private static final String PARAM_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.PARAM";
-
 
     // Akce service
     public static final String ACTION_DEVICE_NAME = ACTION_PREFIX + "EXTRA_DEVICE_NAME";
@@ -53,19 +51,10 @@ public class BluetoothService extends Service {
     public enum RequestState {
         STATE_ON, STATE_OFF
     }
-//    public static final String PARAM_STATE_OFF = PARAM_PREFIX + "PARAM_STATE_OFF";
-//    public static final String PARAM_STATE_ON = PARAM_PREFIX + "PARAM_STATE_ON";
 
-    // Stav připojení zařízení
-    // Výchozí stav
-    public static final int STATE_NONE = 0;
-    // Čekám na příchozí spojení
-    public static final int STATE_LISTEN = 1;
-    // Připojuji se k zařízení
-    public static final int STATE_CONNECTING = 2;
-    // Jsem spojený a můžu komunikovat
-    public static final int STATE_CONNECTED = 3;
-    // endregion
+    public enum ConnectionState {
+        DISCONNECT, CONNECTING, CONNECTED
+    }
 
     // region Variables
     private static boolean running = false;
@@ -109,7 +98,7 @@ public class BluetoothService extends Service {
     // Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter;
     // Stav připojení
-    private int mState = STATE_NONE;
+    private ConnectionState mState = ConnectionState.DISCONNECT;
     // endregion
 
     // region Public static methods
@@ -144,13 +133,9 @@ public class BluetoothService extends Service {
     /**
      * Nastaví interní stav, ve kterém se spojení nachází
      *
-     * @param state Nový stav
-     *              @see #STATE_NONE
-     *              @see #STATE_LISTEN
-     *              @see #STATE_CONNECTING
-     *              @see #STATE_CONNECTED
+     * @param state {@link ConnectionState} Nový stav
      */
-    private synchronized void setState(int state) {
+    private synchronized void setState(ConnectionState state) {
         mState = state;
 
         Intent intent = new Intent(ACTION_STATE_CHANGE);
@@ -176,7 +161,7 @@ public class BluetoothService extends Service {
             mBluetoothAdapter.cancelDiscovery();
         }
 
-        setState(STATE_NONE);
+        setState(ConnectionState.DISCONNECT);
     }
 
     /**
@@ -225,7 +210,7 @@ public class BluetoothService extends Service {
         intent.putExtra(EXTRA_DEVICE_NAME, device.getName());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-        setState(STATE_CONNECTED);
+        setState(ConnectionState.CONNECTED);
     }
 
     /**
@@ -238,7 +223,7 @@ public class BluetoothService extends Service {
             return;
         }
 
-        if (mState == STATE_CONNECTING) {
+        if (mState == ConnectionState.CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -252,7 +237,7 @@ public class BluetoothService extends Service {
         }
         mConnectThread = new ConnectThread(device);
         mConnectThread.start();
-        setState(STATE_CONNECTING);
+        setState(ConnectionState.CONNECTING);
     }
 
     /**
@@ -265,7 +250,7 @@ public class BluetoothService extends Service {
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
         synchronized (lock) {
-            if (mState != STATE_CONNECTED) {
+            if (mState != ConnectionState.CONNECTED) {
                 return;
             }
             r = mConnectedThread;
@@ -328,11 +313,11 @@ public class BluetoothService extends Service {
             try {
                 // Vytvoření nezabezpečeného spojení
                 // Nikdo neví, proč to nejde jednoduššeji
-                Class[] clsArr = new Class[STATE_LISTEN];
-                clsArr[STATE_NONE] = Integer.TYPE;
+                Class[] clsArr = new Class[1];
+                clsArr[0] = Integer.TYPE;
                 Method method = device.getClass().getMethod("createRfcommSocket", clsArr);
-                Object[] objArr = new Object[STATE_LISTEN];
-                objArr[STATE_NONE] = STATE_LISTEN;
+                Object[] objArr = new Object[1];
+                objArr[0] = 1;
                 tmp = (BluetoothSocket) method.invoke(device, objArr);
             } catch (Exception e) {
                 e.printStackTrace();

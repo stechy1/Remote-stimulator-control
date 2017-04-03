@@ -273,6 +273,7 @@ public class ProfileFragment extends Fragment {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
         mBinding.setController(this);
+        mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
         mBinding.executePendingBindings();
 
         initRecyclerView();

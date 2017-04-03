@@ -1,9 +1,9 @@
 package cz.zcu.fav.remotestimulatorcontrol.util;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
@@ -16,14 +16,16 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 
 /**
  * @version 2009-07-03
@@ -242,6 +244,7 @@ public class FileUtils {
      * @see #getFile(Context, Uri)
      * @author paulburke
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
 
         if (DEBUG)
@@ -482,4 +485,59 @@ public class FileUtils {
         }
     }
 
+    /**
+     * Spočítá MD5 hash ze zadaného souboru
+     *
+     * @param file Soubor, pro který má být spočítán hash
+     * @return MD5 hash souboru
+     * @throws IOException Pokud nastane chyba při čtení souboru
+     */
+    public static byte[] md5FromFile(File file) throws IOException {
+        final String MD5 = "MD5";
+        byte[] buffer = new byte[1024];
+        try {
+            MessageDigest md = MessageDigest.getInstance(MD5);
+            InputStream is = null;
+            DigestInputStream dis = null;
+            try {
+                is = new FileInputStream(file);
+                dis = new DigestInputStream(is, md);
+
+                int numRead = 0;
+                do {
+                    numRead = is.read();
+                    if (numRead > 0) {
+                        md.update(buffer, 0, numRead);
+                    }
+                } while (numRead != -1);
+
+                byte[] bytes = md.digest();
+                ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+                for (byte aByte : bytes) {
+                    byteBuffer.put((byte) ((aByte & 0xFF) | 0x100));
+                }
+                Log.d(TAG, "Spočítaný hash: " + BitUtils.byteArrayToHex(byteBuffer.array()));
+                return byteBuffer.array();
+
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // Nemělo by nikdy nastat
+                    }
+                }
+                if (dis != null) {
+                    try {
+                        dis.close();
+                    } catch (IOException e) {
+                        // Nemělo by nikdy nastat
+                    }
+                }
+            }
+        } catch (NoSuchAlgorithmException e) {
+            // Nemělo by nikdy nastat
+            return null;
+        }
+    }
 }

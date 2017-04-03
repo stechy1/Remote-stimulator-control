@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,6 +18,9 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
+
 public class BluetoothService extends Service {
 
     // region Constants
@@ -24,10 +28,11 @@ public class BluetoothService extends Service {
     // Logovací tag
     @SuppressWarnings("unused")
     private static final String TAG = "BluetoothService";
-    private static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.action.";
+    private static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";
+    private static final String EXTRA_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.extra";
 
     // Akce service
-    public static final String ACTION_DEVICE_NAME = ACTION_PREFIX + "DEVICE_NAME";
+    public static final String ACTION_DEVICE_NAME = ACTION_PREFIX + "EXTRA_DEVICE_NAME";
     public static final String ACTION_STATE_CHANGE = ACTION_PREFIX + "BLUETOOTH_STATE_CHANGE";
     public static final String ACTION_CONNECTION_FAILED = ACTION_PREFIX + "CONNECTION_FAILED";
     public static final String ACTION_CONNECTION_LOST = ACTION_PREFIX + "CONNECTION_LOST";
@@ -36,27 +41,20 @@ public class BluetoothService extends Service {
     public static final String ACTION_SEND_DATA = ACTION_PREFIX + "SEND_DAT";
 
     // Názvy konstant představující proměnné pro různé akce
-    public static final String DEVICE_NAME = "device_name";
-    public static final String DEVICE_MAC = "device_mac";
-    public static final String STATE_CHANGE = "state_change";
-    public static final String DATA_RECEIVED_BYTES = "data_received_bytes";
-    public static final String DATA_RECEIVED_BUFFER = "data_received_buffer";
-    public static final String REQUEST_STATE = "request_state";
-    public static final String REQUEST_STATE_OFF = "request_state_off";
-    public static final String REQUEST_STATE_ON = "request_state_on";
-    public static final String DEVICE = "device";
-    public static final String DATA_CONTENT = "data_content";
+    public static final String EXTRA_DEVICE_NAME = EXTRA_PREFIX + "EXTRA_DEVICE_NAME";
+    public static final String EXTRA_DEVICE_MAC = EXTRA_PREFIX + "EXTRA_DEVICE_MAC";
+    public static final String EXTRA_STATE_CHANGE = EXTRA_PREFIX + "EXTRA_STATE_CHANGE";
+    public static final String EXTRA_REQUEST_STATE = EXTRA_PREFIX + "EXTRA_REQUEST_STATE";
+    public static final String EXTRA_DEVICE = EXTRA_PREFIX + "EXTRA_DEVICE";
+    public static final String EXTRA_DATA_CONTENT = EXTRA_PREFIX + "EXTRA_DATA_CONTENT";
 
-    // Stav připojení zařízení
-    // Výchozí stav
-    public static final int STATE_NONE = 0;
-    // Čekám na příchozí spojení
-    public static final int STATE_LISTEN = 1;
-    // Připojuji se k zařízení
-    public static final int STATE_CONNECTING = 2;
-    // Jsem spojený a můžu komunikovat
-    public static final int STATE_CONNECTED = 3;
-    // endregion
+    public enum RequestState {
+        STATE_ON, STATE_OFF
+    }
+
+    public enum ConnectionState {
+        DISCONNECT, CONNECTING, CONNECTED
+    }
 
     // region Variables
     private static boolean running = false;
@@ -67,13 +65,16 @@ public class BluetoothService extends Service {
             final String action = intent.getAction();
 
             if (action.equals(ACTION_REQUEST_STATE_CHANGE)) {
-                final String state = intent.getStringExtra(REQUEST_STATE);
-                if (state.equals(REQUEST_STATE_OFF)) {
+                final RequestState state = (RequestState) intent.getSerializableExtra(EXTRA_REQUEST_STATE);
+                switch (state) {
+                    case STATE_ON:
+                    Log.d(TAG, "Připojuji se k zařízení");
+                    connectToDevice((BluetoothDevice) intent.getParcelableExtra(EXTRA_DEVICE));
+                        break;
+                    case STATE_OFF:
                     Log.d(TAG, "Odpojuji zařízení");
                     stop();
-                } else if (state.equals(REQUEST_STATE_ON)) {
-                    Log.d(TAG, "Připojuji se k zařízení");
-                    connectToDevice((BluetoothDevice) intent.getParcelableExtra(DEVICE));
+                        break;
                 }
             }
         }
@@ -84,7 +85,7 @@ public class BluetoothService extends Service {
             final String action = intent.getAction();
 
             if (action.equals(ACTION_SEND_DATA)) {
-                final byte[] bytes = intent.getByteArrayExtra(DATA_CONTENT);
+                final byte[] bytes = intent.getByteArrayExtra(EXTRA_DATA_CONTENT);
                 write(bytes);
             }
         }
@@ -97,32 +98,55 @@ public class BluetoothService extends Service {
     // Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter;
     // Stav připojení
-    private int mState = STATE_NONE;
+    private ConnectionState mState = ConnectionState.DISCONNECT;
+    // endregion
+
+    // region Public static methods
+
+    /**
+     * Statická pomocná metoda pro odeslání dat pomocí broadcastu do služby
+     *
+     * @param context {@link Context}
+     * @param packet {@link BtPacket} Packet, který se má odeslat
+     */
+    public static void sendData(Context context, BtPacket packet) {
+        Intent intent = new Intent(ACTION_SEND_DATA);
+        intent.putExtra(EXTRA_DATA_CONTENT, packet.getContent());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void changeState(Context context, RequestState requestState) {
+        changeState(context, requestState, null);
+    }
+
+    public static void changeState(Context context, RequestState requestState, BluetoothDevice device) {
+        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
+        intent.putExtra(BluetoothService.EXTRA_REQUEST_STATE, requestState);
+        if (device != null) {
+            intent.putExtra(EXTRA_DEVICE, device);
+        }
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
     // endregion
 
     // region Private methods
     /**
      * Nastaví interní stav, ve kterém se spojení nachází
      *
-     * @param state Nový stav
-     *              @see #STATE_NONE
-     *              @see #STATE_LISTEN
-     *              @see #STATE_CONNECTING
-     *              @see #STATE_CONNECTED
+     * @param state {@link ConnectionState} Nový stav
      */
-    private synchronized void setState(int state) {
+    private synchronized void setState(ConnectionState state) {
         mState = state;
 
         Intent intent = new Intent(ACTION_STATE_CHANGE);
-        intent.putExtra(STATE_CHANGE, state);
-        sendBroadcast(intent);
+        intent.putExtra(EXTRA_STATE_CHANGE, state);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**
      * Ukončí všechna spojení a celou službu
      */
     private synchronized void stop() {
-        setState(STATE_NONE);
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -136,6 +160,8 @@ public class BluetoothService extends Service {
         if (mBluetoothAdapter != null) {
             mBluetoothAdapter.cancelDiscovery();
         }
+
+        setState(ConnectionState.DISCONNECT);
     }
 
     /**
@@ -145,7 +171,7 @@ public class BluetoothService extends Service {
         Log.w(TAG, "Připojení selhalo");
         stop();
 
-        sendBroadcast(new Intent(ACTION_CONNECTION_FAILED));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_CONNECTION_FAILED));
     }
 
     /**
@@ -155,7 +181,7 @@ public class BluetoothService extends Service {
         Log.i(TAG, "Připojení bylo ztraceno");
         stop();
 
-        sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
     }
 
     /**
@@ -181,10 +207,10 @@ public class BluetoothService extends Service {
         mConnectedThread.start();
 
         Intent intent = new Intent(ACTION_DEVICE_NAME);
-        intent.putExtra(DEVICE_NAME, device.getName());
-        sendBroadcast(intent);
+        intent.putExtra(EXTRA_DEVICE_NAME, device.getName());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-        setState(STATE_CONNECTED);
+        setState(ConnectionState.CONNECTED);
     }
 
     /**
@@ -197,7 +223,7 @@ public class BluetoothService extends Service {
             return;
         }
 
-        if (mState == STATE_CONNECTING) {
+        if (mState == ConnectionState.CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -211,7 +237,7 @@ public class BluetoothService extends Service {
         }
         mConnectThread = new ConnectThread(device);
         mConnectThread.start();
-        setState(STATE_CONNECTING);
+        setState(ConnectionState.CONNECTING);
     }
 
     /**
@@ -224,7 +250,7 @@ public class BluetoothService extends Service {
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
         synchronized (lock) {
-            if (mState != STATE_CONNECTED) {
+            if (mState != ConnectionState.CONNECTED) {
                 return;
             }
             r = mConnectedThread;
@@ -237,9 +263,9 @@ public class BluetoothService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("BluetoothService", "Služba spuštěna");
-        registerReceiver(mStatusReceiver, new IntentFilter(ACTION_REQUEST_STATE_CHANGE));
-        registerReceiver(mSenderReceiver, new IntentFilter(ACTION_SEND_DATA));
+        Log.d(TAG, "Služba spuštěna");
+        LocalBroadcastManager.getInstance(this).registerReceiver(mStatusReceiver, new IntentFilter(ACTION_REQUEST_STATE_CHANGE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSenderReceiver, new IntentFilter(ACTION_SEND_DATA));
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         running = true;
         super.onCreate();
@@ -260,8 +286,8 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         stop();
-        unregisterReceiver(mStatusReceiver);
-        unregisterReceiver(mSenderReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStatusReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSenderReceiver);
         Log.d(TAG, "Služba ukončena");
         super.onDestroy();
     }
@@ -287,11 +313,11 @@ public class BluetoothService extends Service {
             try {
                 // Vytvoření nezabezpečeného spojení
                 // Nikdo neví, proč to nejde jednoduššeji
-                Class[] clsArr = new Class[STATE_LISTEN];
-                clsArr[STATE_NONE] = Integer.TYPE;
+                Class[] clsArr = new Class[1];
+                clsArr[0] = Integer.TYPE;
                 Method method = device.getClass().getMethod("createRfcommSocket", clsArr);
-                Object[] objArr = new Object[STATE_LISTEN];
-                objArr[STATE_NONE] = STATE_LISTEN;
+                Object[] objArr = new Object[1];
+                objArr[0] = 1;
                 tmp = (BluetoothSocket) method.invoke(device, objArr);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -311,7 +337,6 @@ public class BluetoothService extends Service {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                e.printStackTrace();
                 connectionFailed();
                 return;
             }
@@ -325,7 +350,7 @@ public class BluetoothService extends Service {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "Selhalo odpojení socketu", e);
+                Log.e(TAG, "Selhalo odpojení socketu");
             }
         }
     }
@@ -334,6 +359,7 @@ public class BluetoothService extends Service {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private final byte[] data = new byte[BtPacket.PACKET_SIZE];
 
         ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -343,7 +369,7 @@ public class BluetoothService extends Service {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e(TAG, "Nepodařilo se vytvořit dočasné sockety", e);
+                Log.e(TAG, "Nepodařilo se vytvořit dočasné sockety");
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
@@ -351,19 +377,31 @@ public class BluetoothService extends Service {
 
         @Override
         public void run() {
-            byte[] buffer = new byte[1024];
+            byte[] tempBuffer = new byte[BtPacket.PACKET_SIZE];
             int count;
+            int totalSize = 0;
 
             while (true) {
                 try {
-                    Arrays.fill(buffer, (byte)0);
-                    count = mmInStream.read(buffer);
-                    Log.d(TAG, "Received: " + new String(buffer, 0, count));
+                    Arrays.fill(tempBuffer, (byte)0);
+                    count = mmInStream.read(tempBuffer);
 
-                    Intent intent = new Intent(ACTION_DATA_RECEIVED);
-                    intent.putExtra(DATA_RECEIVED_BYTES, count);
-                    intent.putExtra(DATA_RECEIVED_BUFFER, buffer);
-                    sendBroadcast(intent);
+                    int freeBytes = BtPacket.PACKET_SIZE - totalSize;
+                    int byteCount = count > freeBytes ? freeBytes : count;
+
+                    System.arraycopy(tempBuffer, 0, data, totalSize, byteCount);
+                    totalSize += count;
+
+                    if (totalSize >= BtPacket.PACKET_SIZE) {
+                        Log.d(TAG, "Vytvářím nový packet: " + BitUtils.byteArrayToHex(data));
+                        Intent intent = new Intent(ACTION_DATA_RECEIVED);
+                        intent.putExtra(EXTRA_DATA_CONTENT, Arrays.copyOf(data, data.length));
+                        LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);
+                        totalSize %= BtPacket.PACKET_SIZE;
+                        // Zkopírování zbývajících dat z bufferu do hlavních dat pro příští použití
+                        Arrays.fill(data, totalSize, data.length, (byte) 0);
+                        System.arraycopy(tempBuffer, count - totalSize, data, 0, totalSize);
+                    }
                 } catch (Exception e) {
                     connectionLost();
                     break;
@@ -375,19 +413,18 @@ public class BluetoothService extends Service {
         void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                Log.d(TAG, "Bylo odesláno: " + Arrays.toString(buffer));
+                //Log.d(TAG, "Bylo odesláno: " + BitUtils.byteArrayToHex(buffer));
 
             } catch (IOException e) {
-                Log.e(TAG, "Nastala neočekávaná vyjímka během zápisu dat", e);
+                Log.e(TAG, "Nastala neočekávaná vyjímka během zápisu dat");
             }
         }
 
         void cancel() {
             try {
                 mmSocket.close();
-
             } catch (IOException e) {
-                Log.e(TAG, "Selhalo odpojení socketu", e);
+                Log.e(TAG, "Selhalo odpojení socketu");
             }
         }
     }

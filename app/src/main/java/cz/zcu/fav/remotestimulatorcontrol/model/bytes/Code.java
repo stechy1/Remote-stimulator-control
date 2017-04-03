@@ -5,9 +5,12 @@ package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
  */
 public class Code {
 
-    private final byte code;
-    private final String description;
-    private final Code next;
+    // Kódová značka
+    public final byte code;
+    // Popis kódové značky
+    public final String description;
+    // Reference na následující kódovou značku
+    public final Code next;
 
     /**
      * Vytvoří novou kódovou značku
@@ -31,34 +34,4 @@ public class Code {
         this.description = description;
         this.next = next;
     }
-
-    /**
-     * Vrátí kódovou značku (typ zprávy)
-     *
-     * @return typ zprávy
-     */
-    public byte getCode() {
-        return code;
-    }
-
-    /**
-     * Vrátí popis kódové značky
-     *
-     * @return popis značky
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Vrátí následující značku (následné značky se používají v případě,
-     * že má kódová značka následovníka např. jas se nastavuje zvlášť)
-     *
-     * @return následující kódová značka
-     */
-    public Code getNext() {
-        return next;
-    }
-
-
 }

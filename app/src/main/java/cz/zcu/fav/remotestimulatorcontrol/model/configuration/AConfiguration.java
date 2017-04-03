@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketOld;
 
 public abstract class AConfiguration extends BaseModel implements IDuplicable {
 
@@ -150,7 +150,7 @@ public abstract class AConfiguration extends BaseModel implements IDuplicable {
     /**
      * @return Vrátí kolekcí packetů reprezentující konfiguraci
      */
-    public abstract List<BtPacket> getPackets();
+    public abstract List<BtPacketOld> getPackets();
 
     // endregion
 

@@ -2,7 +2,11 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.media;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
@@ -18,6 +22,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +33,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,10 +46,15 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentMediaBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileDeleteService;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileSynchronizerService;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileUploadService;
+import cz.zcu.fav.remotestimulatorcontrol.service.RemoteServerIntentService;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -73,6 +84,7 @@ public class MediaFragment extends Fragment {
     private ActionMode mActionMode;
     private FloatingActionButton mFab;
     private MediaPlayer mediaPlayer;
+    private ProgressDialog mProgressDialog;
 
     private boolean permissionGranted = false;
     private boolean mDeleteConfirmed = true;
@@ -85,7 +97,7 @@ public class MediaFragment extends Fragment {
     };
     private int selectedMedia;
 
-    private Handler.Callback managerCallback = new Handler.Callback() {
+    private final Handler.Callback managerCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             boolean success;
@@ -103,6 +115,8 @@ public class MediaFragment extends Fragment {
                     if (success) {
                         isRecyclerViewEmpty.set(false);
                         mMediaAdapter.notifyItemInserted(msg.arg2);
+                        final String filePath = (String) msg.obj;
+                        FileUploadService.startActionUpload(getActivity(), filePath, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, TAG);
                     }
                     break;
                 case MediaManager.MESSAGE_MEDIA_PREPARED_TO_DELETE:
@@ -134,6 +148,7 @@ public class MediaFragment extends Fragment {
                                         if (empty && mActionMode != null) {
                                             mActionMode.finish();
                                         }
+
                                     } else {
                                         mDeleteConfirmed = true;
                                     }
@@ -154,6 +169,10 @@ public class MediaFragment extends Fragment {
                         mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
                     }
                     break;
+                case MediaManager.MESSAGE_MEDIA_DELETE:
+                    final AMedia media = (AMedia) msg.obj;
+                    final String name = media.getMediaFile().getName();
+                    FileDeleteService.startActionDelete(getActivity(), name, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, TAG);
             }
 
             if (snackbarMessage != -1) {
@@ -180,7 +199,84 @@ public class MediaFragment extends Fragment {
             // Zde opravdu nic není
         }
     };
+    private final BroadcastReceiver mFileServiceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (mProgressDialog == null) {
+                return;
+            }
+            switch (action) {
+                case FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE:
+                    final String message = intent.getStringExtra(FileSynchronizerService.PARAM_PROGRESS_MESSAGE);
+                    Log.d(TAG, "Aktualizuji zprávu progressu na: " + message);
+                    mProgressDialog.setMessage(message);
+                    break;
+                case FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS:
+                    final int progress = intent.getIntExtra(FileSynchronizerService.PARAM_MAX_PROGRESS, 0);
+                    totalMaxProgress += progress;
+                    Log.d(TAG, "Inkrementuji progress na: " + totalMaxProgress);
+                    mProgressDialog.setMax(totalMaxProgress);
+                    break;
+                case FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS:
+                    totalProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAIN_PROGRESS, 0);
+                    Log.d(TAG, "Aktualizuji main progress na: " + totalProgress);
+                    mProgressDialog.setProgress(totalProgress);
+                    break;
+                case FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS:
+                    totalSecProgress += intent.getIntExtra(FileSynchronizerService.PARAM_SECONDARY_PROGRESS, 0);
+                    Log.d(TAG, "Aktualizuji secondary progress na: " + totalSecProgress);
+                    mProgressDialog.setProgress(totalSecProgress);
+                    break;
+                case FileSynchronizerService.ACTION_DONE:
+                    Log.d(TAG, "Progress done");
+                    mProgressDialog.cancel();
+                    refreshRecyclerView();
+                    break;
+            }
+        }
+    };
+    private final BroadcastReceiver mServiceEchoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
 
+            if (!action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
+                 return;
+            }
+
+            final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
+            if (!TAG.equals(destService)) {
+                return;
+            }
+
+            final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
+            final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
+
+            switch (srcService) {
+                case FileDeleteService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
+                        return;
+                    }
+
+                    Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
+                    break;
+                case FileUploadService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Soubor se nepodařilo nahrát na server");
+                        return;
+                    }
+
+                    Toast.makeText(context, "Soubor byl nahrán na server", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    private int totalMaxProgress;
+    private int totalProgress;
+    private int totalSecProgress;
     // endregion
 
     // region Private methods
@@ -242,6 +338,7 @@ public class MediaFragment extends Fragment {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_media, container, false);
         mBinding.setController(this);
+        mBinding.setIsRecyclerViewEmpty(isRecyclerViewEmpty);
         mBinding.executePendingBindings();
 
         initRecyclerView();
@@ -263,6 +360,17 @@ public class MediaFragment extends Fragment {
 
         permissionGranted = checkReadExternalPermission();
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE);
+        filter.addAction(FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_DONE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
+                filter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mServiceEchoReceiver,
+                new IntentFilter(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE));
+
         return mBinding.getRoot();
     }
 
@@ -277,6 +385,13 @@ public class MediaFragment extends Fragment {
         outState.putBoolean(SAVE_STATE_IN_ACTION_MODE, mActionMode != null);
         outState.putIntegerArrayList(SAVE_STATE_SELECTED_ITEMS_COUNT, mMediaAdapter.getSelectedItemsIndex());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mFileServiceReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mServiceEchoReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -299,6 +414,38 @@ public class MediaFragment extends Fragment {
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.media_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_media_synchronize:
+                Log.d(TAG, "Synchronizuji");
+
+                totalMaxProgress = 0;
+                totalProgress = 0;
+                totalSecProgress = 0;
+
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setTitle("Media synchronization");
+                mProgressDialog.setMessage("Testovací titulek");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setMax(totalMaxProgress);
+                mProgressDialog.setProgress(totalProgress);
+                mProgressDialog.setSecondaryProgress(totalSecProgress);
+                mProgressDialog.show();
+
+                FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -438,7 +585,7 @@ public class MediaFragment extends Fragment {
     private class ActionBarCallback implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.experiments_context_menu, menu);
+            mode.getMenuInflater().inflate(R.menu.media_context_menu, menu);
             mActionMode = mode;
 
             mFab.setVisibility(View.GONE);
@@ -457,49 +604,9 @@ public class MediaFragment extends Fragment {
                 return false;
             }
 
-            String name = mManager.mediaList.get(selectedItems.get(0)).getName();
-            Intent intent;
             switch (item.getItemId()) {
-                case R.id.context_duplicate: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-//                    intent = new Intent(OutputProfilesActivity.this, ProfileDuplicateActivity.class);
-//                    intent.putExtra(ProfileDuplicateActivity.PROFILE_ID, selectedItems.get(0));
-//                    intent.putExtra(ProfileDuplicateActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_DUPLICATE_PROFILE);
-
-                    return true;
-                case R.id.context_delete: // Smažeme konfigurace
+                case R.id.context_delete: // Smažeme vybraná média
                     mManager.prepareToDelete(selectedItems);
-
-                    return true;
-                case R.id.context_rename: // Spustime novou aktivitu ve formě dialogu
-                    if (selectedItems.size() > 1) {
-                        return false;
-                    }
-
-//                    intent = new Intent(OutputProfilesActivity.this, ProfileRenameActivity.class);
-//                    intent.putExtra(ProfileRenameActivity.PROFILE_ID, selectedItems.get(0));
-//                    intent.putExtra(ProfileRenameActivity.PROFILE_NAME, name);
-//                    startActivityForResult(intent, REQUEST_RENAME_PROFILE);
-
-                    return true;
-                case R.id.context_select_all:
-                    mMediaAdapter.selectAll();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_inverse:
-                    mMediaAdapter.invertSelection();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
-                    return true;
-                case R.id.context_select_none:
-                    mMediaAdapter.selectNone();
-                    mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
-
                     return true;
                 default:
                     return false;

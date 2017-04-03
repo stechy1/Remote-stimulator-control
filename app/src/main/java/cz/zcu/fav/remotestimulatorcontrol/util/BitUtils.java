@@ -51,4 +51,50 @@ public final class BitUtils {
     public static int clearBit(int original, int value) {
         return setBit(original, value, false);
     }
+
+    /**
+     * Vyparsuje z bytového pole integer na základě offsetu
+     *
+     * @param src Pole bytů
+     * @param offset Offset, od kterého se má číst číslo
+     * @return Číslo, které je sestavené ze čtyř bytů
+     */
+    public static int intFromBytes(byte[] src, int offset) {
+        int fileSize = 0;
+        fileSize |= ((src[offset + 0] << 24) & 0xFF000000); // První byte
+        fileSize |= ((src[offset + 1] << 16) & 0xFF0000);   // Druhý byte
+        fileSize |= ((src[offset + 2] << 8) & 0xFF00);      // Třetí byte
+        fileSize |= (src[offset + 3] & 0xFF);               // Čtvrtý byte
+
+        return fileSize;
+    }
+
+    /**
+     * Naparsuje integer do bytového pole od zadaného offsetu
+     *
+     * @param value Hodnota, která se má parsovat
+     * @param dest Cílové pole, do kterého se hodnota vloží
+     * @param offset Offset v poli
+     */
+    public static void intToBytes(int value, byte[] dest, int offset) {
+        dest[offset + 0] = (byte) ((value >>> 24) & 0xFF); // První byte
+        dest[offset + 1] = (byte) ((value >>> 16) & 0xFF); // První byte
+        dest[offset + 2] = (byte) ((value >>> 8) & 0xFF); // První byte
+        dest[offset + 3] = (byte) (value  & 0xFF);        // První byte
+    }
+
+    /**
+     * Metoda pro konverzi bytů na hexa
+     *
+     * @param array Byty, které se mají konvertovat
+     * @return Řetězec z hexa znaků
+     */
+    public static String byteArrayToHex(byte[] array) {
+        StringBuilder sb = new StringBuilder(array.length * 2);
+        for(byte b : array) {
+            sb.append(String.format("%02x ", b));
+        }
+        sb.delete(sb.length() - 1, sb.length());
+        return sb.toString();
+    }
 }

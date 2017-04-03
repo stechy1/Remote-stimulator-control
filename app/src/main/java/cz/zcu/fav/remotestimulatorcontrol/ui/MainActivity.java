@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -30,6 +31,8 @@ import java.util.Map;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.about.AboutFragment;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationSharedPreferences;
@@ -71,28 +74,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String mConnectedDeviceName;
     private CharSequence mTitle;
-    private int mBluetoothServiceStatus;
+    private BluetoothService.ConnectionState mBluetoothServiceStatus;
     private int mFragmentId;
-    // BroadcastReceiver pro nastavení názvu zařízení
-    private final BroadcastReceiver mBluetoothDeviceNameReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothService.ACTION_DEVICE_NAME)) {
-                mConnectedDeviceName = intent.getStringExtra(BluetoothService.DEVICE_NAME);
-            }
-        }
-    };
     // BroadcastReceiver pro reakci na změnu stavu připojení k zařízení
     private final BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if (action.equals(BluetoothService.ACTION_STATE_CHANGE)) {
-                final int state = intent.getIntExtra(BluetoothService.STATE_CHANGE, BluetoothService.STATE_NONE);
-                setBluetoothStatusIcon(state);
+            switch (action) {
+                case BluetoothService.ACTION_STATE_CHANGE:
+                    final BluetoothService.ConnectionState state = (BluetoothService.ConnectionState) intent.getSerializableExtra(BluetoothService.EXTRA_STATE_CHANGE);
+                    setBluetoothStatusIcon(state);
+                    if (state == BluetoothService.ConnectionState.CONNECTED) {
+                        BluetoothService.sendData(MainActivity.this, RemoteFileServer.getHelloPacket());
+                    }
+                    break;
+                case BluetoothService.ACTION_DEVICE_NAME:
+                    mConnectedDeviceName = intent.getStringExtra(BluetoothService.EXTRA_DEVICE_NAME);
+                    break;
+                case BluetoothService.ACTION_DATA_RECEIVED:
+                    BtPacketAdvanced packet = new BtPacketAdvanced(intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT));
+                    if (packet.hasCommand(RemoteFileServer.Codes.OP_HELLO)) {
+                        Toast.makeText(MainActivity.this, new String(packet.getData(), 0, packet.getMaxDataSize()), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
         }
     };
@@ -127,30 +133,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Nastaví ikonu představující stav připojení k zařízení
      *
-     * @param state Stav připojení
+     * @param state {@link BluetoothService.ConnectionState} Stav připojení
      */
-    private void setBluetoothStatusIcon(int state) {
+    private void setBluetoothStatusIcon(BluetoothService.ConnectionState state) {
+        mBluetoothServiceStatus = state;
         switch (state) {
-            case BluetoothService.STATE_CONNECTED:
+            case CONNECTED:
                 Log.d(TAG, "Zařízení je připojeno");
                 if (mMenu != null) {
-                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connected);
+                    MenuItem item = mMenu.findItem(R.id.menu_main_connect);
+                    if (item != null) {
+                        item.setIcon(R.drawable.bluetooth_connected);
+                    }
                 }
-                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTED;
                 setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                 break;
-            case BluetoothService.STATE_CONNECTING:
+            case CONNECTING:
                 Log.d(TAG, "Zařízení se připojuje");
-                mBluetoothServiceStatus = BluetoothService.STATE_CONNECTING;
                 setStatus(R.string.title_connecting);
                 break;
-            case BluetoothService.STATE_LISTEN:
-            case BluetoothService.STATE_NONE:
+            case DISCONNECT:
                 Log.d(TAG, "Zařízení je odpojeno");
                 if (mMenu != null) {
-                    mMenu.getItem(0).setIcon(R.drawable.bluetooth_connect);
+                    MenuItem item = mMenu.findItem(R.id.menu_main_connect);
+                    if (item != null) {
+                        item.setIcon(R.drawable.bluetooth_connect);
+                    }
                 }
-                mBluetoothServiceStatus = BluetoothService.STATE_NONE;
                 setStatus(R.string.title_not_connected);
                 break;
         }
@@ -239,19 +248,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         CharSequence title;
         if (savedInstanceState != null) {
-            setBluetoothStatusIcon(savedInstanceState.getInt(BLUETOOTH_STATUS));
+            setBluetoothStatusIcon((BluetoothService.ConnectionState) savedInstanceState.getSerializable(BLUETOOTH_STATUS));
             title = savedInstanceState.getString(ACTIVITY_TITLE);
             mFragmentId = savedInstanceState.getInt(SELECTED_FRAGMENT_ID);
         } else {
-            setBluetoothStatusIcon(BluetoothService.STATE_NONE);
+            setBluetoothStatusIcon(BluetoothService.ConnectionState.DISCONNECT);
             title = getString(R.string.nav_configurations);
             showFragment(R.id.nav_experiments);
         }
 
         setTitle(title);
 
-        registerReceiver(mBluetoothDeviceNameReceiver, new IntentFilter(BluetoothService.ACTION_DEVICE_NAME));
-        registerReceiver(mBluetoothStateReceiver, new IntentFilter(BluetoothService.ACTION_STATE_CHANGE));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothService.ACTION_DEVICE_NAME);
+        filter.addAction(BluetoothService.ACTION_STATE_CHANGE);
+        //filter.addAction(BluetoothService.ACTION_DATA_RECEIVED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, filter);
 
         mBinding.navView.setCheckedItem(mFragmentId);
     }
@@ -274,12 +286,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (resultCode == RESULT_OK) {
                     try {
                         Log.d(TAG, "Pokus o připojení k bluetooth zařízení");
-                        String mac = data.getStringExtra(BluetoothService.DEVICE_MAC);
+                        String mac = data.getStringExtra(BluetoothService.EXTRA_DEVICE_MAC);
                         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
-                        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_ON);
-                        intent.putExtra(BluetoothService.DEVICE, device);
-                        sendBroadcast(intent);
+                        BluetoothService.changeState(this, BluetoothService.RequestState.STATE_ON, device);
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.unknown_device, Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Nastala neočekávaná vyjímka při připojování k bluetooth zařízení", e);
@@ -301,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(BLUETOOTH_DEVICE_NAME, mConnectedDeviceName);
-        outState.putInt(BLUETOOTH_STATUS, mBluetoothServiceStatus);
+        outState.putSerializable(BLUETOOTH_STATUS, mBluetoothServiceStatus);
         outState.putString(ACTIVITY_TITLE, (String) mTitle);
         outState.putInt(SELECTED_FRAGMENT_ID, mFragmentId);
         super.onSaveInstanceState(outState);
@@ -309,8 +318,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(mBluetoothDeviceNameReceiver);
-        unregisterReceiver(mBluetoothStateReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBluetoothStateReceiver);
         super.onDestroy();
     }
 
@@ -346,14 +354,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 switch (mBluetoothServiceStatus) {
-                    case BluetoothService.STATE_NONE:
-                    case BluetoothService.STATE_LISTEN:
+                    case DISCONNECT:
                         startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
                         break;
-                    case BluetoothService.STATE_CONNECTED:
-                        Intent intent = new Intent(BluetoothService.ACTION_REQUEST_STATE_CHANGE);
-                        intent.putExtra(BluetoothService.REQUEST_STATE, BluetoothService.REQUEST_STATE_OFF);
-                        sendBroadcast(intent);
+                    case CONNECTED:
+                        BluetoothService.sendData(this, RemoteFileServer.getByePacket());
+                        BluetoothService.changeState(this, BluetoothService.RequestState.STATE_OFF);
                         break;
                 }
                 return true;

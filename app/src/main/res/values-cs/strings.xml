@@ -93,8 +93,8 @@
 
     <!-- Typ použitého media k experimentu -->
     <string name="media_led">LED</string>
-    <string name="media_audio">AUDIO</string>
-    <string name="media_image">IMAGE</string>
+    <string name="media_audio">ZVUK</string>
+    <string name="media_image">OBRÁZEK</string>
     <!-- Parametry experimentů -->
     <string name="parameters_erp">ERP parametry</string>
     <string name="parameters_tvep">TVEP parametry</string>
@@ -131,6 +131,7 @@
     <string name="activity_title_import_profile">Importovat profil</string>
     <string name="activity_title_media_chose">activity_title_media_chose</string>
     <string name="no_media_found">Žádná média nenalezena</string>
-    <string name="nav_text_media">Media</string>
+    <string name="nav_text_media">Média</string>
     <string name="activity_title_media">Media manager</string>
+    <string name="action_synchronize">Synchronizovat</string>
 </resources>

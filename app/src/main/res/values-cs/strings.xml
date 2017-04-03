@@ -134,4 +134,7 @@
     <string name="nav_text_media">Média</string>
     <string name="activity_title_media">Media manager</string>
     <string name="action_synchronize">Synchronizovat</string>
+    <string name="stimulation_start">Spustit stimulaci</string>
+    <string name="stimulaton_stop">Zastavis stimulaci</string>
+    <string name="activity_title_stimulation_control">Ovládání stimulace</string>
 </resources>

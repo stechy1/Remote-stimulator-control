@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SeekBar;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.erp.Configura
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.fvep.ConfigurationFragmentFVEP;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.rea.ConfigurationFragmentREA;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.tvep.ConfigurationFragmentTVEP;
+import cz.zcu.fav.remotestimulatorcontrol.ui.stimulator.StimulatorControlActivity;
 import cz.zcu.fav.remotestimulatorcontrol.widget.editableseekbar.EditableSeekBar;
 
 public class ConfigurationDetailActivity extends AppCompatActivity
@@ -222,6 +224,10 @@ public class ConfigurationDetailActivity extends AppCompatActivity
                 .beginTransaction()
                 .replace(R.id.frame_configuration_detail, detailFragment, FRAGMENT)
                 .commit();
+    }
+
+    public void onSelectConfigurationToPlay(View view) {
+        startActivity(new Intent(this, StimulatorControlActivity.class));
     }
 
     // endregion

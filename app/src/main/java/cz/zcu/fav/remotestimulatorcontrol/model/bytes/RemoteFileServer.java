@@ -5,6 +5,7 @@ import android.os.Build;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.LS_FLAG_NO_DIRS;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_DEL;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_GET;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_LS;
@@ -21,6 +22,9 @@ public final class RemoteFileServer {
 
     // Verze přenosového protokolu pouze pro souborov systém
     public static final byte PROTOCOL_VERSION = (byte) 0x00;
+
+    // Cesta ke složce se soubory na serveru
+    public static final String DEFAUT_REMOTE_DIRECTORY = "~/";
 
     // Počet bytů, které zabírá hash
     public static final int HASH_SIZE = 16;
@@ -99,6 +103,15 @@ public final class RemoteFileServer {
      */
     public static BtPacketAdvanced getGetPacket() {
         return getServerPacket().setCommand((byte) (OP_GET + TYPE_REQUEST + PART_LAST));
+    }
+
+    /**
+     * Vrátí packet, který obsahuje informaci, že se bude mazat soubor ze serveru
+     *
+     * @return {@link BtPacketAdvanced} Packet s příkazem DEL
+     */
+    public static BtPacketAdvanced getDelPacket() {
+        return getServerPacket().setCommand((byte) (TYPE_REQUEST + OP_DEL + PART_LAST));
     }
 
     public static class Codes {

@@ -46,11 +46,14 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentMediaBinding;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileDeleteService;
 import cz.zcu.fav.remotestimulatorcontrol.service.FileSynchronizerService;
+import cz.zcu.fav.remotestimulatorcontrol.service.RemoteServerIntentService;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -142,6 +145,7 @@ public class MediaFragment extends Fragment {
                                         if (empty && mActionMode != null) {
                                             mActionMode.finish();
                                         }
+
                                     } else {
                                         mDeleteConfirmed = true;
                                     }
@@ -162,6 +166,10 @@ public class MediaFragment extends Fragment {
                         mActionMode.setTitle(getString(R.string.selected_count, mMediaAdapter.getSelectedItemCount()));
                     }
                     break;
+                case MediaManager.MESSAGE_MEDIA_DELETE:
+                    final AMedia media = (AMedia) msg.obj;
+                    final String name = media.getMediaFile().getName();
+                    FileDeleteService.startActionDelete(getActivity(), name, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, TAG);
             }
 
             if (snackbarMessage != -1) {
@@ -221,6 +229,33 @@ public class MediaFragment extends Fragment {
                     Log.d(TAG, "Progress done");
                     mProgressDialog.cancel();
                     break;
+            }
+        }
+    };
+    private final BroadcastReceiver mServiceEchoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
+                final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
+                if (!TAG.equals(destService)) {
+                    return;
+                }
+
+                final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
+                final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
+
+                if (!FileDeleteService.SERVICE_NAME.equals(srcService)) {
+                    return;
+                }
+
+                if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                    Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
+                    return;
+                }
+
+                Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -319,6 +354,8 @@ public class MediaFragment extends Fragment {
         filter.addAction(FileSynchronizerService.ACTION_DONE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
                 filter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mServiceEchoReceiver,
+                new IntentFilter(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE));
 
         return mBinding.getRoot();
     }
@@ -339,6 +376,7 @@ public class MediaFragment extends Fragment {
     @Override
     public void onDestroy() {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mFileServiceReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mServiceEchoReceiver);
         super.onDestroy();
     }
 

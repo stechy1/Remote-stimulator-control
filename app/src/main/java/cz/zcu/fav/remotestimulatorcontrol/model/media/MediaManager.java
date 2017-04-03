@@ -33,6 +33,7 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
     public static final int MESSAGE_MEDIA_IMPORT = 2;
     public static final int MESSAGE_MEDIA_PREPARED_TO_DELETE = 3;
     public static final int MESSAGE_MEDIA_UNDO_DELETE = 4;
+    public static final int MESSAGE_MEDIA_DELETE = 5;
 
     public static final int MESSAGE_SUCCESSFUL = 1;
     public static final int MESSAGE_UNSUCCESSFUL = 2;
@@ -204,8 +205,8 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
      * Vrátí smezané medium zpět do kolekce
      */
     public void undoDelete() {
-        for (AMedia profile : mMediaToDelete) {
-            mediaList.add(profile);
+        for (AMedia media : mMediaToDelete) {
+            mediaList.add(media);
         }
 
         mMediaToDelete.clear();
@@ -219,10 +220,13 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
      * Potvrzení smazání média
      */
     public void confirmDelete() {
-        for (AMedia configuration : mMediaToDelete) {
-            File configFile = buildMediaFilePath(configuration);
+        for (AMedia media : mMediaToDelete) {
+            File configFile = buildMediaFilePath(media);
             if (!configFile.delete()) {
                 Log.e(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
+            }
+            if (mHandler != null) {
+                mHandler.obtainMessage(MESSAGE_MEDIA_DELETE, media).sendToTarget();
             }
         }
     }

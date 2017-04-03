@@ -33,12 +33,12 @@ public abstract class RemoteServerIntentService extends IntentService {
     protected static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";
     protected static final String PARAM_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.extra.";
 
-    protected static final String ACTION_ECHO_SERVICE_DONE = ACTION_PREFIX + "ECHO_SERVICE_DONE";
-    protected static final String PARAM_ECHO_SERVICE_NAME = PARAM_PREFIX + "ECHO_SERVICE_NAME";
-    protected static final String PARAM_SRC_SERVICE_NAME = PARAM_PREFIX + "SRC_SERVICE_NAME";
-    protected static final String PARAM_ECHO_SERVICE_STATUS = PARAM_PREFIX + "ECHO_SERVICE_STATUS";
-    protected static final int VALUE_ECHO_SERVICE_STATUS_OK = 0;
-    protected static final int VALUE_ECHO_SERVICE_STATUS_ERROR = 1;
+    public static final String ACTION_ECHO_SERVICE_DONE = ACTION_PREFIX + "ECHO_SERVICE_DONE";
+    public static final String PARAM_ECHO_SERVICE_NAME = PARAM_PREFIX + "ECHO_SERVICE_NAME";
+    public static final String PARAM_SRC_SERVICE_NAME = PARAM_PREFIX + "SRC_SERVICE_NAME";
+    public static final String PARAM_ECHO_SERVICE_STATUS = PARAM_PREFIX + "ECHO_SERVICE_STATUS";
+    public static final int VALUE_ECHO_SERVICE_STATUS_OK = 0;
+    public static final int VALUE_ECHO_SERVICE_STATUS_ERROR = 1;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({VALUE_ECHO_SERVICE_STATUS_OK, VALUE_ECHO_SERVICE_STATUS_ERROR})

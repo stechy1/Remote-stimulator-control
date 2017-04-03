@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 /**
@@ -32,7 +33,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     public static final String SERVICE_NAME = "FileSynchronizerService";
 
     private static final String FILE_MASK = "*.jpg;*.gif;*.png";
-    private static final String DEFAUT_REMOTE_DIRECTORY = "~/";
+
 
     private static final String ACTION_SYNCHRONIZE = ACTION_PREFIX + "SYNCHRONIZE";
     public static final String ACTION_DONE = ACTION_PREFIX + "DONE";
@@ -197,7 +198,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
                 names.remove(index);
                 localFiles.remove(index);
             } else {
-                result.second.add(DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
+                result.second.add(RemoteFileServer.DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
             }
             increaseMainProgress(1);
 //            // Získám index hashe
@@ -227,7 +228,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         increaseMaxProgress(2);
         // Nejdříve se spustí další intent service pro načtení souborů ze vzdáleného
         // adresáře
-        FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
+        FileLsService.startActionLs(this, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
         // Abych počkal na dokončení, tak se zamknu na semaforu
         lockService();
         increaseMainProgress(1);
@@ -238,7 +239,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         increaseMaxProgress(mergedFiles.first.size());
         for (File toUpload : mergedFiles.first) {
             Log.d(TAG, "Musím nahrát: " + toUpload + " soubor");
-            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
+            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
             lockService();
             increaseMainProgress(1);
             // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
@@ -294,10 +295,6 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     @Override
     protected void onSubServiceDone(Intent intent) {
         final String action = intent.getAction();
-
-        if (!action.equals(ACTION_ECHO_SERVICE_DONE)) {
-            return;
-        }
 
         final String destService = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
         if (!SERVICE_NAME.equals(destService)) {

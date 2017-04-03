@@ -5,7 +5,7 @@
     <!-- Navigace -->
     <string name="nav_drawer_open">Otevřít navigaci</string>
     <string name="nav_drawer_close">Zavřít navigaci</string>
-    <string name="nav_configurations">Konfigurace</string>
+    <string name="nav_text_configurations">Konfigurace</string>
     <string name="nav_profiles">Profily výstupů</string>
     <string name="nav_text_profiles">Profily</string>
     <string name="nav_text_settings">Nastavení</string>

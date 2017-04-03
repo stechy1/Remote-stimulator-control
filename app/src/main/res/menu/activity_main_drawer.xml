@@ -5,7 +5,7 @@
         <item
             android:id="@+id/nav_experiments"
             android:icon="@drawable/experiments"
-            android:title="@string/nav_configurations" />
+            android:title="@string/nav_text_configurations" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/settings"

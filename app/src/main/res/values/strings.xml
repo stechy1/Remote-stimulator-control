@@ -6,7 +6,7 @@
     <!-- Navigace -->
     <string name="nav_drawer_open">Open sidebar</string>
     <string name="nav_drawer_close">Close sidebar</string>
-    <string name="nav_configurations">Configurations</string>
+    <string name="nav_text_configurations">Configurations</string>
     <string name="nav_profiles">Output profiles</string>
     <string name="nav_text_profiles">Profily</string>
     <string name="nav_text_settings">Settings</string>

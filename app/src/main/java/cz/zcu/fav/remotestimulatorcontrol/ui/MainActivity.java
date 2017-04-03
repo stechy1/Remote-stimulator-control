@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mFragmentId = savedInstanceState.getInt(SELECTED_FRAGMENT_ID);
         } else {
             setBluetoothStatusIcon(BluetoothService.ConnectionState.DISCONNECT);
-            title = getString(R.string.nav_configurations);
+            title = getString(R.string.nav_text_configurations);
             showFragment(R.id.nav_experiments);
         }
 

@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_bottom_experiments"
         android:icon="@drawable/experiments"
-        android:title="@string/nav_configurations" />
+        android:title="@string/nav_text_configurations" />
     <item
         android:id="@+id/nav_bottom_profiles"
         android:icon="@android:drawable/ic_menu_edit"

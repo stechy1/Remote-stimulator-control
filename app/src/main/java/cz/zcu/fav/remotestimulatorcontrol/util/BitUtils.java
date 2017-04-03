@@ -86,14 +86,15 @@ public final class BitUtils {
     /**
      * Metoda pro konverzi bytů na hexa
      *
-     * @param bytes Byty, které se mají konvertovat
+     * @param array Byty, které se mají konvertovat
      * @return Řetězec z hexa znaků
      */
-    public static String byteArrayToHex(byte[] a) {
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b : a) {
+    public static String byteArrayToHex(byte[] array) {
+        StringBuilder sb = new StringBuilder(array.length * 2);
+        for(byte b : array) {
             sb.append(String.format("%02x ", b));
         }
+        sb.delete(sb.length() - 1, sb.length());
         return sb.toString();
     }
 }

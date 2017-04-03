@@ -117,6 +117,16 @@
             android:label="@string/activity_title_media_chose"
             android:theme="@style/AppTheme.Dialog.NoTitle" />
 
+        <!-- Stimulator control activity -->
+        <activity
+            android:name=".ui.stimulator.StimulatorControlActivity"
+            android:label="@string/activity_title_stimulation_control"
+            android:parentActivityName=".ui.MainActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".ui.MainActivity" />
+        </activity>
+
         <!-- Services -->
         <service android:name=".service.BluetoothService" />
         <service android:name=".service.FileSynchronizerService" />

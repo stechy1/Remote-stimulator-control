@@ -27,6 +27,7 @@
         tools:context="cz.zcu.fav.remotestimulatorcontrol.ui.configurations.detail.ConfigurationDetailActivity">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="4dp"
@@ -64,6 +65,17 @@
             </android.support.design.widget.CollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:clickable="true"
+            app:srcCompat="@drawable/start_configuration"
+            app:layout_anchor="@id/appBarLayout"
+            app:layout_anchorGravity="bottom|right|end"
+            android:onClick="onSelectConfigurationToPlay"/>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -109,5 +121,6 @@
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
+
     </android.support.design.widget.CoordinatorLayout>
 </layout>

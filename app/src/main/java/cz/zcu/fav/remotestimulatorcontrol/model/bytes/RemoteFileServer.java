@@ -106,7 +106,7 @@ public final class RemoteFileServer {
         // v protokolu znamena 62 znaku dlouhou zpravu
         public static final byte FULL_LENGTH_MESSAGE = (byte) 0x3E;
         // v protokolu definovan jako posledni z bloku reserved
-        public static final byte COMMUNICATION_OP_CODE = (byte) 0xBF; // TODO v budoucnu zmenit na jinou
+        public static final byte COMMUNICATION_OP_CODE = (byte) 0xEF;
 
         public static final int TRASFER_DATA_SIZE = 60;
         // pri prijeti nevidim prvni dva byte musim je tedy odecist

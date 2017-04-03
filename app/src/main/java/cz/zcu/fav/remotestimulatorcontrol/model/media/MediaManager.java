@@ -159,7 +159,7 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
         int position = mediaList.indexOf(media);
 
         if (mHandler != null) {
-            mHandler.obtainMessage(MESSAGE_MEDIA_IMPORT, MESSAGE_SUCCESSFUL, position).sendToTarget();
+            mHandler.obtainMessage(MESSAGE_MEDIA_IMPORT, MESSAGE_SUCCESSFUL, position, destinationFile.getAbsolutePath()).sendToTarget();
         }
     }
 

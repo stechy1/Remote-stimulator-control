@@ -53,6 +53,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
 import cz.zcu.fav.remotestimulatorcontrol.service.FileDeleteService;
 import cz.zcu.fav.remotestimulatorcontrol.service.FileSynchronizerService;
+import cz.zcu.fav.remotestimulatorcontrol.service.FileUploadService;
 import cz.zcu.fav.remotestimulatorcontrol.service.RemoteServerIntentService;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
@@ -114,6 +115,8 @@ public class MediaFragment extends Fragment {
                     if (success) {
                         isRecyclerViewEmpty.set(false);
                         mMediaAdapter.notifyItemInserted(msg.arg2);
+                        final String filePath = (String) msg.obj;
+                        FileUploadService.startActionUpload(getActivity(), filePath, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, TAG);
                     }
                     break;
                 case MediaManager.MESSAGE_MEDIA_PREPARED_TO_DELETE:
@@ -228,6 +231,7 @@ public class MediaFragment extends Fragment {
                 case FileSynchronizerService.ACTION_DONE:
                     Log.d(TAG, "Progress done");
                     mProgressDialog.cancel();
+                    refreshRecyclerView();
                     break;
             }
         }
@@ -237,25 +241,35 @@ public class MediaFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if (action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
-                final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
-                if (!TAG.equals(destService)) {
-                    return;
-                }
+            if (!action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
+                 return;
+            }
 
-                final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
-                final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
+            final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
+            if (!TAG.equals(destService)) {
+                return;
+            }
 
-                if (!FileDeleteService.SERVICE_NAME.equals(srcService)) {
-                    return;
-                }
+            final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
+            final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
 
-                if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
-                    Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
-                    return;
-                }
+            switch (srcService) {
+                case FileDeleteService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
+                        return;
+                    }
 
-                Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
+                    break;
+                case FileUploadService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Soubor se nepodařilo nahrát na server");
+                        return;
+                    }
+
+                    Toast.makeText(context, "Soubor byl nahrán na server", Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };

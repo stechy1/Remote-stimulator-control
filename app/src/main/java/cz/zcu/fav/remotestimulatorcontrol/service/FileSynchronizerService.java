@@ -294,8 +294,6 @@ public class FileSynchronizerService extends RemoteServerIntentService {
 
     @Override
     protected void onSubServiceDone(Intent intent) {
-        final String action = intent.getAction();
-
         final String destService = intent.getStringExtra(PARAM_ECHO_SERVICE_NAME);
         if (!SERVICE_NAME.equals(destService)) {
             return;

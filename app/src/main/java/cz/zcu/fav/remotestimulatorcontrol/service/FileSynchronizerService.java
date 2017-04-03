@@ -241,6 +241,13 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
             lockService();
             increaseMainProgress(1);
+            // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
+            // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         increaseMaxProgress(mergedFiles.second.size());
@@ -249,6 +256,13 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             FileDownloadService.startActionDownload(this, toDownload, SERVICE_NAME);
             lockService();
             increaseMainProgress(1);
+            // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
+            // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_DONE));

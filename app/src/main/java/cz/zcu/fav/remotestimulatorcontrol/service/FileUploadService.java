@@ -102,13 +102,13 @@ public class FileUploadService extends RemoteServerIntentService {
             Log.e(TAG, "Nepodařilo se poslat první packet", e);
         }
 
-
         FileInputStream in = null;
         final int maxDataSize = BtPacket.PACKET_SIZE - RemoteFileServer.Codes.INDEX_DATA;
         final byte[] totalData = new byte[maxDataSize];
         final byte[] buffer = new byte[maxDataSize];
         int totalSize = 0;
         int count = 0;
+        int counter = 0;
         try {
             in = new FileInputStream(file);
             do {
@@ -135,6 +135,16 @@ public class FileUploadService extends RemoteServerIntentService {
                     }
                     packet.insertData(totalData);
                     sendData(packet);
+
+                    // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
+                    // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
+                    if ((counter++) % 10 == 0) {
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     if (count != -1) {
                         totalSize %= maxDataSize;

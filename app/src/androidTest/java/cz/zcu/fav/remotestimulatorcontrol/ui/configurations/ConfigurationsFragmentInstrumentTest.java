@@ -17,7 +17,6 @@ import cz.zcu.fav.remotestimulatorcontrol.EspressoTestUtils;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.ui.MainActivity;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -29,6 +28,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static cz.zcu.fav.remotestimulatorcontrol.EspressoFix.openActionModeOverflowOrOptionsMenu;
 import static cz.zcu.fav.remotestimulatorcontrol.EspressoTestUtils.childAtPosition;
 import static cz.zcu.fav.remotestimulatorcontrol.EspressoTestUtils.createConfiguration;
 import static org.hamcrest.Matchers.allOf;
@@ -89,14 +89,14 @@ public class ConfigurationsFragmentInstrumentTest {
 
         onView(
                 childAtPosition(
-                    childAtPosition(
-                        withId(R.id.toolbar),
-                        3),
-                2))
+                        childAtPosition(
+                                withId(R.id.toolbar),
+                                3),
+                        2))
                 //.check(matches(withContentDescription("Další možnosti")))
                 .check(matches(isDisplayed()));
 
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        openActionBarOverflowOrOptionsMenu(getTargetContext());
 
         onView(
                 allOf(
@@ -126,7 +126,7 @@ public class ConfigurationsFragmentInstrumentTest {
         onView(
                 withId(R.id.action_mode_close_button))
                 .check(matches(isDisplayed()))
-                .check(matches(withContentDescription("Hotovo")));
+                .check(matches(withContentDescription(android.support.v7.appcompat.R.string.abc_action_mode_done)));
 
         // Kontrola, že je zobrazen správný počet vybraných konfigurací
         onView(
@@ -147,32 +147,21 @@ public class ConfigurationsFragmentInstrumentTest {
                 .check(matches(withContentDescription(R.string.action_rename)));
 
         // Zobrazení rozšířené kontextové nabídky
-        openActionBarOverflowOrOptionsMenu(getTargetContext());
+        openActionModeOverflowOrOptionsMenu(getTargetContext());
 
         // Kontrola, že se zobrazilo tlačítko pro duplikovaní konfigurace
         onView(
                 allOf(
                         withId(R.id.title),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
-                                        0),
-                                0)))
-                .check(matches(isDisplayed()))
-                .check(matches(isEnabled()))
-                .check(matches(withText(R.string.action_duplicate)));
+                        withText(R.string.action_duplicate)))
+                .check(matches(isDisplayed()));
 
         // Kontrola, že se zobrazilo tlačítko pro možnost vybrat vše
         onView(
                 allOf(
                         withId(R.id.title),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
-                                        0),
-                                0)))
+                        withText(R.string.action_select_all)))
                 .check(matches(isDisplayed()))
-                .check(matches(isEnabled()))
-                .check(matches(withText(R.string.action_select_all)));
+                .check(matches(isEnabled()));
     }
 }

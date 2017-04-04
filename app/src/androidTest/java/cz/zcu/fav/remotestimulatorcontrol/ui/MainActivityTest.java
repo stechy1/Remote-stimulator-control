@@ -19,9 +19,8 @@ import org.junit.runner.RunWith;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -32,6 +31,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static cz.zcu.fav.remotestimulatorcontrol.EspressoFix.openActionModeOverflowOrOptionsMenu;
 import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
@@ -110,7 +110,7 @@ public class MainActivityTest {
                         isDisplayed()));
         textView3.check(matches(isDisplayed()));
 
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        openActionModeOverflowOrOptionsMenu(getTargetContext());
 
         ViewInteraction textView5 = onView(
                 allOf(withId(R.id.title), withText("Duplikovat"),

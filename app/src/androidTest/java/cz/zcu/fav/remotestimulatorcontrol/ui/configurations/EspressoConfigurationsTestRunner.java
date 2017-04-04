@@ -10,7 +10,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         ConfigurationsFragmentInstrumentTest.class,
         ConfigurationFractoryInstrumentTest.class,
-        ConfigurationRenameInstrumentTest.class
+        ConfigurationRenameInstrumentTest.class,
+        ConfigurationsFragmentParametrizedTest.class
 })
 public final class EspressoConfigurationsTestRunner {
     // Zde opravdu nic není

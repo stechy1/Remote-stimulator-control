@@ -415,6 +415,11 @@ public class ProfileFragment extends Fragment {
         public boolean onSingleTapConfirmed(MotionEvent e) {
             View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
 
+            if (view == null) {
+                return false;
+            }
+
+
             if (mActionMode != null) {
                 internal_toggleSelection(view);
                 return false;

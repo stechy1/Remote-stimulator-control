@@ -535,6 +535,11 @@ public class MediaFragment extends Fragment {
             View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
             int position = mRecyclerView.getChildAdapterPosition(view);
 
+            if (view == null) {
+                return false;
+            }
+
+
             if (mActionMode != null) {
                 internal_toggleSelection(view);
                 return false;

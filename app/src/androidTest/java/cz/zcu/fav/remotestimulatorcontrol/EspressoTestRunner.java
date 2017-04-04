@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 import cz.zcu.fav.remotestimulatorcontrol.ui.MainActivityInstrumentTest;
 import cz.zcu.fav.remotestimulatorcontrol.ui.MainFragmentInstrumentTest;
+import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.EspressoConfigurationsTestRunner;
 
 /**
  * Spouštěcí třída jednotlivých testů
@@ -12,7 +13,8 @@ import cz.zcu.fav.remotestimulatorcontrol.ui.MainFragmentInstrumentTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         MainActivityInstrumentTest.class,
-        MainFragmentInstrumentTest.class
+        MainFragmentInstrumentTest.class,
+        EspressoConfigurationsTestRunner.class
 })
 public final class EspressoTestRunner {
     // Zde opravdu nic není

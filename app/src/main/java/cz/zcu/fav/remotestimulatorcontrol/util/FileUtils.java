@@ -522,7 +522,7 @@ public class FileUtils {
             }
         } catch (NoSuchAlgorithmException e) {
             // Nemělo by nikdy nastat
-            return null;
+            return new byte[16]; // Velikost hashe pro MD5
         }
     }
 }

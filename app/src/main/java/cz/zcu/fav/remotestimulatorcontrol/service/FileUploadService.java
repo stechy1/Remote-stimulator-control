@@ -138,10 +138,10 @@ public class FileUploadService extends RemoteServerIntentService {
 
                     increaseMainProgress(1);
                     // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
-                    // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
+                    // Je to kvůli pomalému zpracování sériové linky
                     if ((counter++) % 200 == 0) {
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(10000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

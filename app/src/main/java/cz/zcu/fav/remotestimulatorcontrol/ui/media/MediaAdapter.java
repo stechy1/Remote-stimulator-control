@@ -49,7 +49,7 @@ public final class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MediaH
         holder.bindTo(media);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
-        holder.setIsRecyclable(selected);
+        holder.setIsRecyclable(!selected);
     }
 
     @Override

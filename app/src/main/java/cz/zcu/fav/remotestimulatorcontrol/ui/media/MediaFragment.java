@@ -220,13 +220,15 @@ public class MediaFragment extends Fragment {
                     break;
                 case FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS:
                     totalProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAIN_PROGRESS, 0);
+                    totalSecProgress = totalProgress;
                     Log.d(TAG, "Aktualizuji main progress na: " + totalProgress);
                     mProgressDialog.setProgress(totalProgress);
+                    mProgressDialog.setSecondaryProgress(totalSecProgress);
                     break;
                 case FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS:
                     totalSecProgress += intent.getIntExtra(FileSynchronizerService.PARAM_SECONDARY_PROGRESS, 0);
                     Log.d(TAG, "Aktualizuji secondary progress na: " + totalSecProgress);
-                    mProgressDialog.setProgress(totalSecProgress);
+                    mProgressDialog.setSecondaryProgress(totalSecProgress);
                     break;
                 case FileSynchronizerService.ACTION_DONE:
                     Log.d(TAG, "Progress done");

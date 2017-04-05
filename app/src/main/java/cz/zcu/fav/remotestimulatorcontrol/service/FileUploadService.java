@@ -81,6 +81,7 @@ public class FileUploadService extends RemoteServerIntentService {
         final int size = (int) file.length();
         final byte[] data = new byte[BtPacket.PACKET_SIZE - 4];
         BitUtils.intToBytes(size, data, 0);
+        increaseMaxProgress((int) Math.round(Math.floor(size / (double) BtPacketAdvanced.MAX_DATA_SIZE)));
 
         final byte[] hash = FileUtils.md5FromFile(file);
         System.arraycopy(hash, 0, data, 4, hash.length);
@@ -93,7 +94,6 @@ public class FileUploadService extends RemoteServerIntentService {
     // region Handle methods
 
     private void handleActionUpload(String filePath, String remoteDirectory) {
-        updateProgressTitle("File upload");
         final File file = new File(filePath);
 
         try {
@@ -136,11 +136,12 @@ public class FileUploadService extends RemoteServerIntentService {
                     packet.insertData(totalData);
                     sendData(packet);
 
+                    increaseMainProgress(1);
                     // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
                     // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
-                    if ((counter++) % 10 == 0) {
+                    if ((counter++) % 200 == 0) {
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(2000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

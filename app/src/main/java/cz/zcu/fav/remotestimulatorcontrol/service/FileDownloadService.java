@@ -8,8 +8,6 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
@@ -27,10 +25,6 @@ public class FileDownloadService extends RemoteServerIntentService {
     private static final String ACTION_DOWNLOAD = ACTION_PREFIX + "DOWNLOAD";
     private static final String PARAM_REMOTE_FILE_PATH = PARAM_PREFIX + "REMOTE_FILE_PATH";
     public static final String PARAM_DOWNLOADED_FILE_NAME = PARAM_PREFIX + "DOWNLOADED_FILE_NAME";
-    // endregion
-
-    // region Variables
-    private BlockingQueue<BtPacketAdvanced> packetQueue = new ArrayBlockingQueue<>(1000);
     // endregion
 
     // region Constructors
@@ -76,7 +70,6 @@ public class FileDownloadService extends RemoteServerIntentService {
 
     // region Handle methods
     private void handleActionDownload(String remoteFilePath) {
-        updateProgressTitle("File download");
         sendFirstPacket(remoteFilePath);
 
         BtPacketAdvanced firstPacket = null;
@@ -100,6 +93,9 @@ public class FileDownloadService extends RemoteServerIntentService {
         final String fileName = remoteFilePath.substring(remoteFilePath.lastIndexOf("/"));
         final byte[] firstData = firstPacket.getData();
         final int size = BitUtils.intFromBytes(firstData, 1); // Na indexu 0 je result
+        final int progressCount = (int) Math.round(Math.floor(size / (double) BtPacketAdvanced.MAX_DATA_SIZE));
+        increaseMaxProgress(progressCount);
+
         final byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
         File outputFile = new File(getCacheDir(), fileName);
@@ -121,7 +117,9 @@ public class FileDownloadService extends RemoteServerIntentService {
 
                 byte[] data = incommingPacket.getData();
                 outputStream.write(data);
+                increaseMainProgress(1);
             } while (!incommingPacket.hasCommand(RemoteFileServer.Codes.PART_LAST));
+            increaseMainProgress(progressCount);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

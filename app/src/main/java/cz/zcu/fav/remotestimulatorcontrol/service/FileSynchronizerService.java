@@ -18,8 +18,9 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
+
+import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.DEFAUT_REMOTE_DIRECTORY;
 
 /**
  * Service sloužící k synchronizaci souborů se vzdáleným souborovým serverem
@@ -157,11 +158,39 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     }
 
     /**
+     * Najde v kolekci index, pod kterým se ukrývá hledaný hash
+     *
+     * @param hash Hash, který se hledá v kolekci
+     * @param hashes Kolekce s hashema
+     * @return Pokud je hash nalezen v kolekci, tak index, jinak -1
+     */
+    private int getIndexOfHash(byte[] hash, List<byte[]> hashes) {
+        final int count = hashes.size();
+        final int hashSize = hash.length;
+
+        for (int i = 0; i < count; i++) {
+            byte[] toCompare = hashes.get(i);
+            boolean match = true;
+            for (int j = 0; j < hashSize; j++) {
+                if (hash[j] != toCompare[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * Projde všechny lokální a vzdálené soubory a zjistí, které je potřeba
      * stahnout a které se musí nahrát na vzdálený server
      */
     private Pair<ArrayList<File>, ArrayList<String>> mergeFiles() {
-        updateProgressTitle("Merging files");
+
         final Pair<ArrayList<File>, ArrayList<String>> result =
                 new Pair<>(new ArrayList<File>(), new ArrayList<String>());
         final File[] localFilesArray = mediaRootDirectory.listFiles();
@@ -173,44 +202,37 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             localFiles.addAll(Arrays.asList(localFilesArray));
         }
 
+        updateProgressTitle("MD5 processing...");
         // Vypočítám hashe jednotlivých souborů
-        // Pozor!!! Tato akce trvá velmi dlouho, takže je nutné opravdu čekat
-//        List<byte[]> hashes = new ArrayList<>(localFiles.size());
-//        for (File file : localFiles) {
-//            try {
-//                Log.d(TAG, "Počítam hash souboru: " + file.getName());
-//                hashes.add(FileUtils.md5FromFile(file));
-//            } catch (IOException e) {
-//                Log.e(TAG, "Nepodařilo se získat MD5 hash ze souboru: " + file.getName());
-//            }
-//        }
-        List<String> names = new ArrayList<>(localFiles.size());
-        for (File localFile : localFiles) {
-            names.add(localFile.getName());
+        List<byte[]> hashes = new ArrayList<>(localFiles.size());
+        increaseMaxProgress(localFiles.size());
+        for (File file : localFiles) {
+            try {
+                Log.d(TAG, "Počítam hash souboru: " + file.getName());
+                hashes.add(FileUtils.md5FromFile(file));
+                increaseMainProgress(1);
+            } catch (IOException e) {
+                Log.e(TAG, "Nepodařilo se získat MD5 hash ze souboru: " + file.getName());
+            }
         }
 
+        updateProgressTitle("Merging files");
         // Projdu všechny vzdálené soubory a zjistím, které musím stáhnout
-        increaseMaxProgress(names.size());
+        increaseMaxProgress(hashes.size());
         // Dokud nebude fungovat checksuma, budu kontrolovat názvy souborů
         for (FileLsService.RemoteFileEntry remoteFileEntry : remoteFileEntries) {
-            int index = names.indexOf(remoteFileEntry.name);
+            // Získám index hashe
+            int index = getIndexOfHash(remoteFileEntry.hash, hashes);
+            //int index = hashes.indexOf(remoteFileEntry.hash);
             if (index != -1) {
-                names.remove(index);
+                // Když existuje lokální hash, tak smažu záznam
+                hashes.remove(index);
                 localFiles.remove(index);
             } else {
-                result.second.add(RemoteFileServer.DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
+                // Když neexistuje, tak to dám na seznam souborů, co musím stáhnout
+                result.second.add(DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
             }
             increaseMainProgress(1);
-//            // Získám index hashe
-//            int index = hashes.indexOf(remoteFileEntry.hash);
-//            if (index != -1) {
-//                // Když existuje lokální hash, tak smažu záznam
-//                hashes.remove(index);
-//                localFiles.remove(index);
-//            } else {
-//                // Když neexistuje, tak to dám na seznam souborů, co musím stáhnout
-//                result.second.add(DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
-//            }
         }
 
         // Zbylé soubory se musejí nahrát na server
@@ -228,7 +250,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         increaseMaxProgress(2);
         // Nejdříve se spustí další intent service pro načtení souborů ze vzdáleného
         // adresáře
-        FileLsService.startActionLs(this, RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
+        FileLsService.startActionLs(this, DEFAUT_REMOTE_DIRECTORY, FILE_MASK, SERVICE_NAME);
         // Abych počkal na dokončení, tak se zamknu na semaforu
         lockService();
         increaseMainProgress(1);
@@ -239,31 +261,19 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         increaseMaxProgress(mergedFiles.first.size());
         for (File toUpload : mergedFiles.first) {
             Log.d(TAG, "Musím nahrát: " + toUpload + " soubor");
-            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), RemoteFileServer.DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
+            updateProgressTitle("Uploading: " + toUpload.getName());
+            FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
             lockService();
             increaseMainProgress(1);
-            // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
-            // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
         increaseMaxProgress(mergedFiles.second.size());
         for (String toDownload : mergedFiles.second) {
             Log.d(TAG, "Musím stáhnout: " + toDownload + " soubor");
+            updateProgressTitle("Downloading: " + toDownload);
             FileDownloadService.startActionDownload(this, toDownload, SERVICE_NAME);
             lockService();
             increaseMainProgress(1);
-            // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
-            // Je to kvůli pomalému zpracování v arduinu, které mi zahazovalo packety
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_DONE));

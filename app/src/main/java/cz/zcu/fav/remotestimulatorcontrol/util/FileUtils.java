@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -498,38 +496,25 @@ public class FileUtils {
         try {
             MessageDigest md = MessageDigest.getInstance(MD5);
             InputStream is = null;
-            DigestInputStream dis = null;
             try {
                 is = new FileInputStream(file);
-                dis = new DigestInputStream(is, md);
+                int numRead;
 
-                int numRead = 0;
                 do {
-                    numRead = is.read();
+                    numRead = is.read(buffer,0,buffer.length);
                     if (numRead > 0) {
                         md.update(buffer, 0, numRead);
                     }
                 } while (numRead != -1);
 
                 byte[] bytes = md.digest();
-                ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
-                for (byte aByte : bytes) {
-                    byteBuffer.put((byte) ((aByte & 0xFF) | 0x100));
-                }
-                Log.d(TAG, "Spočítaný hash: " + BitUtils.byteArrayToHex(byteBuffer.array()));
-                return byteBuffer.array();
+                Log.d(TAG, "Spočítaný hash: " + BitUtils.byteArrayToHex(bytes));
+                return bytes;
 
             } finally {
                 if (is != null) {
                     try {
                         is.close();
-                    } catch (IOException e) {
-                        // Nemělo by nikdy nastat
-                    }
-                }
-                if (dis != null) {
-                    try {
-                        dis.close();
                     } catch (IOException e) {
                         // Nemělo by nikdy nastat
                     }

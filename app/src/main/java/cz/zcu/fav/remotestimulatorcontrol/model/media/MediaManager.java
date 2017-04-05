@@ -182,7 +182,7 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
             return;
         }
 
-        // Potřebuji odebírat profily od nejvyššího indexu po nejnižší,
+        // Potřebuji odebírat soubory od nejvyššího indexu po nejnižší,
         // abych zabránil NullPointerExceptionu
         if (selectedItems.size() > 1) {
             Collections.sort(selectedItems);
@@ -202,7 +202,7 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
 
     /**
      * Zruší akci mazání
-     * Vrátí smezané medium zpět do kolekce
+     * Vrátí smazané medium zpět do kolekce
      */
     public void undoDelete() {
         for (AMedia media : mMediaToDelete) {
@@ -221,9 +221,9 @@ public final class MediaManager implements MediaAsyncReader.OnMediaLoadedListene
      */
     public void confirmDelete() {
         for (AMedia media : mMediaToDelete) {
-            File configFile = buildMediaFilePath(media);
-            if (!configFile.delete()) {
-                Log.e(TAG, "Nepodařilo se smazat profil: " + configFile.getName());
+            File mediaFile = buildMediaFilePath(media);
+            if (!mediaFile.delete()) {
+                Log.e(TAG, "Nepodařilo se smazat soubor: " + mediaFile.getName());
             }
             if (mHandler != null) {
                 mHandler.obtainMessage(MESSAGE_MEDIA_DELETE, media).sendToTarget();

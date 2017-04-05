@@ -27,7 +27,7 @@ public abstract class RemoteServerIntentService extends IntentService {
     private static final String TAG = "ARemoteServerService";
 
     private static final int DEFAULT_QUEUE_SIZE = 100;
-    protected static final int DEFAULT_WAIT_TIME_FOR_PACKET = 10;
+    protected static final int DEFAULT_WAIT_TIME_FOR_PACKET = 3;
     protected static final TimeUnit DEFAULT_WAIT_UNIT = TimeUnit.SECONDS;
 
     protected static final String ACTION_PREFIX = "cz.zcu.fav.remotestimulatorcontrol.service.action.";

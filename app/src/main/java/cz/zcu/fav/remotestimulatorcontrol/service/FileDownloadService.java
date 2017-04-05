@@ -119,7 +119,6 @@ public class FileDownloadService extends RemoteServerIntentService {
                 outputStream.write(data);
                 increaseMainProgress(1);
             } while (!incommingPacket.hasCommand(RemoteFileServer.Codes.PART_LAST));
-            increaseMainProgress(progressCount);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

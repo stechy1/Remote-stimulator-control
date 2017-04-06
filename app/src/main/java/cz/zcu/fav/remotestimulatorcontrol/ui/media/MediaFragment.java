@@ -209,21 +209,17 @@ public class MediaFragment extends Fragment {
             switch (action) {
                 case FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE:
                     final String message = intent.getStringExtra(FileSynchronizerService.PARAM_PROGRESS_MESSAGE);
-                    Log.d(TAG, "Aktualizuji zprávu progressu na: " + message);
                     mProgressDialog.setMessage(message);
                     break;
                 case FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS:
                     totalMaxProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAX_PROGRESS, 0);
-                    Log.d(TAG, "Inkrementuji progress na: " + totalMaxProgress);
                     mProgressDialog.setMax(totalMaxProgress);
                     break;
                 case FileSynchronizerService.ACTION_INCREASE_PROGRESS:
                     totalProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAIN_PROGRESS, 0);
-                    Log.d(TAG, "Aktualizuji main progress na: " + totalProgress);
                     mProgressDialog.setProgress(totalProgress);
                     break;
                 case FileSynchronizerService.ACTION_DONE:
-                    Log.d(TAG, "Progress done");
                     mProgressDialog.cancel();
                     refreshRecyclerView();
                     break;

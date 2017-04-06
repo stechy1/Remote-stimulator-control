@@ -315,7 +315,6 @@ public class ProfileFragment extends Fragment {
             case REQUEST_NEW_PROFILE:
                 if (resultCode == RESULT_OK) {
                     String name = data.getStringExtra(ProfileFactoryActivity.PROFILE_NAME);
-                    Log.d(TAG, name);
                     mManager.create(name);
                 }
                 break;
@@ -400,8 +399,6 @@ public class ProfileFragment extends Fragment {
         intent.putExtra(ProfileDetailActivity.PROFILE_NAME, profile.getName());
 
         ActivityCompat.startActivity(getActivity(), intent, null);
-
-        Log.d(TAG, String.valueOf(position));
     }
 
     private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {

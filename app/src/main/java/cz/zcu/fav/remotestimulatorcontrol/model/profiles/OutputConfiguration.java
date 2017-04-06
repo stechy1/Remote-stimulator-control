@@ -81,7 +81,6 @@ public class OutputConfiguration extends BaseObservable {
     }
 
     public void setMediaType(MediaType mediaType) {
-        Log.d(TAG, mediaType.name());
         this.mediaType = mediaType;
         notifyPropertyChanged(BR.mediaType);
         setThumbnail(null);

@@ -341,7 +341,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
                     Log.e(TAG, "Nepodařilo se nahrát soubor");
                     break;
                 }
-                Log.d(TAG, "Upload completed");
+                Log.d(TAG, "Upload byl dokončen");
                 break;
             case FileDownloadService.SERVICE_NAME:
                 if (success == VALUE_ECHO_SERVICE_STATUS_ERROR) {

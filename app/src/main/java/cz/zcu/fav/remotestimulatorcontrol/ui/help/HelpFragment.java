@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,9 +42,6 @@ public class HelpFragment extends Fragment {
 
             if (action.equals(BluetoothService.ACTION_DATA_RECEIVED)) {
                 byte[] bytes = intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT);
-
-                BtPacket packet = new BtPacket(bytes);
-                Log.d("fjsdlkfasd", "Neco jsem dostal");
 
                 mBinding.textView2.setText(new String(bytes, 0, bytes.length));
             }

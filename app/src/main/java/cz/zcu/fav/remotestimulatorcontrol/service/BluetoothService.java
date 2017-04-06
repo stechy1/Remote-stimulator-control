@@ -411,7 +411,6 @@ public class BluetoothService extends Service {
         void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                //Log.d(TAG, "Bylo odesláno: " + BitUtils.byteArrayToHex(buffer));
 
             } catch (IOException e) {
                 Log.e(TAG, "Nastala neočekávaná vyjímka během zápisu dat");

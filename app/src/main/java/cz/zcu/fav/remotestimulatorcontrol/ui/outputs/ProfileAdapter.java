@@ -54,7 +54,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileH
         holder.bindTo(profile);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
-        holder.setIsRecyclable(!selected);
     }
 
     @Override

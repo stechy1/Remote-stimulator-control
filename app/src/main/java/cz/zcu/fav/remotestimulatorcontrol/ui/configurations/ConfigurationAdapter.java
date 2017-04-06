@@ -60,7 +60,6 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
         holder.bindTo(configuration);
         boolean selected = mSelectedItems.get(position, false);
         holder.itemView.setSelected(selected);
-        holder.setIsRecyclable(!selected);
     }
 
     @Override
@@ -202,6 +201,7 @@ class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.Con
 
     class ConfigurationHolder extends RecyclerView.ViewHolder {
         private final ConfigurationItemBinding mmBinding;
+
 
         private ConfigurationHolder(final ConfigurationItemBinding binding) {
             super(binding.getRoot());

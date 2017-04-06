@@ -25,7 +25,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@{TextDrawable.builder().buildRound(profile.name.substring(0, 1), ColorGenerator.MATERIAL.getRandomColor())}"/>
+            android:src="@{TextDrawable.builder().buildRound(profile.name.substring(0, 1), ColorGenerator.MATERIAL.getColor(profile.name))}"/>
 
         <TextView
             android:id="@+id/textProfileName"

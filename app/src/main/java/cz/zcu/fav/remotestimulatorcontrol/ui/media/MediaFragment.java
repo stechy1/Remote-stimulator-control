@@ -457,6 +457,9 @@ public class MediaFragment extends Fragment {
         }
     }
 
+    // region Click handlers
+
+    // Kliknutí na FAB tlačítko
     public void fabClick(View view) {
         if (!permissionGranted) {
             Log.i(TAG, "Nebyla udělena práva pro přístup k úložišti");
@@ -623,5 +626,7 @@ public class MediaFragment extends Fragment {
             isRecyclerViewEmpty.set(mMediaAdapter.getItemCount() == 0);
         }
     }
+
+    // endregion
 
 }

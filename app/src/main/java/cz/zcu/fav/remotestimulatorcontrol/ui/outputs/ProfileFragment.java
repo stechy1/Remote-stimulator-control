@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -389,6 +388,8 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    // region Click handlers
+
     // Kliknutí na FAB tlačítko
     public void fabClick(View view) {
         startActivityForResult(new Intent(getActivity(), ProfileFactoryActivity.class), REQUEST_NEW_PROFILE);
@@ -529,5 +530,7 @@ public class ProfileFragment extends Fragment {
             isRecyclerViewEmpty.set(mProfileAdapter.getItemCount() == 0);
         }
     }
+
+    // endregion
 
 }

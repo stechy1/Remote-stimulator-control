@@ -511,6 +511,42 @@ public class ConfigurationsFragment extends Fragment {
         startActivityForResult(intent, REQUEST_DETAIL_CONFIGURATION);
     }
 
+    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private void internal_toggleSelection(View v) {
+            int index = mRecyclerView.getChildAdapterPosition(v);
+            toggleSelection(index);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+
+            if (view == null) {
+                return false;
+            }
+
+            if (mActionMode != null) {
+                internal_toggleSelection(view);
+                return false;
+            }
+
+            onItemClick(view);
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+            if (mActionMode != null || view == null) {
+                return;
+            }
+
+            startActionMode();
+            internal_toggleSelection(view);
+            super.onLongPress(e);
+        }
+    }
+
     class ActionBarCallback implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -589,42 +625,6 @@ public class ConfigurationsFragment extends Fragment {
             mFab.setVisibility(View.VISIBLE);
 
             mIsRecyclerViewEmpty.set(mConfigurationAdapter.getItemCount() == 0);
-        }
-    }
-
-    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private void internal_toggleSelection(View v) {
-            int index = mRecyclerView.getChildAdapterPosition(v);
-            toggleSelection(index);
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
-
-            if (view == null) {
-                return false;
-            }
-
-            if (mActionMode != null) {
-                internal_toggleSelection(view);
-                return false;
-            }
-
-            onItemClick(view);
-            return super.onSingleTapConfirmed(e);
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
-            if (mActionMode != null || view == null) {
-                return;
-            }
-
-            startActionMode();
-            internal_toggleSelection(view);
-            super.onLongPress(e);
         }
     }
 

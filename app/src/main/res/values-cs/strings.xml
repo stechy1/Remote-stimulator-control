@@ -141,7 +141,7 @@
     <!-- Hlášky z service -->
     <string name="service_message_downloading">Stahuji: <xliff:g id="remote_file">%1$s</xliff:g></string>
     <string name="service_message_uploading">Nahrávám: <xliff:g id="remote_file">%1$s</xliff:g></string>
-    <string name="service_message_ls_action">Čtu vzdálen adresář</string>
+    <string name="service_message_ls_action">Čtu vzdálený adresář</string>
     <string name="service_message_merge_files">Spojování souborů</string>
     <string name="service_message_waiting_for_confirm">Čekám na potvrzení</string>
 </resources>

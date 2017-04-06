@@ -91,7 +91,7 @@ public class FileLsService extends RemoteServerIntentService {
      * @param remoteFolder Cesta ke vzdálenému adresáři
      */
     private void handleActionLs(String remoteFolder, String fileMask) {
-        updateProgressTitle("LS action");
+        updateProgressMessage("LS action");
         sendFirstPacket(remoteFolder, fileMask);
         BtPacketAdvanced firstPacket = null;
         try {

@@ -213,22 +213,14 @@ public class MediaFragment extends Fragment {
                     mProgressDialog.setMessage(message);
                     break;
                 case FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS:
-                    final int progress = intent.getIntExtra(FileSynchronizerService.PARAM_MAX_PROGRESS, 0);
-                    totalMaxProgress += progress;
+                    totalMaxProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAX_PROGRESS, 0);
                     Log.d(TAG, "Inkrementuji progress na: " + totalMaxProgress);
                     mProgressDialog.setMax(totalMaxProgress);
                     break;
-                case FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS:
+                case FileSynchronizerService.ACTION_INCREASE_PROGRESS:
                     totalProgress += intent.getIntExtra(FileSynchronizerService.PARAM_MAIN_PROGRESS, 0);
-                    totalSecProgress = totalProgress;
                     Log.d(TAG, "Aktualizuji main progress na: " + totalProgress);
                     mProgressDialog.setProgress(totalProgress);
-                    mProgressDialog.setSecondaryProgress(totalSecProgress);
-                    break;
-                case FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS:
-                    totalSecProgress += intent.getIntExtra(FileSynchronizerService.PARAM_SECONDARY_PROGRESS, 0);
-                    Log.d(TAG, "Aktualizuji secondary progress na: " + totalSecProgress);
-                    mProgressDialog.setSecondaryProgress(totalSecProgress);
                     break;
                 case FileSynchronizerService.ACTION_DONE:
                     Log.d(TAG, "Progress done");
@@ -278,7 +270,6 @@ public class MediaFragment extends Fragment {
 
     private int totalMaxProgress;
     private int totalProgress;
-    private int totalSecProgress;
     // endregion
 
     // region Private methods
@@ -365,8 +356,7 @@ public class MediaFragment extends Fragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction(FileSynchronizerService.ACTION_UPDATE_PROGRESS_MESSAGE);
         filter.addAction(FileSynchronizerService.ACTION_INCREASE_MAX_PROGRESS);
-        filter.addAction(FileSynchronizerService.ACTION_UPDATE_MAIN_PROGRESS);
-        filter.addAction(FileSynchronizerService.ACTION_UPDATE_SECONDARY_PROGRESS);
+        filter.addAction(FileSynchronizerService.ACTION_INCREASE_PROGRESS);
         filter.addAction(FileSynchronizerService.ACTION_DONE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mFileServiceReceiver,
                 filter);
@@ -432,7 +422,6 @@ public class MediaFragment extends Fragment {
 
                 totalMaxProgress = 0;
                 totalProgress = 0;
-                totalSecProgress = 0;
 
                 mProgressDialog = new ProgressDialog(getActivity());
                 mProgressDialog.setTitle("Media synchronization");
@@ -441,7 +430,7 @@ public class MediaFragment extends Fragment {
                 mProgressDialog.setIndeterminate(false);
                 mProgressDialog.setMax(totalMaxProgress);
                 mProgressDialog.setProgress(totalProgress);
-                mProgressDialog.setSecondaryProgress(totalSecProgress);
+                mProgressDialog.setCancelable(false);
                 mProgressDialog.show();
 
                 FileSynchronizerService.startActionSynchronize(getActivity(), new File(getActivity().getFilesDir(), MediaManager.MEDIA_FOLDER).getAbsolutePath());

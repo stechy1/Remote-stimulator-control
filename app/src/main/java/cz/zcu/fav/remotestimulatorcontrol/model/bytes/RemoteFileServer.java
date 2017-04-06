@@ -54,7 +54,7 @@ public final class RemoteFileServer {
                 .setIteration((byte) 0);
 
         packet.content[INDEX_HELLO_VERSION] = PROTOCOL_VERSION;
-        String name = Build.MANUFACTURER + Build.MODEL;
+        String name = Build.MANUFACTURER + " " + Build.MODEL;
         packet.insertData(name.getBytes());
 
         return packet;

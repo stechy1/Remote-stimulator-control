@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
 import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.DEFAUT_REMOTE_DIRECTORY;
@@ -50,21 +51,19 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     private final Semaphore serviceLock = new Semaphore(0);
     private final List<FileLsService.RemoteFileEntry> remoteFileEntries = new ArrayList<>();
 
-    private final BroadcastReceiver mSecondaryProgressReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mProgressReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
             switch (action) {
-                case ACTION_UPDATE_SECONDARY_PROGRESS:
-                    final int progress = intent.getIntExtra(PARAM_SECONDARY_PROGRESS, 0);
-                    secProgress += progress;
-                    mainProgress += progress;
-                    updateProgress(mainProgress);
+                case ACTION_INCREASE_PROGRESS:
+                    mainProgress += intent.getIntExtra(PARAM_MAIN_PROGRESS, 0);
+                    updateNotificationProgress(mainProgress);
                     break;
                 case ACTION_UPDATE_PROGRESS_MESSAGE:
                     final String title = intent.getStringExtra(PARAM_PROGRESS_MESSAGE);
-                    setNotifyTitle(title);
+                    setNotificationTitle(title);
                     break;
             }
         }
@@ -75,7 +74,6 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     private File mediaRootDirectory;
     private int mainMaxProgress;
     private int mainProgress;
-    private int secProgress;
 
     // endregion
 
@@ -125,23 +123,38 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         mNotifyManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
     }
 
-    private void updateMaxProgress(int max) {
+    /**
+     * Nastaví maximální hodnotu progress baru v notifikaci
+     *
+     * @param max Maximální hodnota progress baru
+     */
+    private void updateNotificationMaxProgress(int max) {
         if (mNotifyBuilder != null) {
             mNotifyBuilder.setProgress(max, mainProgress, false);
             mNotifyManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
         }
     }
 
-    private void updateProgress(int progress) {
+    /**
+     * Nastaví aktuální hodnotu progress baru v notifikaci
+     *
+     * @param progress Aktuální hodnota progress baru
+     */
+    private void updateNotificationProgress(int progress) {
         if (mNotifyBuilder != null) {
             mNotifyBuilder.setProgress(mainMaxProgress, progress, false);
             mNotifyManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
         }
     }
 
-    private void setNotifyTitle(CharSequence title) {
+    /**
+     * Nastaví titulek notifikace
+     *
+     * @param title Titulek notifikace
+     */
+    private void setNotificationTitle(CharSequence title) {
         if (mNotifyBuilder != null) {
-            mNotifyBuilder.setSubText(title);
+            mNotifyBuilder.setContentText(title);
             mNotifyManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
         }
     }
@@ -202,23 +215,19 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             localFiles.addAll(Arrays.asList(localFilesArray));
         }
 
-        updateProgressTitle("MD5 processing...");
         // Vypočítám hashe jednotlivých souborů
         List<byte[]> hashes = new ArrayList<>(localFiles.size());
-        increaseMaxProgress(localFiles.size());
         for (File file : localFiles) {
             try {
                 Log.d(TAG, "Počítam hash souboru: " + file.getName());
                 hashes.add(FileUtils.md5FromFile(file));
-                increaseMainProgress(1);
             } catch (IOException e) {
                 Log.e(TAG, "Nepodařilo se získat MD5 hash ze souboru: " + file.getName());
             }
         }
 
-        updateProgressTitle("Merging files");
+        updateProgressMessage("Merging files");
         // Projdu všechny vzdálené soubory a zjistím, které musím stáhnout
-        increaseMaxProgress(hashes.size());
         // Dokud nebude fungovat checksuma, budu kontrolovat názvy souborů
         for (FileLsService.RemoteFileEntry remoteFileEntry : remoteFileEntries) {
             // Získám index hashe
@@ -231,13 +240,15 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             } else {
                 // Když neexistuje, tak to dám na seznam souborů, co musím stáhnout
                 result.second.add(DEFAUT_REMOTE_DIRECTORY + remoteFileEntry.name);
+                mainMaxProgress += (int) Math.round(Math.floor(remoteFileEntry.size / (double) BtPacketAdvanced.MAX_DATA_SIZE));
             }
-            increaseMainProgress(1);
         }
 
         // Zbylé soubory se musejí nahrát na server
-        result.first.addAll(localFiles);
-        increaseMainProgress(localFiles.size());
+        for (File localFile : localFiles) {
+            result.first.add(localFile);
+            mainMaxProgress += (int) Math.round(Math.floor(localFile.length() / (double) BtPacketAdvanced.MAX_DATA_SIZE));
+        }
 
         return result;
     }
@@ -245,7 +256,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     // region Handle methods
 
     private void handleActionSynchronize(String mediaRootDirectory) {
-        //initNotification();
+        initNotification();
         this.mediaRootDirectory = new File(mediaRootDirectory);
         increaseMaxProgress(2);
         // Nejdříve se spustí další intent service pro načtení souborů ze vzdáleného
@@ -255,28 +266,29 @@ public class FileSynchronizerService extends RemoteServerIntentService {
         lockService();
         increaseMainProgress(1);
         // Teď mám přístupnou proměnnou "remoteFileEntries"
-        Pair<ArrayList<File>, ArrayList<String>> mergedFiles =
-                mergeFiles();
+        Pair<ArrayList<File>, ArrayList<String>> mergedFiles = mergeFiles();
 
-        increaseMaxProgress(mergedFiles.first.size());
+        updateNotificationMaxProgress(mainMaxProgress);
+        increaseMaxProgress(mainMaxProgress);
+
         for (File toUpload : mergedFiles.first) {
             Log.d(TAG, "Musím nahrát: " + toUpload + " soubor");
-            updateProgressTitle("Uploading: " + toUpload.getName());
             FileUploadService.startActionUpload(this, toUpload.getAbsolutePath(), DEFAUT_REMOTE_DIRECTORY, SERVICE_NAME);
             lockService();
-            increaseMainProgress(1);
         }
 
-        increaseMaxProgress(mergedFiles.second.size());
         for (String toDownload : mergedFiles.second) {
             Log.d(TAG, "Musím stáhnout: " + toDownload + " soubor");
-            updateProgressTitle("Downloading: " + toDownload);
             FileDownloadService.startActionDownload(this, toDownload, SERVICE_NAME);
             lockService();
-            increaseMainProgress(1);
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_DONE));
+        if (mNotifyBuilder != null) {
+            mNotifyBuilder.setContentText("Done");
+            mNotifyBuilder.setProgress(0, 0, false);
+            mNotifyManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
+        }
     }
 
     // endregion
@@ -356,14 +368,15 @@ public class FileSynchronizerService extends RemoteServerIntentService {
     public void onCreate() {
         super.onCreate();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_UPDATE_SECONDARY_PROGRESS);
+        filter.addAction(ACTION_INCREASE_MAX_PROGRESS);
+        filter.addAction(ACTION_INCREASE_PROGRESS);
         filter.addAction(ACTION_UPDATE_PROGRESS_MESSAGE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSecondaryProgressReceiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mProgressReceiver, filter);
     }
 
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSecondaryProgressReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mProgressReceiver);
         super.onDestroy();
     }
 

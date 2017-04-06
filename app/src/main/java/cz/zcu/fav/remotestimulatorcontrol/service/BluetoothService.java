@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 
 public class BluetoothService extends Service {
 
@@ -393,7 +392,6 @@ public class BluetoothService extends Service {
                     totalSize += count;
 
                     if (totalSize >= BtPacket.PACKET_SIZE) {
-                        Log.d(TAG, "Vytvářím nový packet: " + BitUtils.byteArrayToHex(data));
                         Intent intent = new Intent(ACTION_DATA_RECEIVED);
                         intent.putExtra(EXTRA_DATA_CONTENT, Arrays.copyOf(data, data.length));
                         LocalBroadcastManager.getInstance(BluetoothService.this).sendBroadcast(intent);

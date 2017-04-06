@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
@@ -81,7 +82,6 @@ public class FileUploadService extends RemoteServerIntentService {
         final int size = (int) file.length();
         final byte[] data = new byte[BtPacket.PACKET_SIZE - 4];
         BitUtils.intToBytes(size, data, 0);
-        increaseMaxProgress((int) Math.round(Math.floor(size / (double) BtPacketAdvanced.MAX_DATA_SIZE)));
 
         final byte[] hash = FileUtils.md5FromFile(file);
         System.arraycopy(hash, 0, data, 4, hash.length);
@@ -95,11 +95,14 @@ public class FileUploadService extends RemoteServerIntentService {
 
     private void handleActionUpload(String filePath, String remoteDirectory) {
         final File file = new File(filePath);
+        updateProgressMessage("Uploading: " + file.getName());
 
         try {
             sendFirstPacket(file, remoteDirectory);
         } catch (IOException e) {
             Log.e(TAG, "Nepodařilo se poslat první packet", e);
+            sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+            return;
         }
 
         FileInputStream in = null;
@@ -137,15 +140,6 @@ public class FileUploadService extends RemoteServerIntentService {
                     sendData(packet);
 
                     increaseMainProgress(1);
-                    // Pozor, zde uspávám proces, abych uměle zvýšil prodlevu mezi jednotlivými operacemi
-                    // Je to kvůli pomalému zpracování sériové linky
-                    if ((counter++) % 200 == 0) {
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
 
                     if (count != -1) {
                         totalSize %= maxDataSize;
@@ -156,6 +150,24 @@ public class FileUploadService extends RemoteServerIntentService {
                 }
 
             } while (count != -1);
+
+            updateProgressMessage("Waiting for confirm");
+            BtPacketAdvanced responce = null;
+            try {
+                // Počkám, dokud mi nepříjde echo, že server soubor přijal v pořádku
+                // Může se čekat i velmi dlouho, proto je čekací doba velká
+                responce = incommintPackets.poll(1, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (responce == null || !responce.isResponse(RemoteFileServer.Codes.RESPONSE_OK)) {
+                sendEchoDone(new Intent(), VALUE_ECHO_SERVICE_STATUS_ERROR);
+                Log.e(TAG, "Upload nebyl úspěšný");
+                return;
+            }
+
+            sendEchoDone(new Intent());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -168,8 +180,6 @@ public class FileUploadService extends RemoteServerIntentService {
                 }
             }
         }
-
-        sendEchoDone(new Intent());
     }
     // endregion
 
@@ -185,6 +195,7 @@ public class FileUploadService extends RemoteServerIntentService {
         if (intent == null) {
             return;
         }
+
         final String action = intent.getAction();
         switch (action) {
             case ACTION_UPLOAD:

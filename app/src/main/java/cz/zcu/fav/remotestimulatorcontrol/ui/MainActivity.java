@@ -31,7 +31,6 @@ import java.util.Map;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.about.AboutFragment;
@@ -92,12 +91,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case BluetoothService.ACTION_DEVICE_NAME:
                     mConnectedDeviceName = intent.getStringExtra(BluetoothService.EXTRA_DEVICE_NAME);
-                    break;
-                case BluetoothService.ACTION_DATA_RECEIVED:
-                    BtPacketAdvanced packet = new BtPacketAdvanced(intent.getByteArrayExtra(BluetoothService.EXTRA_DATA_CONTENT));
-                    if (packet.hasCommand(RemoteFileServer.Codes.OP_HELLO)) {
-                        Toast.makeText(MainActivity.this, new String(packet.getData(), 0, packet.getMaxDataSize()), Toast.LENGTH_SHORT).show();
-                    }
                     break;
             }
         }
@@ -262,7 +255,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothService.ACTION_DEVICE_NAME);
         filter.addAction(BluetoothService.ACTION_STATE_CHANGE);
-        //filter.addAction(BluetoothService.ACTION_DATA_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBluetoothStateReceiver, filter);
 
         mBinding.navView.setCheckedItem(mFragmentId);

@@ -45,13 +45,11 @@ public abstract class RemoteServerIntentService extends IntentService {
     public @interface ServiceStatus {}
 
 
-    public static final String ACTION_UPDATE_MAIN_PROGRESS = ACTION_PREFIX + "UPDATE_MAIN_PROGRESS";
-    public static final String ACTION_INCREASE_MAX_PROGRESS = ACTION_PREFIX + "SET_MAX_MAIN_PROGRESS";
-    public static final String ACTION_UPDATE_SECONDARY_PROGRESS = ACTION_PREFIX + "UPDATE_SECONDARY_PROGRESS";
-    public static final String ACTION_UPDATE_PROGRESS_MESSAGE = ACTION_PREFIX + "UPDATE_PROGRESS_TITLE";
+    public static final String ACTION_INCREASE_PROGRESS = ACTION_PREFIX + "INCREASE_PROGRESS";
+    public static final String ACTION_INCREASE_MAX_PROGRESS = ACTION_PREFIX + "INCREASE_MAX_MAIN_PROGRESS";
+    public static final String ACTION_UPDATE_PROGRESS_MESSAGE = ACTION_PREFIX + "UPDATE_PROGRESS_MESSAGE";
     public static final String PARAM_MAIN_PROGRESS = PARAM_PREFIX + "MAIN_PROGRESS";
     public static final String PARAM_MAX_PROGRESS = PARAM_PREFIX + "MAX_MAIN_PROGRESS";
-    public static final String PARAM_SECONDARY_PROGRESS = PARAM_PREFIX + "SECONDARY_PROGRESS";
     public static final String PARAM_PROGRESS_MESSAGE = PARAM_PREFIX + "PROGRESS_TITLE";
 
     private static byte GLOBAL_ITERATION = 10;
@@ -163,7 +161,7 @@ public abstract class RemoteServerIntentService extends IntentService {
      * @param progress Nový progress
      */
     protected void increaseMainProgress(int progress) {
-        Intent intent = new Intent(ACTION_UPDATE_MAIN_PROGRESS);
+        Intent intent = new Intent(ACTION_INCREASE_PROGRESS);
         intent.putExtra(PARAM_MAIN_PROGRESS, progress);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
@@ -180,23 +178,12 @@ public abstract class RemoteServerIntentService extends IntentService {
     }
 
     /**
-     * Pošle broadcast s informací o aktualizaci vedlejšího progresu
-     *
-     * @param progress Nový progress
-     */
-    protected void increaseSecondaryProgress(int progress) {
-        Intent intent = new Intent(ACTION_UPDATE_SECONDARY_PROGRESS);
-        intent.putExtra(PARAM_SECONDARY_PROGRESS, progress);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
-
-    /**
      * Pošle broadcast s informací o aktualizaci nadpisu progressu
      *
      * @param resId Resource id identifikující text, který se má zobrazit
      */
-    protected void updateProgressTitle(@StringRes int resId) {
-        updateProgressTitle(getString(resId));
+    protected void updateProgressMessage(@StringRes int resId) {
+        updateProgressMessage(getString(resId));
     }
 
     /**
@@ -204,7 +191,7 @@ public abstract class RemoteServerIntentService extends IntentService {
      *
      * @param title Nový titulek, který se má zobrazit v nadpisu
      */
-    protected void updateProgressTitle(CharSequence title) {
+    protected void updateProgressMessage(CharSequence title) {
         Intent intent = new Intent(ACTION_UPDATE_PROGRESS_MESSAGE);
         intent.putExtra(PARAM_PROGRESS_MESSAGE, title);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

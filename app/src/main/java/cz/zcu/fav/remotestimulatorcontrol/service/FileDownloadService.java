@@ -70,6 +70,7 @@ public class FileDownloadService extends RemoteServerIntentService {
 
     // region Handle methods
     private void handleActionDownload(String remoteFilePath) {
+        updateProgressMessage("Downloading: " + remoteFilePath);
         sendFirstPacket(remoteFilePath);
 
         BtPacketAdvanced firstPacket = null;
@@ -93,8 +94,6 @@ public class FileDownloadService extends RemoteServerIntentService {
         final String fileName = remoteFilePath.substring(remoteFilePath.lastIndexOf("/"));
         final byte[] firstData = firstPacket.getData();
         final int size = BitUtils.intFromBytes(firstData, 1); // Na indexu 0 je result
-        final int progressCount = (int) Math.round(Math.floor(size / (double) BtPacketAdvanced.MAX_DATA_SIZE));
-        increaseMaxProgress(progressCount);
 
         final byte[] hash = new byte[RemoteFileServer.HASH_SIZE];
         System.arraycopy(firstData, 0, hash, 0, hash.length);
@@ -102,7 +101,7 @@ public class FileDownloadService extends RemoteServerIntentService {
         FileOutputStream outputStream = null;
         try {
             BtPacketAdvanced incommingPacket = null;
-             outputStream = new FileOutputStream(outputFile);
+            outputStream = new FileOutputStream(outputFile);
             do {
                 try {
                     incommingPacket = incommintPackets.poll(DEFAULT_WAIT_TIME_FOR_PACKET, DEFAULT_WAIT_UNIT);

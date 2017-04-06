@@ -235,4 +235,11 @@
         <item name="2">CSV</item>
     </string-array>
 
+    <!-- Hlášky z service -->
+    <string name="service_message_downloading">Downloading: <xliff:g id="remote_file">%1$s</xliff:g></string>
+    <string name="service_message_uploading">Uploading: <xliff:g id="remote_file">%1$s</xliff:g></string>
+    <string name="service_message_ls_action">LS action</string>
+    <string name="service_message_merge_files">Merging files</string>
+    <string name="service_message_waiting_for_confirm">Waiting for confirm</string>
+
 </resources>

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
@@ -70,7 +71,7 @@ public class FileDownloadService extends RemoteServerIntentService {
 
     // region Handle methods
     private void handleActionDownload(String remoteFilePath) {
-        updateProgressMessage("Downloading: " + remoteFilePath);
+        updateProgressMessage(getString(R.string.service_message_downloading, remoteFilePath));
         sendFirstPacket(remoteFilePath);
 
         BtPacketAdvanced firstPacket = null;

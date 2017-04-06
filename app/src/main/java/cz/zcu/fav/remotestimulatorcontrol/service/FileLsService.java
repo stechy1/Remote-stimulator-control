@@ -10,6 +10,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
@@ -91,7 +92,7 @@ public class FileLsService extends RemoteServerIntentService {
      * @param remoteFolder Cesta ke vzdálenému adresáři
      */
     private void handleActionLs(String remoteFolder, String fileMask) {
-        updateProgressMessage("LS action");
+        updateProgressMessage(R.string.service_message_ls_action);
         sendFirstPacket(remoteFolder, fileMask);
         BtPacketAdvanced firstPacket = null;
         try {

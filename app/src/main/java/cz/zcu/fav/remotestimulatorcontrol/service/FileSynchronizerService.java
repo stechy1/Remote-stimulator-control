@@ -226,7 +226,7 @@ public class FileSynchronizerService extends RemoteServerIntentService {
             }
         }
 
-        updateProgressMessage("Merging files");
+        updateProgressMessage(R.string.service_message_merge_files);
         // Projdu všechny vzdálené soubory a zjistím, které musím stáhnout
         // Dokud nebude fungovat checksuma, budu kontrolovat názvy souborů
         for (FileLsService.RemoteFileEntry remoteFileEntry : remoteFileEntries) {

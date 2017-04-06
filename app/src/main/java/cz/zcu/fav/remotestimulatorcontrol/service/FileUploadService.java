@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
@@ -95,7 +96,7 @@ public class FileUploadService extends RemoteServerIntentService {
 
     private void handleActionUpload(String filePath, String remoteDirectory) {
         final File file = new File(filePath);
-        updateProgressMessage("Uploading: " + file.getName());
+        updateProgressMessage(getString(R.string.service_message_uploading, file.getName()));
 
         try {
             sendFirstPacket(file, remoteDirectory);
@@ -151,7 +152,7 @@ public class FileUploadService extends RemoteServerIntentService {
 
             } while (count != -1);
 
-            updateProgressMessage("Waiting for confirm");
+            updateProgressMessage(R.string.service_message_waiting_for_confirm);
             BtPacketAdvanced responce = null;
             try {
                 // Počkám, dokud mi nepříjde echo, že server soubor přijal v pořádku

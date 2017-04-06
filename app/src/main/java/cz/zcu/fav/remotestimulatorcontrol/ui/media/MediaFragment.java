@@ -407,6 +407,14 @@ public class MediaFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        super.onDestroyView();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.media_menu, menu);
     }

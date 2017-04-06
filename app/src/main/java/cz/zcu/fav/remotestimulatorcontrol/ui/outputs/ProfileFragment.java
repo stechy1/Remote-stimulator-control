@@ -364,6 +364,14 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        super.onDestroyView();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         mMenu = menu;
 

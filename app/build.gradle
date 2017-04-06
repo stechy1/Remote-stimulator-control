@@ -60,6 +60,8 @@ dependencies {
             [group: 'com.android.support', name: 'support-v4', version: supportLibVersion],
             [group: 'com.android.support', name: 'palette-v7', version: supportLibVersion]
     )
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+
     testCompile([group: 'org.mockito', name: 'mockito-all', version: '1.10.19'])
     androidTestCompile(
             [group: 'com.android.support', name: 'support-annotations', version: supportLibVersion]

@@ -4,22 +4,39 @@
     <data>
         <import type="android.view.View" />
         <import type="cz.zcu.fav.remotestimulatorcontrol.model.profiles.OutputProfile" />
+        <import type="com.amulyakhare.textdrawable.TextDrawable" />
+        <import type="android.graphics.Color" />
+        <import type="com.amulyakhare.textdrawable.util.ColorGenerator" />
 
         <variable
             name="profile"
             type="OutputProfile" />
     </data>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/textProfileName"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:text="@{profile.name}"
-    android:gravity="center_vertical"
-    android:textSize="20sp"
-    android:background="@drawable/selection_indicator_state_list"
-    android:padding="8dp">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/profile_item"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@drawable/selection_indicator_state_list"
+        android:clickable="true"
+        android:padding="8dp"
+        android:orientation="horizontal">
 
-</TextView>
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@{TextDrawable.builder().buildRound(profile.name.substring(0, 1), ColorGenerator.MATERIAL.getRandomColor())}"/>
+
+        <TextView
+            android:id="@+id/textProfileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{profile.name}"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
+            android:padding="8dp">
+
+        </TextView>
+    </LinearLayout>
 
 </layout>

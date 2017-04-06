@@ -27,7 +27,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -39,6 +38,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.flexbox.FlexboxLayoutManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -276,7 +277,7 @@ public class MediaFragment extends Fragment {
         mRecyclerView = mBinding.recyclerViewMedia;
         mMediaAdapter = new MediaAdapter(mManager.mediaList);
 
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setLayoutManager(new FlexboxLayoutManager());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mMediaAdapter);
         mRecyclerView.addOnItemTouchListener(mItemTouchListener);

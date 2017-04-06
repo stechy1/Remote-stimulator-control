@@ -47,7 +47,7 @@ public class PatternWidget extends FlexboxLayout {
     public PatternWidget(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        setFlexWrap(FLEX_WRAP_WRAP);
+        setFlexWrap(LayoutParams.WRAP_CONTENT);
 
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.PatternWidget);
         mBitCount = a.getInt(R.styleable.PatternWidget_bit_count, 0);
@@ -86,7 +86,7 @@ public class PatternWidget extends FlexboxLayout {
                 mBitList.add(checkBox);
                 addView(checkBox);
                 FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(checkBox.getLayoutParams());
-                lp.minWidth = PixelUtil.dpToPixel(context, 12);
+                lp.setMinWidth(PixelUtil.dpToPixel(context, 12));
                 checkBox.setLayoutParams(lp);
             }
         } else {

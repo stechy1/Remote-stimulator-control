@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
 
 public abstract class AConfiguration extends BaseModel implements IDuplicable {
 

@@ -9,8 +9,8 @@ import android.widget.Toast;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityStimulatorControlBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Stimulator;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.Stimulator;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
 public class StimulatorControlActivity extends AppCompatActivity {

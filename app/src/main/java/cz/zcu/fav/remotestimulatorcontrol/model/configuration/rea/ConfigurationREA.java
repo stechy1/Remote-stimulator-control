@@ -7,7 +7,7 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 

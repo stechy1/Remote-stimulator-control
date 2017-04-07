@@ -1,18 +1,18 @@
-package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
+package cz.zcu.fav.remotestimulatorcontrol.model.stimulator;
 
 import android.os.Build;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.LS_FLAG_NO_DIRS;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_BYE;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_DEL;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_GET;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_LS;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_PUT;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_CONTINUE;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.LS_FLAG_NO_DIRS;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_BYE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_DEL;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_GET;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_HELLO;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_LS;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_PUT;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.PART_CONTINUE;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.PART_LAST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.TYPE_REQUEST;
 
 /**
  * Pomocná knihovní třída obsahující všechny kódové značky, které jsou potřebné pro komunikaci

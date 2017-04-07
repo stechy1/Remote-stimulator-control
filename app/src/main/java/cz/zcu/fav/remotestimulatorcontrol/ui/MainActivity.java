@@ -31,7 +31,7 @@ import java.util.Map;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityMainBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 import cz.zcu.fav.remotestimulatorcontrol.ui.about.AboutFragment;
 import cz.zcu.fav.remotestimulatorcontrol.ui.configurations.ConfigurationSharedPreferences;

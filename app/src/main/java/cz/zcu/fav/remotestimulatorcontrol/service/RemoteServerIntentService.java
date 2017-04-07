@@ -16,7 +16,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacketAdvanced;
 
 /**
  * Základní intent service pro komunikaci se vzdálenm souborovm systémem

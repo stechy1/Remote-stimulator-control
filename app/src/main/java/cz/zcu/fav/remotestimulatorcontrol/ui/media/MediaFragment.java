@@ -50,7 +50,7 @@ import java.util.List;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentMediaBinding;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ImageDialogBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;

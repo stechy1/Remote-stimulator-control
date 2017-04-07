@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 
 /**
  * Service sloužící ke smazání jednoho souboru ze vzdáleného serveru

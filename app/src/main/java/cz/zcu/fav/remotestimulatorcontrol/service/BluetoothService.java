@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
 
 public class BluetoothService extends Service {
 

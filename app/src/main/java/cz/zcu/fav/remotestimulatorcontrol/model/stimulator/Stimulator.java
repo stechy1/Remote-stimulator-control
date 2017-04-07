@@ -1,4 +1,4 @@
-package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
+package cz.zcu.fav.remotestimulatorcontrol.model.stimulator;
 
 import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 

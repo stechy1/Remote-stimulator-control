@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacketAdvanced;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.DEFAUT_REMOTE_DIRECTORY;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.DEFAUT_REMOTE_DIRECTORY;
 
 /**
  * Service sloužící k synchronizaci souborů se vzdáleným souborovým serverem

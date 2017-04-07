@@ -1,12 +1,12 @@
-package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
+package cz.zcu.fav.remotestimulatorcontrol.model.stimulator;
 
 import java.util.Arrays;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_COMMAND;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_DATA;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_DATA;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_ITER;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_COMMAND;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_DATA;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_HELLO_DATA;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_ITER;
 
 /**
  * Rozšíření standartní třídy {@link BtPacket} o funkce pro práci s daty ze vzdáleného FS

@@ -10,8 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 
 /**

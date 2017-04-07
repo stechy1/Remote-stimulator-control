@@ -18,18 +18,18 @@ import android.view.ViewGroup;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentHelpBinding;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_COMMAND;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_DATA;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.INDEX_ITER;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.OP_HELLO;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PART_LAST;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.PREFIX;
-import static cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer.Codes.TYPE_REQUEST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_COMMAND;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_HELLO_DATA;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_HELLO_VERSION;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.INDEX_ITER;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.OP_HELLO;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.PART_LAST;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.PREFIX;
+import static cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer.Codes.TYPE_REQUEST;
 
 public class HelpFragment extends Fragment {
 

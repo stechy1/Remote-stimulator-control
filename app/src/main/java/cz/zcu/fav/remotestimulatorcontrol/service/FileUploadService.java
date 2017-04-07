@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketAdvanced;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.BtPacketAdvanced;
+import cz.zcu.fav.remotestimulatorcontrol.model.stimulator.RemoteFileServer;
 import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 import cz.zcu.fav.remotestimulatorcontrol.util.FileUtils;
 

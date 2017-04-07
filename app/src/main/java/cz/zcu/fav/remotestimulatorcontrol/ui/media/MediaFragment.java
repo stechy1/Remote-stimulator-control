@@ -2,6 +2,7 @@ package cz.zcu.fav.remotestimulatorcontrol.ui.media;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -47,8 +49,8 @@ import java.util.List;
 
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.FragmentMediaBinding;
+import cz.zcu.fav.remotestimulatorcontrol.databinding.ImageDialogBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.RemoteFileServer;
-import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MediaType;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.AMedia;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaAudio;
 import cz.zcu.fav.remotestimulatorcontrol.model.media.MediaManager;
@@ -76,28 +78,60 @@ public class MediaFragment extends Fragment {
 
     // region Variables
     private final ObservableBoolean isRecyclerViewEmpty = new ObservableBoolean(true);
-    private FragmentMediaBinding mBinding;
+    private final BroadcastReceiver mServiceEchoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
 
+            if (!action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
+                return;
+            }
+
+            final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
+            if (!TAG.equals(destService)) {
+                return;
+            }
+
+            final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
+            final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
+
+            switch (srcService) {
+                case FileDeleteService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
+                        return;
+                    }
+
+                    Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
+                    break;
+                case FileUploadService.SERVICE_NAME:
+                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
+                        Log.e(TAG, "Soubor se nepodařilo nahrát na server");
+                        return;
+                    }
+
+                    Toast.makeText(context, "Soubor byl nahrán na server", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+    private FragmentMediaBinding mBinding;
     private RecyclerView mRecyclerView;
     private MediaAdapter mMediaAdapter;
     private MediaManager mManager;
-    private GestureDetectorCompat mGestureDetector;
-    private ActionMode mActionMode;
-    private FloatingActionButton mFab;
-    private MediaPlayer mediaPlayer;
-    private ProgressDialog mProgressDialog;
-
-    private boolean permissionGranted = false;
-    private boolean mDeleteConfirmed = true;
-
     public final SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
             mManager.refresh();
         }
     };
-    private int selectedMedia;
-
+    private GestureDetectorCompat mGestureDetector;
+    private ActionMode mActionMode;
+    private FloatingActionButton mFab;
+    private MediaPlayer mediaPlayer;
+    private ProgressDialog mProgressDialog;
+    private boolean permissionGranted = false;
+    private boolean mDeleteConfirmed = true;
     private final Handler.Callback managerCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -183,6 +217,7 @@ public class MediaFragment extends Fragment {
         }
     };
     private final Handler managerHandler = new Handler(managerCallback);
+    private int selectedMedia;
     private RecyclerView.OnItemTouchListener mItemTouchListener = new RecyclerView.OnItemTouchListener() {
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -200,6 +235,8 @@ public class MediaFragment extends Fragment {
             // Zde opravdu nic není
         }
     };
+    private int totalMaxProgress;
+    private int totalProgress;
     private final BroadcastReceiver mFileServiceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -227,49 +264,10 @@ public class MediaFragment extends Fragment {
             }
         }
     };
-    private final BroadcastReceiver mServiceEchoReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (!action.equals(RemoteServerIntentService.ACTION_ECHO_SERVICE_DONE)) {
-                 return;
-            }
-
-            final String destService = intent.getStringExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_NAME);
-            if (!TAG.equals(destService)) {
-                return;
-            }
-
-            final String srcService = intent.getStringExtra(RemoteServerIntentService.PARAM_SRC_SERVICE_NAME);
-            final int success = intent.getIntExtra(RemoteServerIntentService.PARAM_ECHO_SERVICE_STATUS, RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR);
-
-            switch (srcService) {
-                case FileDeleteService.SERVICE_NAME:
-                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
-                        Log.e(TAG, "Nepodařilo se smazat soubor ze serveru");
-                        return;
-                    }
-
-                    Toast.makeText(context, "Soubor byl smazán ze serveru", Toast.LENGTH_SHORT).show();
-                    break;
-                case FileUploadService.SERVICE_NAME:
-                    if (success == RemoteServerIntentService.VALUE_ECHO_SERVICE_STATUS_ERROR) {
-                        Log.e(TAG, "Soubor se nepodařilo nahrát na server");
-                        return;
-                    }
-
-                    Toast.makeText(context, "Soubor byl nahrán na server", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    };
-
-    private int totalMaxProgress;
-    private int totalProgress;
     // endregion
 
     // region Private methods
+
     /**
      * Inicializuje recycler view
      */
@@ -298,8 +296,7 @@ public class MediaFragment extends Fragment {
         mActionMode.setTitle(title);
     }
 
-    private boolean checkReadExternalPermission()
-    {
+    private boolean checkReadExternalPermission() {
         String permission = "android.permission.READ_EXTERNAL_STORAGE";
         int res = getActivity().checkCallingOrSelfPermission(permission);
         return (res == PackageManager.PERMISSION_GRANTED);
@@ -479,7 +476,7 @@ public class MediaFragment extends Fragment {
         private final MediaPlayer.OnPreparedListener mmMediaPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                ((MediaAudio)(mManager.mediaList.get(selectedMedia))).setPlaying(true);
+                ((MediaAudio) (mManager.mediaList.get(selectedMedia))).setPlaying(true);
                 mediaPlayer.start();
             }
         };
@@ -495,6 +492,7 @@ public class MediaFragment extends Fragment {
         // endregion
 
         // region Private methods
+
         /**
          * Odstartuje přehrávač
          *
@@ -550,23 +548,42 @@ public class MediaFragment extends Fragment {
 
             AMedia media = mManager.mediaList.get(position);
             String filePath = media.getMediaFile().getAbsolutePath();
-            if (media.getMediaType() == MediaType.AUDIO) {
-                if (mediaPlayer == null) {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setOnPreparedListener(mmMediaPreparedListener);
-                    mediaPlayer.setOnCompletionListener(mmMediaCompletionListener);
-                }
-
-                if (mediaPlayer.isPlaying()) {
-                    final boolean nextPlay = position != selectedMedia;
-                    stopMediaPlayer(selectedMedia);
-                    if (nextPlay) {
-                        playMediaPlayer(filePath, position);
+            switch (media.getMediaType()) {
+                case AUDIO:
+                    if (mediaPlayer == null) {
+                        mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setOnPreparedListener(mmMediaPreparedListener);
+                        mediaPlayer.setOnCompletionListener(mmMediaCompletionListener);
                     }
-                    return true;
-                }
 
-                playMediaPlayer(filePath, position);
+                    if (mediaPlayer.isPlaying()) {
+                        final boolean nextPlay = position != selectedMedia;
+                        stopMediaPlayer(selectedMedia);
+                        if (nextPlay) {
+                            playMediaPlayer(filePath, position);
+                        }
+                        return true;
+                    }
+
+                    playMediaPlayer(filePath, position);
+                    break;
+                case IMAGE:
+                    final Dialog dialog = new Dialog(getActivity(), R.style.Theme_Dialog);
+                    dialog.setTitle(media.getName());
+                    ImageDialogBinding dialogBinding = DataBindingUtil.inflate(
+                            LayoutInflater.from(getActivity()), R.layout.image_dialog, null, false);
+                    dialogBinding.dialogImageView.setImageDrawable(Drawable.createFromPath(media.getMediaFile().getAbsolutePath()));
+                    dialogBinding.dialogBtnDismiss.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.setContentView(dialogBinding.getRoot());
+                    dialog.show();
+                    break;
+                default:
+                    break;
 
             }
 

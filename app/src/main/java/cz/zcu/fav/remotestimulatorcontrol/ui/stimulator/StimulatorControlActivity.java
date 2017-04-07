@@ -10,7 +10,7 @@ import android.widget.Toast;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityStimulatorControlBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.StimulatorControl;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Stimulator;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
 public class StimulatorControlActivity extends AppCompatActivity {
@@ -33,11 +33,11 @@ public class StimulatorControlActivity extends AppCompatActivity {
     }
 
     public void onStimulationStart(View view) {
-        BluetoothService.sendData(this, StimulatorControl.getStartPacket());
+        BluetoothService.sendData(this, Stimulator.getStartPacket());
     }
 
     public void onStimulationStop(View view) {
-        BluetoothService.sendData(this, StimulatorControl.getStopPacket());
+        BluetoothService.sendData(this, Stimulator.getStopPacket());
     }
 
     public void onStimulationRefresh(View view) {

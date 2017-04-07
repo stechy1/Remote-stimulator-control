@@ -84,6 +84,31 @@ public final class BitUtils {
     }
 
     /**
+     * Převede datový typ integer na pole o jednom bytu
+     *
+     * @param value Hodnota, která se má převést
+     * @return Hodnota převedená na pole jednoho bytu
+     */
+    public static byte[] intTo1Byte(int value) {
+        return new byte[] {
+                (byte) (value & 0xFF)
+        };
+    }
+
+    /**
+     * Převede datový typ integer na pole o dvou bytech
+     *
+     * @param value Hodnota, která se má převést
+     * @return Hodnota převedená na polo dvou bytů
+     */
+    public static byte[] intTo2Bytes(int value) {
+        return new byte[] {
+                (byte) ((value >> 8) & 0xFF),
+                (byte) (value & 0xFF)
+        };
+    }
+
+    /**
      * Metoda pro konverzi bytů na hexa
      *
      * @param array Byty, které se mají konvertovat

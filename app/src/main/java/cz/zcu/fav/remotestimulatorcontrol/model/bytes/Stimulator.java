@@ -1,12 +1,24 @@
 package cz.zcu.fav.remotestimulatorcontrol.model.bytes;
 
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
+
 /**
  * Pomocní knihovní třída obsahující všechny kódové značky, které jsou v přenosovém protokolu
  */
-public class StimulatorControl {
+public class Stimulator {
 
-    private StimulatorControl() {
+    private Stimulator() {
         throw new AssertionError();
+    }
+
+    /**
+     * Metoda pro převod [0.1 ms] na 2 bajty
+     *
+     * @param number číslo reprezentující počet 0.1 ms např 30.6 ms => 306*0.1 ms
+     * @return pole od dvou bajtech
+     */
+    public static byte[] milisecondsTo2B(double number){
+        return BitUtils.intTo2Bytes((int)(10 * number));
     }
 
     /**

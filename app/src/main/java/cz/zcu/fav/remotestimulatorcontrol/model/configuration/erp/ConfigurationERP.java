@@ -10,10 +10,10 @@ import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.DataConvertor;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.StimulatorControl;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Stimulator;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
+import cz.zcu.fav.remotestimulatorcontrol.util.BitUtils;
 
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MAX_DISTRIBUTION_VALUE;
 import static cz.zcu.fav.remotestimulatorcontrol.model.configuration.erp.ConfigurationERP.Output.MIN_DISTRIBUTION_VALUE;
@@ -184,44 +184,44 @@ public class ConfigurationERP extends AConfiguration {
         List<BtPacket> packets = new ArrayList<>();
 
         packets.add(new BtPacket()
-                .setMessageType(StimulatorControl.Codes.EDGE)
+                .setMessageType(Stimulator.Codes.EDGE)
                 .setDataLength(1)
-                .setData(DataConvertor.intTo1B(edge.equals(Edge.FALLING)
-                        ? StimulatorControl.Codes.PULSE_EDGE_DOWN
-                        : StimulatorControl.Codes.PULSE_EDGE_UP)));
+                .setData(BitUtils.intTo1Byte(edge.equals(Edge.FALLING)
+                        ? Stimulator.Codes.PULSE_EDGE_DOWN
+                        : Stimulator.Codes.PULSE_EDGE_UP)));
 
         packets.add(new BtPacket() // Protokol neumí nastavit mezi stavy
                 .setMessageType(random.equals(Random.OFF)
-                        ? StimulatorControl.Codes.RANDOMNESS_OFF
-                        : StimulatorControl.Codes.RANDOMNESS_ON));
+                        ? Stimulator.Codes.RANDOMNESS_OFF
+                        : Stimulator.Codes.RANDOMNESS_ON));
 
         packets.add(new BtPacket()
-                .setMessageType(StimulatorControl.Codes.SYNC_PULSE_INTERVAL)
+                .setMessageType(Stimulator.Codes.SYNC_PULSE_INTERVAL)
                 .setDataLength(2)
-                .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(out))));
+                .setData(Stimulator.milisecondsTo2B(Integer.parseInt(out))));
 
         for (int i = 0; i < outputList.size(); i++) {
             final Output output = outputList.get(i);
             packets.add(new BtPacket()
-                    .setMessageType(StimulatorControl.Codes.DURATION[i])
+                    .setMessageType(Stimulator.Codes.DURATION[i])
                     .setDataLength(2)
-                    .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
+                    .setData(Stimulator.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
 
             packets.add(new BtPacket()
-                    .setMessageType(StimulatorControl.Codes.PAUSE[i])
+                    .setMessageType(Stimulator.Codes.PAUSE[i])
                     .setDataLength(2)
-                    .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
+                    .setData(Stimulator.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
 
             packets.add(new BtPacket() //TODO u distribution parametru ještě neposíláme delay
-                    .setMessageType(StimulatorControl.Codes.DISTRIBUTION[i])
+                    .setMessageType(Stimulator.Codes.DISTRIBUTION[i])
                     .setDataLength(1)
-                    .setData(DataConvertor.intTo1B(Integer.parseInt(output.distributionValue))));
+                    .setData(BitUtils.intTo1Byte(Integer.parseInt(output.distributionValue))));
 
             if(i != 5 && i != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
                 packets.add(new BtPacket()
-                        .setMessageType(StimulatorControl.Codes.BRIGHTNESS[i])
+                        .setMessageType(Stimulator.Codes.BRIGHTNESS[i])
                         .setDataLength(1)
-                        .setData(DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
+                        .setData(BitUtils.intTo1Byte(Integer.parseInt(output.brightness))));
             }
         }
 

@@ -9,10 +9,9 @@ import java.util.List;
 import cz.zcu.fav.remotestimulatorcontrol.BR;
 import cz.zcu.fav.remotestimulatorcontrol.io.IOHandler;
 import cz.zcu.fav.remotestimulatorcontrol.model.BaseModel;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacketOld;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Code;
-import cz.zcu.fav.remotestimulatorcontrol.model.bytes.Codes;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.DataConvertor;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.StimulatorControl;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.AConfiguration;
 import cz.zcu.fav.remotestimulatorcontrol.model.configuration.ConfigurationType;
 
@@ -181,35 +180,49 @@ public class ConfigurationERP extends AConfiguration {
     }
 
     @Override
-    public List<BtPacketOld> getPackets() {
-        List<BtPacketOld> packets = new ArrayList<>();
+    public List<BtPacket> getPackets() {
+        List<BtPacket> packets = new ArrayList<>();
 
-        packets.add(new BtPacketOld(Codes.EDGE, DataConvertor.intTo1B(edge.ordinal())));
-        packets.add(new BtPacketOld(Codes.RANDOMNESS_ON, DataConvertor.intTo1B(random.ordinal()))); //TODO jak je to s tím kódem náhodnosti?
+        packets.add(new BtPacket()
+                .setMessageType(StimulatorControl.Codes.EDGE)
+                .setDataLength(1)
+                .setData(DataConvertor.intTo1B(edge.equals(Edge.FALLING)
+                        ? StimulatorControl.Codes.PULSE_EDGE_DOWN
+                        : StimulatorControl.Codes.PULSE_EDGE_UP)));
 
-        Code actualDURATION = Codes.OUTPUT0_DURATION;
-        Code actualPAUSE = Codes.OUTPUT0_PAUSE;
-        Code actualDISTRIBUTION = Codes.OUTPUT0_DISTRIBUTION;
-        Code actualBRIGHTNESS = Codes.OUTPUT0_BRIGHTNESS;
+        packets.add(new BtPacket() // Protokol neumí nastavit mezi stavy
+                .setMessageType(random.equals(Random.OFF)
+                        ? StimulatorControl.Codes.RANDOMNESS_OFF
+                        : StimulatorControl.Codes.RANDOMNESS_ON));
 
-        int vystup = 0; //index výstupu, slouží pro odfiltrování jasu kvůli sdružení u LED 5 a 7
+        packets.add(new BtPacket()
+                .setMessageType(StimulatorControl.Codes.SYNC_PULSE_INTERVAL)
+                .setDataLength(2)
+                .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(out))));
 
-        for(Output output : outputList){
-            packets.add(new BtPacketOld(actualDURATION, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
-            packets.add(new BtPacketOld(actualPAUSE, DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
-            packets.add(new BtPacketOld(actualDISTRIBUTION, DataConvertor.intTo1B(Integer.parseInt(output.distributionValue)))); //TODO u distribution parametru ještě neposíláme delay
+        for (int i = 0; i < outputList.size(); i++) {
+            final Output output = outputList.get(i);
+            packets.add(new BtPacket()
+                    .setMessageType(StimulatorControl.Codes.DURATION[i])
+                    .setDataLength(2)
+                    .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsUp))));
 
-            if(vystup != 5 && vystup != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
-                packets.add(new BtPacketOld(actualBRIGHTNESS, DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
-                actualBRIGHTNESS = actualBRIGHTNESS.next;
+            packets.add(new BtPacket()
+                    .setMessageType(StimulatorControl.Codes.PAUSE[i])
+                    .setDataLength(2)
+                    .setData(DataConvertor.milisecondsTo2B(Integer.parseInt(output.pulsDown))));
+
+            packets.add(new BtPacket() //TODO u distribution parametru ještě neposíláme delay
+                    .setMessageType(StimulatorControl.Codes.DISTRIBUTION[i])
+                    .setDataLength(1)
+                    .setData(DataConvertor.intTo1B(Integer.parseInt(output.distributionValue))));
+
+            if(i != 5 && i != 7) {  //neukládáme hodnoty pro výstupy 5 a 7 protože jsou sdružené (bereme ty nižší)
+                packets.add(new BtPacket()
+                        .setMessageType(StimulatorControl.Codes.BRIGHTNESS[i])
+                        .setDataLength(1)
+                        .setData(DataConvertor.intTo1B(Integer.parseInt(output.brightness))));
             }
-
-            actualDURATION = actualDURATION.next;
-            actualPAUSE = actualPAUSE.next;
-            actualDISTRIBUTION = actualDISTRIBUTION.next;
-
-
-            vystup++;
         }
 
         return packets;

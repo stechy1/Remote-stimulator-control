@@ -10,6 +10,7 @@ import android.widget.Toast;
 import cz.zcu.fav.remotestimulatorcontrol.R;
 import cz.zcu.fav.remotestimulatorcontrol.databinding.ActivityStimulatorControlBinding;
 import cz.zcu.fav.remotestimulatorcontrol.model.bytes.BtPacket;
+import cz.zcu.fav.remotestimulatorcontrol.model.bytes.StimulatorControl;
 import cz.zcu.fav.remotestimulatorcontrol.service.BluetoothService;
 
 public class StimulatorControlActivity extends AppCompatActivity {
@@ -32,11 +33,11 @@ public class StimulatorControlActivity extends AppCompatActivity {
     }
 
     public void onStimulationStart(View view) {
-        Toast.makeText(this, "Spouštím stimulaci...", Toast.LENGTH_SHORT).show();
+        BluetoothService.sendData(this, StimulatorControl.getStartPacket());
     }
 
     public void onStimulationStop(View view) {
-        Toast.makeText(this, "Zastavuji stimulaci...", Toast.LENGTH_SHORT).show();
+        BluetoothService.sendData(this, StimulatorControl.getStopPacket());
     }
 
     public void onStimulationRefresh(View view) {

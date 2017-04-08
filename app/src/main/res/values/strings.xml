@@ -222,7 +222,7 @@
     <string name="stimulation_start">Start stimulation</string>
     <string name="stimulaton_stop">Stop stimulation</string>
     <string name="activity_title_stimulation_control">Stimulation control</string>
-
+    <string name="upload_configuration">Upload configuration</string>
 
     <string-array name="pref_extensions" translatable="false">
         <item name="0">XML</item>
@@ -241,5 +241,6 @@
     <string name="service_message_ls_action">LS action</string>
     <string name="service_message_merge_files">Merging files</string>
     <string name="service_message_waiting_for_confirm">Waiting for confirm</string>
+
 
 </resources>

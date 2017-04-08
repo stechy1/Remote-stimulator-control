@@ -15,7 +15,7 @@ import cz.zcu.fav.remotestimulatorcontrol.model.configuration.MetaData;
 /**
  * Třída pro asynchronní načtení zadané konfigurace
  */
-class ConfigurationLoader extends AsyncTask<File, Void, Void> {
+public class ConfigurationLoader extends AsyncTask<File, Void, Void> {
 
     // region Constants
     // Logovací tag
@@ -34,7 +34,7 @@ class ConfigurationLoader extends AsyncTask<File, Void, Void> {
      * @param configuration Konfigurace, která se má načíst
      * @param onLoaded Handler, který se zavolá po úspěšném načtení konfigurace
      */
-    ConfigurationLoader(AConfiguration configuration, OnConfigurationLoaded onLoaded) {
+    public ConfigurationLoader(AConfiguration configuration, OnConfigurationLoaded onLoaded) {
         this.mConfiguration = configuration;
         this.mOnLoaded = onLoaded;
     }
@@ -67,7 +67,7 @@ class ConfigurationLoader extends AsyncTask<File, Void, Void> {
     /**
      * Rozhraní definující kontrakt pro zachycení načtení konfigurace
      */
-    interface OnConfigurationLoaded {
+    public interface OnConfigurationLoaded {
 
         /**
          * Zavolá se po načtení konfigurace z disku

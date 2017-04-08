@@ -135,8 +135,9 @@
     <string name="activity_title_media">Media manager</string>
     <string name="action_synchronize">Synchronizovat</string>
     <string name="stimulation_start">Spustit stimulaci</string>
-    <string name="stimulaton_stop">Zastavis stimulaci</string>
+    <string name="stimulaton_stop">Zastavit stimulaci</string>
     <string name="activity_title_stimulation_control">Ovládání stimulace</string>
+    <string name="upload_configuration">Nahrát konfiguraci</string>
 
     <!-- Hlášky z service -->
     <string name="service_message_downloading">Stahuji: <xliff:g id="remote_file">%1$s</xliff:g></string>
@@ -144,4 +145,5 @@
     <string name="service_message_ls_action">Čtu vzdálený adresář</string>
     <string name="service_message_merge_files">Spojování souborů</string>
     <string name="service_message_waiting_for_confirm">Čekám na potvrzení</string>
+
 </resources>

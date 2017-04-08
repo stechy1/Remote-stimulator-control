@@ -227,7 +227,11 @@ public class ConfigurationDetailActivity extends AppCompatActivity
     }
 
     public void onSelectConfigurationToPlay(View view) {
-        startActivity(new Intent(this, StimulatorControlActivity.class));
+        Intent intent = new Intent(this, StimulatorControlActivity.class);
+        intent.putExtra(StimulatorControlActivity.CONFIGURATION_NAME, configuration.getName());
+        intent.putExtra(StimulatorControlActivity.CONFIGURATION_TYPE, configuration.getConfigurationType());
+        intent.putExtra(StimulatorControlActivity.CONFIGURATION_EXTENSION_TYPE, configuration.metaData.extensionType);
+        startActivity(intent);
     }
 
     // endregion

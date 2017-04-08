@@ -4,15 +4,25 @@
     <data>
 
         <import type="cz.zcu.fav.remotestimulatorcontrol.ui.stimulator.StimulatorControlActivity" />
+        <import type="android.databinding.ObservableBoolean" />
 
         <variable
             name="controller"
             type="StimulatorControlActivity" />
+
+        <variable
+            name="loaded"
+            type="ObservableBoolean" />
+
+        <variable
+            name="running"
+            type="ObservableBoolean" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/stimulatorControlContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -36,19 +46,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/stimulation_start"
-            android:onClick="onStimulationStart"/>
+            android:onClick="onStimulationStart"
+            android:enabled="@{loaded &amp;&amp; !running }"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/stimulaton_stop"
-            android:onClick="onStimulationStop"/>
+            android:onClick="onStimulationStop"
+            android:enabled="@{loaded &amp;&amp; running}"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Refresh display"
-            android:onClick="onStimulationRefresh"/>
+            android:text="@string/upload_configuration"
+            android:onClick="onStimulatorUploadConfig"
+            android:enabled="@{loaded &amp;&amp; !running}"/>
 
     </LinearLayout>
 </layout>

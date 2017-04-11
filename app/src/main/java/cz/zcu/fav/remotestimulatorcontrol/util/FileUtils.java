@@ -7,16 +7,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,6 +130,30 @@ public class FileUtils {
         return null;
     }
 
+    public static String getFileName(Context context, Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
     /**
      * @return The MIME type for the given file.
      */
@@ -188,7 +216,7 @@ public class FileUtils {
      * @return Whether the Uri authority is Google Photos.
      */
     public static boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+        return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
     }
 
     /**
@@ -312,7 +340,7 @@ public class FileUtils {
 
             // Return the remote address
             if (isGooglePhotosUri(uri))
-                return uri.getLastPathSegment();
+                return getImageUrlWithAuthority(context, uri);
 
             return getDataColumn(context, uri, null, null);
         }
@@ -322,6 +350,63 @@ public class FileUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Vrátí cestu k obrázku od vybrané autority
+     *
+     * @param context {@link Context}
+     * @param uri {@link Uri}
+     * @return Cestu k obrázku od autority
+     */
+    private static String getImageUrlWithAuthority(Context context, Uri uri) {
+        InputStream is = null;
+        if (uri.getAuthority() != null) {
+            try {
+                is = context.getContentResolver().openInputStream(uri);
+                Bitmap bmp = BitmapFactory.decodeStream(is);
+                return writeToTempImageAndGetPath(context, bmp, getFileName(context, uri));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Uloží obrázek do dočasného souboru a vrátí k němu cestu
+     *
+     * @param inContext {@link Context}
+     * @param inImage Obrázek, ke kterému se má vrátit cesta
+     * @param name Název obrázku
+     * @return Cesta k dočasně uloženému obrázku
+     */
+    private static String writeToTempImageAndGetPath(Context inContext, Bitmap inImage, String name) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        File cacheFile = new File(inContext.getCacheDir(), name);
+        FileOutputStream fous = null;
+        try {
+            fous = new FileOutputStream(cacheFile);
+            fous.write(bytes.toByteArray());
+        } catch (IOException e) {
+            if (fous != null) {
+                try {
+                    fous.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return cacheFile.getAbsolutePath();
     }
 
     /**

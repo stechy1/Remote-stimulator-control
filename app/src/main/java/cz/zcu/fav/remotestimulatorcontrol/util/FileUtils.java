@@ -35,6 +35,7 @@ import java.text.DecimalFormat;
  * @version 2013-12-11
  * @author paulburke (ipaulpro)
  */
+@SuppressWarnings("all")
 public class FileUtils {
     private FileUtils() {} //private constructor to enforce Singleton pattern
 
